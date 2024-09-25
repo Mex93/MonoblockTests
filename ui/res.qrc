@@ -1,0 +1,18 @@
+<RCC>
+  <qresource prefix="res">
+    <file>images/cancel.png</file>
+    <file>images/print.png</file>
+    <file>images/qr1.png</file>
+    <file>images/scancode1 with text.png</file>
+    <file>images/scancode1.png</file>
+    <file>images/print_ok.svg</file>
+    <file>images/print.svg</file>
+    <file>images/arrow_down.svg</file>
+    <file>images/arrow_up.svg</file>
+    <file>images/disabled_by_default.svg</file>
+    <file>images/logo.ico</file>
+    <file>images/save.svg</file>
+    <file>images/select_window_closed.svg</file>
+    <file>images/select_window_open.svg</file>
+  </qresource>
+</RCC>
