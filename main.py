@@ -8,7 +8,9 @@ from PySide6.QtGui import QFontDatabase
 from ui.untitled import Ui_MainWindow
 from common import send_message_box, SMBOX_ICON_TYPE, get_about_text, get_rules_text
 
-from components.CConfig import CTests, CConfig, TEST_TYPE
+from components.CConfig import CNewConfig, CParameters, BLOCKS_DATA, SYS_INFO_PARAMS, CONFIG_PARAMS
+from components.CTests import CTests, TEST_TYPE
+from components.CConfig_Main import CMainConfig
 from components.CSystemInfo import CSystemInfo
 
 
@@ -28,11 +30,34 @@ class MainWindow(QMainWindow):
         QFontDatabase.addApplicationFont("designs/Iosevka Bold.ttf")
         self.setWindowTitle(f'Печать QR Kvant 2024 v0.1 Бумага 58 на 20')
 
-        self.cconfig_unit = None
+        self.main_config = CMainConfig()
+        # ---------------------------------------
+        try:
+            if self.main_config.load_data() is False:
+                send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
+                                 text="Ошибка в главном файле конфигурации!\n"
+                                      "Один или несколько параметров ошибочны!",
+                                 title="Внимание!",
+                                 variant_yes="Закрыть", variant_no="", callback=lambda: self.set_close())
+                return
 
-        filtred_files = CConfig.get_configs_list_in_folder()
+        except Exception as err:
+            send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
+                             text="Ошибка в файле конфигурации!\n"
+                                  "Один или несколько параметров ошибочны!\n\n"
+                                  f"Ошибка: '{err}'",
+                             title="Внимание!",
+                             variant_yes="Закрыть", variant_no="", callback=lambda: self.set_close())
+            return
+
+        self.cconfig_unit = CNewConfig()
+        self.cconfig_unit.init_params()
+
+        filtred_files = CNewConfig.get_configs_list_in_folder()
         if filtred_files is not None:
             for item in filtred_files:
+                if item.find("main.ini") != -1:
+                    continue
                 self.ui.comboBox_config_get.addItem(item)
 
         buttons = list()
@@ -55,75 +80,98 @@ class MainWindow(QMainWindow):
             btn_unit.set_buttons_default_value()
             btn_unit.set_enabled(False)
 
-        self.ui.comboBox_config_get.setCurrentIndex(-1)
         self.ui.comboBox_config_get.currentIndexChanged.connect(self.on_changed_config)
+
+        only_config_name = self.main_config.get_only_config_name()
+        if len(only_config_name):
+            current_index = self.get_item_index_from_text(only_config_name)
+            if current_index is not None:
+                self.ui.comboBox_config_get.setCurrentIndex(current_index)
+                self.on_changed_config()
+                self.ui.comboBox_config_get.setEnabled(False)
+                return
+
+        last_config = self.main_config.get_last_config_name()
+        if len(last_config):
+            current_index = self.get_item_index_from_text(last_config)
+            if current_index is not None:
+                self.ui.comboBox_config_get.setCurrentIndex(current_index)
+                self.on_changed_config()
+                return
+
+        self.ui.comboBox_config_get.setCurrentIndex(-1)
 
     def on_user_presed_launch_test(self, test_type: TEST_TYPE):
         print(f"Запущен тест: {test_type}")
 
     def on_changed_config(self):
         text = self.ui.comboBox_config_get.currentText()
+        print(text)
         if text:
-            print(text)
-            if not CConfig.set_init_config(text):
-                CConfig.create_config_data()
+
+            if not self.cconfig_unit.set_init_config(text):
+                self.cconfig_unit.create_config_data()
                 self.close()
                 return
 
-            c_handler = CConfig.get_config_handler()
-            if c_handler is not None:
-                try:
-                    CConfig.load_config()
-                except:
-                    CConfig.create_config_data()
-                    self.send_error_message(
-                        "Во время выполнения программы произошла ошибка считывания конфигурации.\n"
-                        "Весь конфиг файл был сброшен по умолчанию!\n\n"
-                        f"Код ошибки: 'on_changed_config -> [Error Read Data]'")
-                    self.close()
-                    return
+            try:
+                self.cconfig_unit.load_config()
+            except:
+                self.cconfig_unit.create_config_data()
+                self.send_error_message(
+                    "Во время выполнения программы произошла ошибка считывания конфигурации.\n"
+                    "Весь конфиг файл был сброшен по умолчанию!\n\n"
+                    f"Код ошибки: 'on_changed_config -> [Error Read Data]'")
+                self.close()
+                return
+            config_human_name = self.cconfig_unit.get_config_value(BLOCKS_DATA.PROGRAM_SETTING, CONFIG_PARAMS.CONFIG_NAME)
+            self.ui.label_monoblock_config_name.setText(f"Тест моноблоков: {config_human_name}")
+            self.main_config.save_last_config(text)
 
-                name = CConfig.get_config_text_name()
-                if name:
-                    self.ui.label_monoblock_config_name.setText(f"Тест моноблоков: {name}")
+            # LOAD
+            CSystemInfo.set_test_used(self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.SYS_INFO_TEST_USED))
+            CSystemInfo.set_bios_stats(self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.BIOS_CHECK))
+            CSystemInfo.set_cpu_stats(self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.CPU_CHECK))
+            CSystemInfo.set_ram_stats(self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.RAM_CHECK))
+            CSystemInfo.set_disk_stats(self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.DISK_CHECK))
 
-                    # LOAD
-                    CSystemInfo.set_test_used(CConfig.sys_info_test_used)
-                    CSystemInfo.set_bios_stats(CConfig.bios_stats)
-                    CSystemInfo.set_cpu_stats(CConfig.cpu_stats)
-                    CSystemInfo.set_ram_stats(CConfig.ram_stats)
-                    CSystemInfo.set_disk_stats(CConfig.disks_stats)
+            Buttoms.set_clear_callbacks_for_all()
 
-                    Buttoms.set_clear_callbacks_for_all()
+            block_datas = CTests.get_config_block_data()
+            btn_index = 0
+            for index, block_data in enumerate(block_datas):
+                bname, btype = block_datas[index]
+                if btype == TEST_TYPE.TEST_SYSTEM_INFO:
+                    if CSystemInfo.is_test_used():
+                        btn_unit = Buttoms.get_unit_from_index(btn_index)
+                        btn_unit.set_callback(btype, self.on_user_presed_launch_test)
+                        btn_unit.set_name(bname)
+                        btn_unit.set_enabled(True)
+                        btn_unit.set_hidden(False)
+                        btn_index += 1
 
-                    block_datas = CTests.get_config_block_data()
-                    btn_index = 0
-                    for index, block_data in enumerate(block_datas):
-                        bname, btype = block_datas[index]
-                        if btype == TEST_TYPE.TEST_SYSTEM_INFO:
-                            if CSystemInfo.is_test_used():
-                                btn_unit = Buttoms.get_unit_from_index(btn_index)
-                                btn_unit.set_callback(btype, self.on_user_presed_launch_test)
-                                btn_unit.set_name(bname)
-                                btn_unit.set_enabled(True)
-                                btn_unit.set_hidden(False)
-                                btn_index += 1
+            # отключаем лишние
+            btn_size = Buttoms.get_current_size()
+            if btn_index < btn_size:
+                for index in range(btn_index, btn_size):
+                    btn_unit = Buttoms.get_unit_from_index(index)
+                    btn_unit.set_enabled(False)
+                    btn_unit.set_hidden(True)
 
-                    # отключаем лишние
-                    btn_size = Buttoms.get_current_size()
-                    if btn_index < btn_size:
-                        for index in range(btn_index, btn_size):
-                            btn_unit = Buttoms.get_unit_from_index(index)
-                            btn_unit.set_enabled(False)
-                            btn_unit.set_hidden(True)
-
-                    print(CConfig.bios_stats)
+            print(config_human_name)
 
     def send_error_message(self, text: str):
         send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
                          text=text,
                          title="Фатальная ошибка",
                          variant_yes="Закрыть программу", variant_no="", callback=lambda: self.set_close())
+
+    def get_item_index_from_text(self, item_text: str) -> int | None:
+        for index in range(0, self.ui.comboBox_config_get.count()):
+            print(self.ui.comboBox_config_get.itemText(index), item_text)
+            if self.ui.comboBox_config_get.itemText(index) == item_text:
+                return index
+        return None
 
     def set_close(self):
         sys.exit()
@@ -174,6 +222,7 @@ class Buttoms:
     def set_buttoms_default_values(cls):
         for btn in cls.__units:
             btn.set_buttons_default_value()
+
     @classmethod
     def get_unit_from_index(cls, index: int):
         return cls.__units[index]

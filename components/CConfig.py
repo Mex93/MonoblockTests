@@ -1,7 +1,7 @@
 import configparser
 from os import path, listdir
 
-from components.CTests import TEST_TYPE, CTests
+from enuuuums import CONFIG_PARAMS, SYS_INFO_PARAMS, BLOCKS_DATA
 
 
 class ConfigError(Exception):
@@ -12,65 +12,108 @@ class ConfigError(Exception):
         return self.message
 
 
-class CConfig:
-    __folder_name = "configs"
-    __config_path = ""
-    __config_name = ""
-    __main_config = None
+class CParameters:
+    __blocks_sets = set()
+    __parameters_sets = set()
 
-    __in_config_name = ""
+    def __init__(self, block_name: str, params_name: str, data_type: type, default_value: str):
+        self.__blocks_sets.add(block_name)
+        self.__parameters_sets.add(params_name)
 
-    #####
-    sys_info_test_used = ""
-    bios_string = ""
-    cpu_string = ""
-    ram_string = ""
-    disks_string = ""
-    bios_stats = None
-    cpu_stats = None
-    ram_stats = None
-    disks_stats = None
-    #####
-    __config_handler = None
+        self.__blockname = block_name
+        self.__param_name = params_name
+        self.__data_type = data_type
+        self.__default_value = default_value
+
+    def get_params_name(self) -> str:
+        return self.__param_name
+
+    def get_blocks_name(self) -> str:
+        return self.__blockname
+
+    def get_data_type(self) -> type:
+        return self.__data_type
+
+    def get_default_value(self) -> str:
+        return self.__default_value
 
     @classmethod
-    def set_init_config(cls, config_file_name: str) -> bool:
-        config_path = f'{cls.get_folder_name()}/{config_file_name}'
+    def get_blocks_list(cls) -> list:
+        return list(cls.__blocks_sets)
 
-        if cls.is_config_created(config_path):
-            cls.__config_name = config_file_name
-            cls.__config_path = config_path
 
-            handler = cls.create_config_handler()
-            handler.add_section('program_settings')
-            block_name = CTests.get_config_block_name_from_test_type(TEST_TYPE.TEST_SYSTEM_INFO)
-            handler.add_section(block_name)
+class CNewConfig:
+    __folder_name = "configs"
+    __data_units: list[CParameters] = list()
 
-            cls.__main_config = handler
+    def __init__(self):
+        self.__config_file_name = ""
+        config_unit = configparser.ConfigParser()
+        self.__config_unit = config_unit
+        self.__data_dict = dict()
+        self.__load_sections = False
+
+    def set_init_config(self, config_file_name: str) -> bool:
+        config_path = f'{self.get_folder_name()}/{config_file_name}'
+
+        if self.is_config_created(config_path):
+            self.__config_file_name = config_file_name
+
             return True
         return False
 
-    @classmethod
-    def get_config_path(cls) -> str:
-        return cls.__config_path
+    def set_config_file_name(self, config_name: str):
+        self.__config_file_name = config_name
 
-    @classmethod
-    def get_config_text_name(cls) -> str:
-        return cls.__in_config_name
+    def get_config_file_name(self) -> str:
+        return self.__config_file_name
 
-    @classmethod
-    def get_folder_name(cls) -> str:
-        return cls.__folder_name
+    def get_config_patch(self) -> str:
+        return f"{self.get_folder_name()}/{self.__config_file_name}"
 
-    @classmethod
-    def is_config_created(cls, file_patch=None) -> bool:
+    def get_config_handler(self) -> configparser:
+        return self.__config_unit
+
+    def is_config_created(self, file_patch=None) -> bool:
         if file_patch is not None:
             if path.isfile(file_patch):
                 return True
         else:
-            if path.isfile(cls.__config_path):
+            if path.isfile(self.get_config_patch()):
                 return True
         return False
+
+    def load_config(self):
+        patch = self.get_config_patch()
+        handler = self.get_config_handler()
+        handler.read(patch, encoding="utf-8")
+        self.__data_dict.clear()
+        for unit in self.__data_units:
+            bname = unit.get_blocks_name()
+            pname = unit.get_params_name()
+            dtype = unit.get_data_type()
+
+            var = dtype(handler.get(bname, pname))
+            self.__data_dict.update({f'{bname}-{pname}': var})
+
+    def get_config_value(self, block_name: str, param_name: str) -> None | int | str | bool:
+        return self.__data_dict.get(f'{block_name}-{param_name}', None)
+
+    def create_config_data(self):
+        patch = self.get_config_patch()
+        handler = self.get_config_handler()
+        with open(patch, 'w') as config_file:
+            for unit in self.__data_units:
+                bname = unit.get_blocks_name()
+                pname = unit.get_params_name()
+                dvalue = unit.get_default_value()
+                handler.set(bname, pname, dvalue)
+            ##
+            handler.write(config_file)
+
+    def save_config(self):
+        with open(self.get_config_patch(), 'w') as config_file:
+            self.get_config_handler().write(config_file)
 
     @classmethod
     def get_configs_list_in_folder(cls) -> list | None:
@@ -86,72 +129,30 @@ class CConfig:
 
         return None
 
-    @classmethod
-    def create_config_handler(cls) -> configparser:
-        return configparser.ConfigParser()
+    def init_params(self):
+
+        self.add_params(BLOCKS_DATA.PROGRAM_SETTING, CONFIG_PARAMS.CONFIG_NAME, str, "-")
+
+        self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.SYS_INFO_TEST_USED, bool, "true")
+        self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.BIOS_CHECK, bool, "true")
+        self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.CPU_CHECK, bool, "true")
+        self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.RAM_CHECK, bool, "true")
+        self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.DISK_CHECK, bool, "true")
+
+        self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.BIOS_STRING, str, "-")
+        self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.CPU_STRING, str, "-")
+        self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.RAM_STRING, str, "-")
+        self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.DISK_STRING, str, "-")
+
+        blist = CParameters.get_blocks_list()
+        for block in blist:
+            self.__config_unit.add_section(block)
 
     @classmethod
-    def get_config_handler(cls) -> configparser:
-        return cls.__main_config
+    def get_folder_name(cls) -> str:
+        return cls.__folder_name
 
     @classmethod
-    def load_config(cls):
-        handler = cls.get_config_handler()
-        if handler is not None:
-
-            if not CConfig.is_config_created():
-                return
-            cpatch = CConfig.get_config_path()
-
-            handler.read(cpatch, encoding="utf-8")
-
-            cls.__in_config_name = handler.get("program_settings", "config_name")
-
-            ###
-            block_name = CTests.get_config_block_name_from_test_type(TEST_TYPE.TEST_SYSTEM_INFO)
-            cls.sys_info_test_used = bool(handler.get(block_name, "sys_info_test_used"))
-            cls.bios_stats = bool(handler.get(block_name, "bios_check"))
-            cls.cpu_stats = bool(handler.get(block_name, "cpu_check"))
-            cls.ram_stats = bool(handler.get(block_name, "ram_check"))
-            cls.disks_stats = bool(handler.get(block_name, "disk_check"))
-            cls.bios_string = handler.get(block_name, "bios_string")
-            cls.cpu_string = handler.get(block_name, "cpu_string")
-            cls.ram_string = handler.get(block_name, "ram_string")
-            cls.disks_string = handler.get(block_name, "disk_string")
-
-    @classmethod
-    def create_config_data(cls):
-        handler = cls.get_config_handler()
-        if handler is not None:
-
-            if not CConfig.is_config_created():
-                return
-
-            cpatch = CConfig.get_config_path()
-            with open(cpatch, 'w') as config_file:
-
-                handler.set("program_settings", "config_name", "-")
-                ##
-
-                block_name = CTests.get_config_block_name_from_test_type(TEST_TYPE.TEST_SYSTEM_INFO)
-                handler.set(block_name, "sys_info_test_used", "true")
-                handler.set(block_name, "bios_check", "true")
-                handler.set(block_name, "cpu_check", "true")
-                handler.set(block_name, "ram_check", "true")
-                handler.set(block_name, "disk_check", "true")
-                handler.set(block_name, "bios_string", "-")
-                handler.set(block_name, "cpu_string", "-")
-                handler.set(block_name, "ram_string", "-")
-                handler.set(block_name, "disk_string", "-")
-                handler.write(config_file)
-
-    @classmethod
-    def save_config(cls):
-        handler = cls.get_config_handler()
-        if handler is not None:
-            cpatch = CConfig.get_config_path()
-            with open(cpatch, 'w') as config_file:
-                handler.write(config_file)
-
-
-
+    def add_params(cls, block_name: str, params_name: str, data_type: type, default_value: str):
+        new_block = CParameters(block_name, params_name, data_type, default_value)
+        cls.__data_units.append(new_block)

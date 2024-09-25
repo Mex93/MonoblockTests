@@ -73,11 +73,6 @@
               <pointsize>15</pointsize>
              </font>
             </property>
-            <item>
-             <property name="text">
-              <string>TRICOLOR</string>
-             </property>
-            </item>
            </widget>
           </item>
          </layout>

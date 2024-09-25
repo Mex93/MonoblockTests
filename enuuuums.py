@@ -35,3 +35,24 @@ class TEST_SYSTEM_INFO_TYPES(IntEnum):
     CPU_STATS = auto(),
     RAM_STATS = auto(),
     DISKS_STATS = auto(),
+
+
+class BLOCKS_DATA:
+    PROGRAM_SETTING = "program"
+    SYS_INFO_TEST = "sys_info_test"
+
+
+class CONFIG_PARAMS:
+    CONFIG_NAME = "config_name"
+
+
+class SYS_INFO_PARAMS:
+    SYS_INFO_TEST_USED = "sys_info_used"
+    BIOS_CHECK = "bios_check"
+    CPU_CHECK = "cpu_check"
+    RAM_CHECK = "ram_check"
+    DISK_CHECK = "disk_check"
+    BIOS_STRING = "bios_string"
+    CPU_STRING = "cpu_string"
+    RAM_STRING = "ram_string"
+    DISK_STRING = "disk_string"
