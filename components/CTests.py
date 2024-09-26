@@ -1,4 +1,4 @@
-from enuuuums import TEST_TYPE, TEST_ARRAY_ID
+from enuuuums import TEST_TYPE, TEST_ARRAY_ID, TEST_RESULT
 
 
 class CTests:
@@ -66,3 +66,53 @@ class CTests:
         if arr_index != -1:
             return cls.tests_params[arr_index][TEST_ARRAY_ID.ARRAY_CONFIG_BLOCK_NAME]
 
+
+class CTestUnit:
+    def __init__(self, test_type: TEST_TYPE, test_name: str):
+        self.__test_type = test_type
+        self.__test_name = test_name
+        self.Test_result = TEST_RESULT.NONE
+
+    def get_test_type(self) -> TEST_TYPE:
+        return self.__test_type
+
+    @property
+    def Test_result(self) -> TEST_RESULT:
+        """This is 'value' property."""
+        return self.__test_result
+
+    @Test_result.setter
+    def Test_result(self, test_result: TEST_RESULT):
+        self.__test_result = test_result
+
+    @Test_result.deleter
+    def Test_result(self):
+        del self.__test_result
+
+
+class CTestProcess:
+    __test_units = list()
+
+    def __init__(self):
+        self.__current_test_launch = TEST_TYPE.TEST_NONE
+
+        for test in CTests.get_config_block_data():
+            test_name, test_type = test
+
+            self.__test_units.append(CTestUnit(test_type, test_name))
+
+    def get_unit_test_id_from_test_type(self, test_type: TEST_TYPE) -> CTestUnit | None:
+        for unit in self.__test_units:
+            if unit.get_test_type() == test_type:
+                return unit
+
+    def get_result_test(self, test_type: TEST_TYPE) -> TEST_RESULT | None:
+        unit = self.get_unit_test_id_from_test_type(test_type)
+        if unit is not None:
+            return unit.Test_result
+
+    def set_result_test(self, test_type: TEST_TYPE, result_status: TEST_RESULT) -> bool:
+        unit = self.get_unit_test_id_from_test_type(test_type)
+        if unit is not None:
+            unit.Test_result = result_status
+            return True

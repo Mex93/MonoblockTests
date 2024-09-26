@@ -56,3 +56,9 @@ class SYS_INFO_PARAMS:
     CPU_STRING = "cpu_string"
     RAM_STRING = "ram_string"
     DISK_STRING = "disk_string"
+
+
+class TEST_RESULT(IntEnum):
+    NONE = auto(),
+    SUCCESS = auto(),
+    FAIL = auto(),

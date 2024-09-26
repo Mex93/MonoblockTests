@@ -1,20 +1,21 @@
-import configparser
-import sys
+from sys import argv, exit
 
 from PySide6.QtWidgets import QApplication
-from PySide6.QtWidgets import QMainWindow, QPushButton
+from PySide6.QtWidgets import QMainWindow
 from PySide6.QtGui import QFontDatabase
 
 from ui.untitled import Ui_MainWindow
 from common import send_message_box, SMBOX_ICON_TYPE, get_about_text, get_rules_text
 
 from components.CConfig import CNewConfig, CParameters, BLOCKS_DATA, SYS_INFO_PARAMS, CONFIG_PARAMS
-from components.CTests import CTests, TEST_TYPE
+from components.CTests import CTests, TEST_TYPE, CTestProcess, TEST_RESULT
 from components.CConfig_Main import CMainConfig
-from components.CSystemInfo import CSystemInfo
+from components.CSystemInfo import CSystemInfo, CSystemInfoWindow
+from components.CButtons import CButtoms
 
 
 # pyside6-uic .\ui\untitled.ui -o .\ui\untitled.py
+# pyside6-uic .\ui\test_sys_info.ui -o .\ui\test_sys_info.py
 # pyside6-rcc .\ui\res.qrc -o .\ui\res_rc.py
 # Press the green button in the gutter to run the script.
 
@@ -52,6 +53,9 @@ class MainWindow(QMainWindow):
 
         self.cconfig_unit = CNewConfig()
         self.cconfig_unit.init_params()
+        self.ctest_process = CTestProcess()
+
+        self.ctest_window_sys_info = CSystemInfoWindow(self)
 
         filtred_files = CNewConfig.get_configs_list_in_folder()
         if filtred_files is not None:
@@ -76,7 +80,7 @@ class MainWindow(QMainWindow):
 
         # кнопки в дефолт
         for btn in buttons:
-            btn_unit = Buttoms(btn)
+            btn_unit = CButtoms(btn)
             btn_unit.set_buttons_default_value()
             btn_unit.set_enabled(False)
 
@@ -104,6 +108,51 @@ class MainWindow(QMainWindow):
     def on_user_presed_launch_test(self, test_type: TEST_TYPE):
         print(f"Запущен тест: {test_type}")
 
+        self.show_test_window(TEST_TYPE.TEST_SYSTEM_INFO)
+        # if test_type == TEST_TYPE.TEST_SYSTEM_INFO:
+        #     print("wdfqeq")
+        #     print(CSystemInfo.get_drives_info())
+        #
+        #     print("\\nИнформация о жёстких дисках:")
+        #     for drive in CSystemInfo.get_drives_info():
+        #         print(f"Устройство: {drive['device']}, "
+        #               f"Точка монтирования: {drive['mountpoint']}, "
+        #               f"Общий размер: {drive['total'] / (1024 ** 3):.2f} ГБ, "
+        #               f"Использовано: {drive['used'] / (1024 ** 3):.2f} ГБ, "
+        #               f"Свободно: {drive['free'] / (1024 ** 3):.2f} ГБ")
+        #
+        #     memory_info = CSystemInfo.get_memory_info()
+        #     print("\\nИнформация о памяти:")
+        #     print(f"Всего: {memory_info['total'] / (1024 ** 3):.2f} ГБ, "
+        #           f"Доступно: {memory_info['available'] / (1024 ** 3):.2f} ГБ, "
+        #           f"Использовано: {memory_info['used'] / (1024 ** 3):.2f} ГБ")
+        #
+        #     bios_info = CSystemInfo.get_bios_info()
+        #     print("\\nИнформация о BIOS:")
+        #     print(f"Производитель: {bios_info['manufacturer']}, "
+        #           f"Версия: {bios_info['version']}, "
+        #           f"Серийный номер: {bios_info['serial_number']}, "
+        #           f"Дата выпуска: {bios_info['release_date']}")
+        #
+        #     print("Сетевые интерфейсы:")
+        #     network_interfaces = CSystemInfo.get_network_interfaces()
+        #     for interface, info in network_interfaces.items():
+        #         if info['ip_address'] is not None:  # Выводим только интерфейсы с IP
+        #             print(f"Название: {interface}")
+        #             print(f"  Тип подключения: {info['type']}")
+        #             print(f"  IP-адрес: {info['ip_address']}")
+        #             print(f"  Маска сети: {info['netmask']}")
+        #             print("")
+        #
+        #     print("Проверка соединения с LAN...")
+        #     if CSystemInfo.check_lan_connectivity():
+        #         print("Соединение с LAN установлено.")
+        #     else:
+        #         print("Нет соединения с LAN.")
+        #
+        #     print("\\nИнформация о CPU:")
+        #     print(CSystemInfo.get_cpu_info())
+
     def on_changed_config(self):
         text = self.ui.comboBox_config_get.currentText()
         print(text)
@@ -124,18 +173,24 @@ class MainWindow(QMainWindow):
                     f"Код ошибки: 'on_changed_config -> [Error Read Data]'")
                 self.close()
                 return
-            config_human_name = self.cconfig_unit.get_config_value(BLOCKS_DATA.PROGRAM_SETTING, CONFIG_PARAMS.CONFIG_NAME)
+            config_human_name = self.cconfig_unit.get_config_value(BLOCKS_DATA.PROGRAM_SETTING,
+                                                                   CONFIG_PARAMS.CONFIG_NAME)
             self.ui.label_monoblock_config_name.setText(f"Тест моноблоков: {config_human_name}")
             self.main_config.save_last_config(text)
 
             # LOAD
-            CSystemInfo.set_test_used(self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.SYS_INFO_TEST_USED))
-            CSystemInfo.set_bios_stats(self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.BIOS_CHECK))
-            CSystemInfo.set_cpu_stats(self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.CPU_CHECK))
-            CSystemInfo.set_ram_stats(self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.RAM_CHECK))
-            CSystemInfo.set_disk_stats(self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.DISK_CHECK))
+            CSystemInfo.set_test_used(
+                self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.SYS_INFO_TEST_USED))
+            CSystemInfo.set_bios_stats(
+                self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.BIOS_CHECK))
+            CSystemInfo.set_cpu_stats(
+                self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.CPU_CHECK))
+            CSystemInfo.set_ram_stats(
+                self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.RAM_CHECK))
+            CSystemInfo.set_disk_stats(
+                self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.DISK_CHECK))
 
-            Buttoms.set_clear_callbacks_for_all()
+            CButtoms.set_clear_callbacks_for_all()
 
             block_datas = CTests.get_config_block_data()
             btn_index = 0
@@ -143,7 +198,7 @@ class MainWindow(QMainWindow):
                 bname, btype = block_datas[index]
                 if btype == TEST_TYPE.TEST_SYSTEM_INFO:
                     if CSystemInfo.is_test_used():
-                        btn_unit = Buttoms.get_unit_from_index(btn_index)
+                        btn_unit = CButtoms.get_unit_from_index(btn_index)
                         btn_unit.set_callback(btype, self.on_user_presed_launch_test)
                         btn_unit.set_name(bname)
                         btn_unit.set_enabled(True)
@@ -151,10 +206,10 @@ class MainWindow(QMainWindow):
                         btn_index += 1
 
             # отключаем лишние
-            btn_size = Buttoms.get_current_size()
+            btn_size = CButtoms.get_current_size()
             if btn_index < btn_size:
                 for index in range(btn_index, btn_size):
-                    btn_unit = Buttoms.get_unit_from_index(index)
+                    btn_unit = CButtoms.get_unit_from_index(index)
                     btn_unit.set_enabled(False)
                     btn_unit.set_hidden(True)
 
@@ -173,64 +228,21 @@ class MainWindow(QMainWindow):
                 return index
         return None
 
-    def set_close(self):
-        sys.exit()
+    def show_test_window(self, test_type: TEST_TYPE):
+        match test_type:
+            case TEST_TYPE.TEST_SYSTEM_INFO:
+                self.ctest_window_sys_info.load_data()
+                self.ctest_window_sys_info.show()
+                self.ctest_window_sys_info.setFocus()
 
-
-class Buttoms:
-    __units = list()
-
-    def __init__(self, btn_id: QPushButton):
-        self.__btn_id = btn_id
-        self.__callback_func = None
-        self.__units.append(self)
-
-    def set_callback(self, test_type: TEST_TYPE, func):
-        if self.__callback_func is None:
-            self.__callback_func = func
-            self.__btn_id.clicked.connect(lambda: func(test_type))
-
-    @classmethod
-    def get_current_size(cls):
-        return len(cls.__units)
-
-    @classmethod
-    def set_clear_callbacks_for_all(cls):
-        for btn in cls.__units:
-            btn.set_clear_callbacks()
-
-    def set_hidden(self, status: bool):
-        self.__btn_id.setHidden(status)
-
-    def set_clear_callbacks(self):
-        if self.__callback_func is not None:
-            self.__btn_id.clicked.disconnect()
-            self.__callback_func = None
-
-    def set_name(self, name: str):
-        self.__btn_id.setText(name)
-
-    def set_enabled(self, status: bool):
-        self.__btn_id.setEnabled(status)
-
-    def set_buttons_default_value(self):
-        self.set_name("-")
-        self.set_enabled(True)
-        self.set_clear_callbacks()
-
-    @classmethod
-    def set_buttoms_default_values(cls):
-        for btn in cls.__units:
-            btn.set_buttons_default_value()
-
-    @classmethod
-    def get_unit_from_index(cls, index: int):
-        return cls.__units[index]
+    @staticmethod
+    def set_close():
+        exit()
 
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
+    app = QApplication(argv)
     window = MainWindow()
     window.show()
 
-    sys.exit(app.exec())
+    exit(app.exec())
