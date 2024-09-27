@@ -5,6 +5,8 @@ from os import system
 from socket import AF_INET
 from win32com.client import GetObject
 
+from wifi import Cell as WIFI_Cell
+
 from enuuuums import TEST_TYPE
 from PySide6.QtWidgets import QMainWindow, QTableWidgetItem
 from PySide6.QtGui import QFontDatabase
@@ -160,15 +162,18 @@ class CSystemInfo:
         return interface_info
 
     @staticmethod
-    def check_lan_connectivity():
+    def check_lan_connectivity() -> bool:
         # Пинговать известный адрес (например, 8.8.8.8 - Google DNS)
-        hostname = "8.8.8.8"
-        response = system("ping -c 1 " + hostname)
-
+        hostname = "192.168.5.1"
+        response = system("ping -n 1 " + hostname)
         if response == 0:
             return True
-        else:
-            return False
+
+    @staticmethod
+    def scan_wifi():
+        wifi_cells = WIFI_Cell.all('wlan0')  # Укажите ваш интерфейс Wi-Fi (например, wlan0)
+        networks = [(cell.ssid, cell.signal) for cell in wifi_cells]
+        return networks
 
 
 
@@ -180,14 +185,14 @@ class CSystemInfoWindow(QMainWindow):
         self.ui.setupUi(self)
         QFontDatabase.addApplicationFont("designs/Iosevka Bold.ttf")
 
-        unit = self.ui.tableWidget_devices
+        # unit = self.ui.tableWidget_devices
 
-        MAX_ROW_COUNT = 2
-        header_text = ["Накопитель", "Объём"]
-        unit.setColumnCount(MAX_ROW_COUNT)
-        for i in range(0, MAX_ROW_COUNT):
-            item = QTableWidgetItem(header_text[i])  # Устанавливаем текст при создании
-            unit.setHorizontalHeaderItem(i, item)  # Устанавливаем элемент заголовка
+        # MAX_ROW_COUNT = 2
+        # header_text = ["Накопитель", "Объём"]
+        # unit.setColumnCount(MAX_ROW_COUNT)
+        # for i in range(0, MAX_ROW_COUNT):
+        #     item = QTableWidgetItem(header_text[i])  # Устанавливаем текст при создании
+        #     unit.setHorizontalHeaderItem(i, item)  # Устанавливаем элемент заголовка
 
         self.setWindowTitle(f'Меню теста')
         self.setWindowModality(qc.Qt.WindowModality.ApplicationModal)
@@ -212,23 +217,42 @@ class CSystemInfoWindow(QMainWindow):
         self.ui.label_os_info.setText(f"OS: {platform.system()} {platform.release()} {platform.version()} | "
                                       f"{CSystemInfo.get_computer_name()}")
 
-        # disks
-        drivers = CSystemInfo.get_drives_info()
-        unit = self.ui.tableWidget_devices
+        # остальные тесты
 
-        __sortingEnabled = unit.isSortingEnabled()
-        unit.setSortingEnabled(False)
+        unit = self.ui.textBrowser_lan_port
+        unit.clear()
+        unit.append("Тестирование запущено!!")
 
-        count = len(drivers)
-        if count > 0:
-            unit.setRowCount(count)
-            for index, driver in enumerate(drivers):
+        # lan
+        response = CSystemInfo.check_lan_connectivity()
+        if response:
+            unit.append("LAN Test: <span style=\" font-size:14pt; font-weight:700; color:#83ff37;\">пройден успешно!</span>")
+        else:
+            unit.append("LAN Test: <span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">не пройден!</span>")
 
-                print(index)
-                item = QTableWidgetItem(f"{driver['device']}")
-                unit.setItem(index, 0, item)
+        # wifi test
+        wifi = CSystemInfo.scan_wifi()
+        print(wifi)
+        unit.append(
+            "WIFI Test: <span style=\" font-size:14pt; font-weight:700; color:#83ff37;\">пройден успешно!</span>")
 
-                item = QTableWidgetItem(f"{driver['total'] / (1024 ** 3):.2f} ГБ")
-                unit.setItem(index, 1, item)
-
-        unit.setSortingEnabled(__sortingEnabled)
+        # # disks
+        # drivers = CSystemInfo.get_drives_info()
+        # unit = self.ui.tableWidget_devices
+        #
+        # __sortingEnabled = unit.isSortingEnabled()
+        # unit.setSortingEnabled(False)
+        #
+        # count = len(drivers)
+        # if count > 0:
+        #     unit.setRowCount(count)
+        #     for index, driver in enumerate(drivers):
+        #
+        #         print(index)
+        #         item = QTableWidgetItem(f"{driver['device']}")
+        #         unit.setItem(index, 0, item)
+        #
+        #         item = QTableWidgetItem(f"{driver['total'] / (1024 ** 3):.2f} ГБ")
+        #         unit.setItem(index, 1, item)
+        #
+        # unit.setSortingEnabled(__sortingEnabled)
