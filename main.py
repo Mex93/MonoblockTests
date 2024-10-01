@@ -3,7 +3,6 @@ from sys import argv, exit
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtGui import QFontDatabase
-from PySide6.QtMultimedia import QMediaPlayer
 
 from ui.untitled import Ui_MainWindow
 from common import send_message_box, SMBOX_ICON_TYPE, get_about_text, get_rules_text
@@ -19,6 +18,7 @@ from components.CButtons import CButtoms
 # pyside6-uic .\ui\untitled.ui -o .\ui\untitled.py
 # pyside6-uic .\ui\test_sys_info.ui -o .\ui\test_sys_info.py
 # pyside6-uic .\ui\test_external_display.ui -o .\ui\test_external_display.py
+# pyside6-uic .\ui\test_speaker_audio.ui -o .\ui\test_speaker_audio.py
 # pyside6-rcc .\ui\res.qrc -o .\ui\res_rc.py
 # Press the green button in the gutter to run the script.
 
@@ -32,7 +32,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         QFontDatabase.addApplicationFont("designs/Iosevka Bold.ttf")
-        self.setWindowTitle(f'Печать QR Kvant 2024 v0.1 Бумага 58 на 20')
+        self.setWindowTitle(f'Тестирование моноблоков Kvant 2024 v0.1a')
 
         self.main_config = CMainConfig()
         # ---------------------------------------

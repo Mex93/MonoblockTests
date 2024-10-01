@@ -1,7 +1,6 @@
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtMultimedia import QAudioOutput
 from PySide6.QtMultimedia import QMediaPlayer
-import PySide6.QtCore as WindowModality
 from PySide6.QtCore import QUrl, Qt
 
 import subprocess

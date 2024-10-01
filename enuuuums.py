@@ -77,6 +77,12 @@ class EXTERNAL_DISPLAY_PARAMS:
     WINDOW_SWITCH_TO = "window_switch_to"
 
 
+class SPEAKER_PARAMS:
+    SPEAKER_TEST_USED = "speaker_test_used"
+    AUDIO_PATCH_LEFT = "audio_patch_left"
+    AUDIO_PATCH_RIGHT = "audio_patch_right"
+
+
 class TEST_RESULT(IntEnum):
     NONE = auto(),
     SUCCESS = auto(),
