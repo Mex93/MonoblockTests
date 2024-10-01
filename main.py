@@ -3,6 +3,7 @@ from sys import argv, exit
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtGui import QFontDatabase
+from PySide6.QtMultimedia import QMediaPlayer
 
 from ui.untitled import Ui_MainWindow
 from common import send_message_box, SMBOX_ICON_TYPE, get_about_text, get_rules_text
@@ -11,11 +12,13 @@ from components.CConfig import CNewConfig, CParameters, BLOCKS_DATA, SYS_INFO_PA
 from components.CTests import CTests, TEST_TYPE, CTestProcess, TEST_RESULT
 from components.CConfig_Main import CMainConfig
 from components.CSystemInfo import CSystemInfo, CSystemInfoWindow
+from components.CExternalDisplay import CExternalDisplayWindow, CExternalDisplay, EXTERNAL_DISPLAY_PARAMS
 from components.CButtons import CButtoms
 
 
 # pyside6-uic .\ui\untitled.ui -o .\ui\untitled.py
 # pyside6-uic .\ui\test_sys_info.ui -o .\ui\test_sys_info.py
+# pyside6-uic .\ui\test_external_display.ui -o .\ui\test_external_display.py
 # pyside6-rcc .\ui\res.qrc -o .\ui\res_rc.py
 # Press the green button in the gutter to run the script.
 
@@ -56,6 +59,7 @@ class MainWindow(QMainWindow):
         self.ctest_process = CTestProcess()
 
         self.ctest_window_sys_info = CSystemInfoWindow(self)
+        self.ctest_window_external_display = CExternalDisplayWindow(self)
 
         filtred_files = CNewConfig.get_configs_list_in_folder()
         if filtred_files is not None:
@@ -141,51 +145,10 @@ class MainWindow(QMainWindow):
         print(f"Запущен тест: {test_type}")
 
         if test_type == TEST_TYPE.TEST_SYSTEM_INFO:
-            self.show_test_window(TEST_TYPE.TEST_SYSTEM_INFO)
+            self.show_test_window(test_type)
 
-        # if test_type == TEST_TYPE.TEST_SYSTEM_INFO:
-        #     print("wdfqeq")
-        #     print(CSystemInfo.get_drives_info())
-        #
-        #     print("\\nИнформация о жёстких дисках:")
-        #     for drive in CSystemInfo.get_drives_info():
-        #         print(f"Устройство: {drive['device']}, "
-        #               f"Точка монтирования: {drive['mountpoint']}, "
-        #               f"Общий размер: {drive['total'] / (1024 ** 3):.2f} ГБ, "
-        #               f"Использовано: {drive['used'] / (1024 ** 3):.2f} ГБ, "
-        #               f"Свободно: {drive['free'] / (1024 ** 3):.2f} ГБ")
-        #
-        #     memory_info = CSystemInfo.get_memory_info()
-        #     print("\\nИнформация о памяти:")
-        #     print(f"Всего: {memory_info['total'] / (1024 ** 3):.2f} ГБ, "
-        #           f"Доступно: {memory_info['available'] / (1024 ** 3):.2f} ГБ, "
-        #           f"Использовано: {memory_info['used'] / (1024 ** 3):.2f} ГБ")
-        #
-        #     bios_info = CSystemInfo.get_bios_info()
-        #     print("\\nИнформация о BIOS:")
-        #     print(f"Производитель: {bios_info['manufacturer']}, "
-        #           f"Версия: {bios_info['version']}, "
-        #           f"Серийный номер: {bios_info['serial_number']}, "
-        #           f"Дата выпуска: {bios_info['release_date']}")
-        #
-        #     print("Сетевые интерфейсы:")
-        #     network_interfaces = CSystemInfo.get_network_interfaces()
-        #     for interface, info in network_interfaces.items():
-        #         if info['ip_address'] is not None:  # Выводим только интерфейсы с IP
-        #             print(f"Название: {interface}")
-        #             print(f"  Тип подключения: {info['type']}")
-        #             print(f"  IP-адрес: {info['ip_address']}")
-        #             print(f"  Маска сети: {info['netmask']}")
-        #             print("")
-        #
-        #     print("Проверка соединения с LAN...")
-        #     if CSystemInfo.check_lan_connectivity():
-        #         print("Соединение с LAN установлено.")
-        #     else:
-        #         print("Нет соединения с LAN.")
-        #
-        #     print("\\nИнформация о CPU:")
-        #     print(CSystemInfo.get_cpu_info())
+        elif test_type == TEST_TYPE.TEST_EXTERNAL_DISPLAY:
+            self.show_test_window(test_type)
 
     def on_changed_config(self):
         text = self.ui.comboBox_config_get.currentText()
@@ -263,6 +226,23 @@ class MainWindow(QMainWindow):
                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
                                                                           SYS_INFO_PARAMS.LAN_STRING))
 
+            # External display
+            # check
+            CExternalDisplay.set_test_stats(EXTERNAL_DISPLAY_PARAMS.EXTD_TEST_USED,
+                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST,
+                                                                               EXTERNAL_DISPLAY_PARAMS.EXTD_TEST_USED))
+            # string
+            CExternalDisplay.set_test_stats(EXTERNAL_DISPLAY_PARAMS.VIDEO_PATCH,
+                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST,
+                                                                               EXTERNAL_DISPLAY_PARAMS.VIDEO_PATCH))
+            CExternalDisplay.set_test_stats(EXTERNAL_DISPLAY_PARAMS.WINDOW_DEFAULT,
+                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST,
+                                                                               EXTERNAL_DISPLAY_PARAMS.WINDOW_DEFAULT))
+
+            CExternalDisplay.set_test_stats(EXTERNAL_DISPLAY_PARAMS.WINDOW_SWITCH_TO,
+                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST,
+                                                                               EXTERNAL_DISPLAY_PARAMS.WINDOW_SWITCH_TO))
+
             CButtoms.set_clear_callbacks_for_all()
 
             block_datas = CTests.get_config_block_data()
@@ -271,6 +251,14 @@ class MainWindow(QMainWindow):
                 bname, btype = block_datas[index]
                 if btype == TEST_TYPE.TEST_SYSTEM_INFO:
                     if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.SYS_INFO_TEST_USED) is True:
+                        btn_unit = CButtoms.get_unit_from_index(btn_index)
+                        btn_unit.set_callback(btype, self.on_user_presed_launch_test)
+                        btn_unit.set_name(bname)
+                        btn_unit.set_enabled(True)
+                        btn_unit.set_hidden(False)
+                        btn_index += 1
+                elif btype == TEST_TYPE.TEST_EXTERNAL_DISPLAY:
+                    if CExternalDisplay.get_test_stats(EXTERNAL_DISPLAY_PARAMS.EXTD_TEST_USED) is True:
                         btn_unit = CButtoms.get_unit_from_index(btn_index)
                         btn_unit.set_callback(btype, self.on_user_presed_launch_test)
                         btn_unit.set_name(bname)
@@ -312,17 +300,25 @@ class MainWindow(QMainWindow):
                 data = self.ctest_window_sys_info.get_data()
                 self.ctest_window_sys_info.load_data(data)
 
+            case TEST_TYPE.TEST_EXTERNAL_DISPLAY:
+                result = self.ctest_window_external_display.window_show()
+                if not result:
+                    send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
+                                     text="Ошибка в файле конфигурации для видео!\n"
+                                          "Один или несколько параметров ошибочны!\n\n"
+                                     ,
+                                     title="Внимание!",
+                                     variant_yes="Закрыть", variant_no="", callback=None)
+                else:
+                    self.ctest_window_external_display.setFocus()
+                    CExternalDisplay.setup_window_for_dual_monitor()
+
     def on_test_phb_break_all_test(self, test_type: TEST_TYPE):
         current_test = self.ctest_process.is_test_launch()
         if current_test != TEST_TYPE.TEST_NONE:
             self.ctest_process.stop_test()
-        if test_type == TEST_TYPE.TEST_SYSTEM_INFO:
-            self.ctest_window_sys_info.close()
 
-        print("нажата прервать все тесты")
-
-        if test_type.TEST_SYSTEM_INFO:
-            pass
+        self.close_current_test_window(test_type)
 
     def set_next_test(self, current_test: TEST_TYPE):
         next_test = self.ctest_process.get_next_test(current_test)
@@ -345,11 +341,7 @@ class MainWindow(QMainWindow):
         if btn_unit is not None:
             btn_unit.set_btn_color_green()
 
-        if test_type == TEST_TYPE.TEST_SYSTEM_INFO:
-            self.ctest_window_sys_info.close()
-
-        if test_type.TEST_SYSTEM_INFO:
-            print("нажата success")
+        self.close_current_test_window(test_type)
 
     def on_test_phb_fail(self, test_type: TEST_TYPE):
 
@@ -362,11 +354,13 @@ class MainWindow(QMainWindow):
         if btn_unit is not None:
             btn_unit.set_btn_color_red()
 
-        if test_type == TEST_TYPE.TEST_SYSTEM_INFO:
-            self.ctest_window_sys_info.close()
+        self.close_current_test_window(test_type)
 
-        if test_type.TEST_SYSTEM_INFO:
-            print("нажата fail")
+    def close_current_test_window(self, current_test: TEST_TYPE):
+        if current_test == TEST_TYPE.TEST_SYSTEM_INFO:
+            self.ctest_window_sys_info.close()
+        elif current_test == TEST_TYPE.TEST_EXTERNAL_DISPLAY:
+            self.ctest_window_external_display.close()
 
     def closeEvent(self, e):
         e.accept()
@@ -382,3 +376,48 @@ if __name__ == '__main__':
     window.show()
 
     exit(app.exec())
+
+# def trash()
+# if test_type == TEST_TYPE.TEST_SYSTEM_INFO:
+#     print("wdfqeq")
+#     print(CSystemInfo.get_drives_info())
+#
+#     print("\\nИнформация о жёстких дисках:")
+#     for drive in CSystemInfo.get_drives_info():
+#         print(f"Устройство: {drive['device']}, "
+#               f"Точка монтирования: {drive['mountpoint']}, "
+#               f"Общий размер: {drive['total'] / (1024 ** 3):.2f} ГБ, "
+#               f"Использовано: {drive['used'] / (1024 ** 3):.2f} ГБ, "
+#               f"Свободно: {drive['free'] / (1024 ** 3):.2f} ГБ")
+#
+#     memory_info = CSystemInfo.get_memory_info()
+#     print("\\nИнформация о памяти:")
+#     print(f"Всего: {memory_info['total'] / (1024 ** 3):.2f} ГБ, "
+#           f"Доступно: {memory_info['available'] / (1024 ** 3):.2f} ГБ, "
+#           f"Использовано: {memory_info['used'] / (1024 ** 3):.2f} ГБ")
+#
+#     bios_info = CSystemInfo.get_bios_info()
+#     print("\\nИнформация о BIOS:")
+#     print(f"Производитель: {bios_info['manufacturer']}, "
+#           f"Версия: {bios_info['version']}, "
+#           f"Серийный номер: {bios_info['serial_number']}, "
+#           f"Дата выпуска: {bios_info['release_date']}")
+#
+#     print("Сетевые интерфейсы:")
+#     network_interfaces = CSystemInfo.get_network_interfaces()
+#     for interface, info in network_interfaces.items():
+#         if info['ip_address'] is not None:  # Выводим только интерфейсы с IP
+#             print(f"Название: {interface}")
+#             print(f"  Тип подключения: {info['type']}")
+#             print(f"  IP-адрес: {info['ip_address']}")
+#             print(f"  Маска сети: {info['netmask']}")
+#             print("")
+#
+#     print("Проверка соединения с LAN...")
+#     if CSystemInfo.check_lan_connectivity():
+#         print("Соединение с LAN установлено.")
+#     else:
+#         print("Нет соединения с LAN.")
+#
+#     print("\\nИнформация о CPU:")
+#     print(CSystemInfo.get_cpu_info())

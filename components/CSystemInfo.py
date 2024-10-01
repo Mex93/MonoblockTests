@@ -7,11 +7,9 @@ from socket import AF_INET
 from win32com.client import GetObject
 from bluetooth import discover_devices
 from enuuuums import TEST_TYPE, TEST_SYSTEM_INFO_TYPES, SYS_INFO_PARAMS
-from PySide6.QtWidgets import QMainWindow, QTableWidgetItem
+from PySide6.QtWidgets import QMainWindow
 from PySide6.QtGui import QFontDatabase
-from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-                            QMetaObject, QObject, QPoint, QRect,
-                            QSize, QTime, QUrl, Qt)
+from PySide6.QtCore import Qt
 
 import PySide6.QtCore as qc
 
@@ -29,7 +27,6 @@ class CSystemInfo:
     @classmethod
     def set_test_stats(cls, test_name: SYS_INFO_PARAMS, params: str | bool) -> None:
         cls.__test_dict.update({test_name: params})
-
 
     @staticmethod
     # Получаем название компьютера
@@ -181,9 +178,10 @@ class CSystemInfoWindow(QMainWindow):
         #     unit.setHorizontalHeaderItem(i, item)  # Устанавливаем элемент заголовка
 
         self.setWindowTitle(f'Меню теста')
-        self.setWindowModality(qc.Qt.WindowModality.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
 
-        self.ui.pushButton_success.clicked.connect(lambda: self.__main_window.on_test_phb_success(TEST_TYPE.TEST_SYSTEM_INFO))
+        self.ui.pushButton_success.clicked.connect(
+            lambda: self.__main_window.on_test_phb_success(TEST_TYPE.TEST_SYSTEM_INFO))
         self.ui.pushButton_fail.clicked.connect(
             lambda: self.__main_window.on_test_phb_fail(TEST_TYPE.TEST_SYSTEM_INFO))
 
@@ -342,28 +340,27 @@ class CSystemInfoWindow(QMainWindow):
                 case TEST_SYSTEM_INFO_TYPES.RAM_STATS:
                     self.ui.label_ram_info.setText(data)
 
-            # bios
+                # bios
                 case TEST_SYSTEM_INFO_TYPES.BIOS_STATS:
                     self.ui.label_bios_info.setText(data)
 
-            # cpu
+                # cpu
                 case TEST_SYSTEM_INFO_TYPES.CPU_STATS:
                     self.ui.label_cpu_info.setText(data)
-            # os
+                # os
                 case TEST_SYSTEM_INFO_TYPES.OS_STATS:
                     self.ui.label_os_info.setText(data)
 
-            # остальные тесты
-            # lan
+                # остальные тесты
+                # lan
                 case TEST_SYSTEM_INFO_TYPES.LAN_STATS:
                     unit.append(data)
-            # wifi
+                # wifi
                 case TEST_SYSTEM_INFO_TYPES.WIFI_STATS:
                     unit.append(data)
-            # BT
+                # BT
                 case TEST_SYSTEM_INFO_TYPES.BT_STATS:
                     unit.append(data)
-
 
         # # disks
         # drivers = CSystemInfo.get_drives_info()

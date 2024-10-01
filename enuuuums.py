@@ -41,10 +41,10 @@ class TEST_SYSTEM_INFO_TYPES(IntEnum):
     BT_STATS = auto(),
 
 
-
 class BLOCKS_DATA:
     PROGRAM_SETTING = "program"
     SYS_INFO_TEST = "sys_info_test"
+    EXTERNAL_DISPLAY_TEST = "external_display_test"
 
 
 class CONFIG_PARAMS:
@@ -69,6 +69,12 @@ class SYS_INFO_PARAMS:
     BT_STRING = "bt_string"
     LAN_STRING = "lan_string"
 
+
+class EXTERNAL_DISPLAY_PARAMS:
+    EXTD_TEST_USED = "ext_display_used"
+    VIDEO_PATCH = "video_patch"
+    WINDOW_DEFAULT = "window_switch_def"
+    WINDOW_SWITCH_TO = "window_switch_to"
 
 
 class TEST_RESULT(IntEnum):

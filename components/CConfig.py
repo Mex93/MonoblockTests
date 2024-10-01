@@ -1,7 +1,7 @@
 import configparser
 from os import path, listdir
-
-from enuuuums import CONFIG_PARAMS, SYS_INFO_PARAMS, BLOCKS_DATA
+from components.CExternalDisplay import CExternalDisplay
+from enuuuums import CONFIG_PARAMS, SYS_INFO_PARAMS, BLOCKS_DATA, EXTERNAL_DISPLAY_PARAMS
 
 
 class ConfigError(Exception):
@@ -133,6 +133,7 @@ class CNewConfig:
 
         self.add_params(BLOCKS_DATA.PROGRAM_SETTING, CONFIG_PARAMS.CONFIG_NAME, str, "-")
 
+        #sys info
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.SYS_INFO_TEST_USED, bool, "true")
 
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.BIOS_CHECK, bool, "true")
@@ -150,6 +151,16 @@ class CNewConfig:
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.WLAN_STRING, str, "-")
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.BT_STRING, str, "-")
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.LAN_STRING, str, "-")
+
+        # external display
+        self.add_params(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST, EXTERNAL_DISPLAY_PARAMS.EXTD_TEST_USED, bool, "true")
+        self.add_params(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST, EXTERNAL_DISPLAY_PARAMS.VIDEO_PATCH, str, "content/external_display_vid.mp4")
+
+        monitor_mode_list = CExternalDisplay.get_monitor_mode_avalible()
+        self.add_params(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST, EXTERNAL_DISPLAY_PARAMS.WINDOW_DEFAULT, str,
+                        f"extend \n; {",".join(monitor_mode_list)}")
+        self.add_params(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST, EXTERNAL_DISPLAY_PARAMS.WINDOW_SWITCH_TO, str,
+                        f"clone \n; {",".join(monitor_mode_list)}")
 
         blist = CParameters.get_blocks_list()
         for block in blist:

@@ -102,9 +102,7 @@ class CTestProcess:
 
     def get_next_test(self, current_test: TEST_TYPE) -> TEST_TYPE | None:
 
-        print(self.__test_avalible_list)
         end_element = self.__test_avalible_list[-1]
-        print(end_element)
         if end_element == current_test:
             return None
         else:
