@@ -35,6 +35,11 @@ class TEST_SYSTEM_INFO_TYPES(IntEnum):
     CPU_STATS = auto(),
     RAM_STATS = auto(),
     DISKS_STATS = auto(),
+    OS_STATS = auto(),
+    LAN_STATS = auto(),
+    WIFI_STATS = auto(),
+    BT_STATS = auto(),
+
 
 
 class BLOCKS_DATA:
@@ -52,10 +57,18 @@ class SYS_INFO_PARAMS:
     CPU_CHECK = "cpu_check"
     RAM_CHECK = "ram_check"
     DISK_CHECK = "disk_check"
+    WLAN_CHECK = "wlan_check"
+    BT_CHECK = "bt_check"
+    LAN_CHECK = "lan_check"
+
     BIOS_STRING = "bios_string"
     CPU_STRING = "cpu_string"
     RAM_STRING = "ram_string"
     DISK_STRING = "disk_string"
+    WLAN_STRING = "wlan_string"
+    BT_STRING = "bt_string"
+    LAN_STRING = "lan_string"
+
 
 
 class TEST_RESULT(IntEnum):

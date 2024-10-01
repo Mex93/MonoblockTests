@@ -12,9 +12,6 @@ class CTests:
         ["Флешки", TEST_TYPE.TEST_REMOVABLE_DEVICE, "test_removable_device"],
         ["Цвета", TEST_TYPE.TEST_BRIGHTNESS, "test_brightness"],
         ["Передняя камера", TEST_TYPE.TEST_FRONT_PHOTO, "test_front_phonto"],
-        ["Bluetooth", TEST_TYPE.TEST_BLUETOOTH, "test_bluetooth"],
-        ["LAN", TEST_TYPE.TEST_LAN_PORT, "test_lan_port"],
-        ["WIFI", TEST_TYPE.TEST_WIFI, "test_wifi"],
     )
 
     @classmethod
@@ -85,21 +82,87 @@ class CTestUnit:
     def Test_result(self, test_result: TEST_RESULT):
         self.__test_result = test_result
 
-    @Test_result.deleter
-    def Test_result(self):
-        del self.__test_result
+    # @Test_result.deleter
+    # def Test_result(self):
+    #     del self.__test_result
 
 
 class CTestProcess:
     __test_units = list()
 
     def __init__(self):
+        self.__test_launch = False
         self.__current_test_launch = TEST_TYPE.TEST_NONE
+        self.__test_avalible_list = list()
 
         for test in CTests.get_config_block_data():
             test_name, test_type = test
 
             self.__test_units.append(CTestUnit(test_type, test_name))
+
+    def get_next_test(self, current_test: TEST_TYPE) -> TEST_TYPE | None:
+
+        print(self.__test_avalible_list)
+        end_element = self.__test_avalible_list[-1]
+        print(end_element)
+        if end_element == current_test:
+            return None
+        else:
+            for index, test in enumerate(self.__test_avalible_list, 0):
+                if test == current_test:
+                    return self.__test_avalible_list[index + 1]
+
+    def add_test_in_launch(self, test_type: TEST_TYPE):
+        self.__test_avalible_list.append(test_type)
+
+    def is_test_launch(self) -> TEST_TYPE:
+        if self.__test_launch:
+            return self.__current_test_launch
+
+        return TEST_TYPE.TEST_NONE
+
+    def switch_launch_test(self, test_type: TEST_TYPE) -> bool:
+        if self.__test_launch:
+            if test_type != self.__current_test_launch:
+                self.__current_test_launch = test_type
+                return True
+
+        return False
+
+    def is_test_in_launch(self, test_type: TEST_TYPE) -> bool:
+        for test in self.__test_avalible_list:
+            if test == test_type:
+                return True
+
+    def remove_test_in_launch(self, test_type: TEST_TYPE):
+        # for test in self.__test_avalible_list:
+        #     if test == test_type:
+        #         is_find = True
+        #         continue
+        #     new_set.add(test)
+
+        new_list = list(test for test in self.__test_avalible_list if test != test_type)
+        self.__test_avalible_list = new_list
+
+    def clear_test_launch(self):
+        self.__test_avalible_list.clear()
+
+    def start_test(self, first_start_test: TEST_TYPE) -> bool:
+        if not self.__test_launch:
+            self.__current_test_launch = first_start_test
+            self.__test_launch = True
+
+            return True
+
+    def stop_test(self) -> bool:
+        if self.__test_launch:
+            self.__test_launch = False
+            self.set_default_value()
+            return True
+
+    def set_default_value(self):
+        self.clear_test_launch()
+        self.__current_test_launch = TEST_TYPE.TEST_NONE
 
     def get_unit_test_id_from_test_type(self, test_type: TEST_TYPE) -> CTestUnit | None:
         for unit in self.__test_units:
@@ -116,3 +179,7 @@ class CTestProcess:
         if unit is not None:
             unit.Test_result = result_status
             return True
+
+    def clear_result_test(self) -> None:
+        for unit in self.__test_units:
+            unit.Test_result = TEST_RESULT.NONE

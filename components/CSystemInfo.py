@@ -2,17 +2,16 @@ import platform
 from psutil import disk_partitions, virtual_memory, disk_usage, net_if_addrs
 from wmi import WMI
 from os import system
+import subprocess
 from socket import AF_INET
 from win32com.client import GetObject
-
-from wifi import Cell as WIFI_Cell
-
-from enuuuums import TEST_TYPE
+from bluetooth import discover_devices
+from enuuuums import TEST_TYPE, TEST_SYSTEM_INFO_TYPES, SYS_INFO_PARAMS
 from PySide6.QtWidgets import QMainWindow, QTableWidgetItem
 from PySide6.QtGui import QFontDatabase
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
+                            QMetaObject, QObject, QPoint, QRect,
+                            QSize, QTime, QUrl, Qt)
 
 import PySide6.QtCore as qc
 
@@ -21,57 +20,16 @@ from ui.test_sys_info import Ui_TestSysInfoWindow
 
 class CSystemInfo:
     __test_used = False
-    __bios_string = ""
-    __cpu_string = ""
-    __ram_string = ""
-    __disks_string = ""
-    __bios_stats = None
-    __cpu_stats = None
-    __ram_stats = None
-    __disks_stats = None
+    __test_dict = dict()
 
     @classmethod
-    def is_test_used(cls) -> bool:
-        return cls.__test_used
+    def get_test_stats(cls, test_name: SYS_INFO_PARAMS) -> bool | None:
+        return cls.__test_dict.get(test_name, None)
 
     @classmethod
-    def set_test_used(cls, used: bool):
-        cls.__test_used = used
+    def set_test_stats(cls, test_name: SYS_INFO_PARAMS, params: str | bool) -> None:
+        cls.__test_dict.update({test_name: params})
 
-    @classmethod
-    def set_bios_stats(cls, value: bool):
-        cls.__bios_stats = value
-
-    @classmethod
-    def get_bios_stats(cls) -> bool:
-        return cls.__bios_stats
-
-    ########
-    @classmethod
-    def set_cpu_stats(cls, value: bool):
-        cls.__cpu_stats = value
-
-    @classmethod
-    def get_cpu_stats(cls) -> bool:
-        return cls.__cpu_stats
-
-    ########
-    @classmethod
-    def set_ram_stats(cls, value: bool):
-        cls.__ram_stats = value
-
-    @classmethod
-    def get_ram_stats(cls) -> bool:
-        return cls.__ram_stats
-
-    @classmethod
-    ########
-    def set_disk_stats(cls, value: bool):
-        cls.__disks_stats = value
-
-    @classmethod
-    def get_disk_stats(cls) -> bool:
-        return cls.__disks_stats
 
     @staticmethod
     # Получаем название компьютера
@@ -170,11 +128,39 @@ class CSystemInfo:
             return True
 
     @staticmethod
-    def scan_wifi():
-        wifi_cells = WIFI_Cell.all('wlan0')  # Укажите ваш интерфейс Wi-Fi (например, wlan0)
-        networks = [(cell.ssid, cell.signal) for cell in wifi_cells]
-        return networks
+    def scan_wifi() -> bool | list:
 
+        output = subprocess.check_output("netsh wlan show networks", shell=True)
+        output = output.decode('cp866')  # Или 'utf-8', если это подходит
+        if len(output) > 0:
+            if output.find("Беспроводной интерфейс в системе отсутствует") != -1:
+                raise ValueError("Беспроводной интерфейс в системе отсутствует")
+            elif output.find("Сейчас видно следующее количество сетей: 0") != -1:
+                return False
+            else:
+                networks = []
+                lines = output.splitlines()
+                for line in lines:
+                    if "SSID" in line:
+                        network_name = line.split(":")[1].strip()
+                        networks.append(network_name)
+                if len(networks) > 0:
+                    return networks
+        return False
+
+    @staticmethod
+    def scan_bluetooth_devices() -> bool | list:
+
+        nearby_devices = discover_devices(duration=8, lookup_names=True)
+        if len(nearby_devices) == 0:
+            return False
+        else:
+            devices = list()
+            for _, name in nearby_devices:
+                # print(f"{name} - {addr}")
+                devices.append(name)
+            if len(devices) > 0:
+                return devices
 
 
 class CSystemInfoWindow(QMainWindow):
@@ -197,44 +183,187 @@ class CSystemInfoWindow(QMainWindow):
         self.setWindowTitle(f'Меню теста')
         self.setWindowModality(qc.Qt.WindowModality.ApplicationModal)
 
-    def load_data(self):
+        self.ui.pushButton_success.clicked.connect(lambda: self.__main_window.on_test_phb_success(TEST_TYPE.TEST_SYSTEM_INFO))
+        self.ui.pushButton_fail.clicked.connect(
+            lambda: self.__main_window.on_test_phb_fail(TEST_TYPE.TEST_SYSTEM_INFO))
 
+        self.ui.pushButton_all_test_break.clicked.connect(
+            lambda: self.__main_window.on_test_phb_break_all_test(TEST_TYPE.TEST_SYSTEM_INFO))
+
+    def set_default_string(self):
+        unit = self.ui.textBrowser_lan_port
+        unit.clear()
+        unit.append("Получение результатов...")
+
+        self.ui.label_ram_info.setText("-")
+        self.ui.label_bios_info.setText("-")
+        self.ui.label_cpu_info.setText("-")
+        self.ui.label_os_info.setText("-")
+
+    @staticmethod
+    def get_data() -> list:
         # ram
+        result_list = list()
+
         memory_info = CSystemInfo.get_memory_info()
-        self.ui.label_ram_info.setText(f"ОЗУ: Всего: {memory_info['total'] / (1024 ** 3):.2f} | "
-                                       f"Доступно: {memory_info['available'] / (1024 ** 3):.2f} | "
-                                       f"Использовано: {memory_info['used'] / (1024 ** 3):.2f} ГБ")
+        ram_dict = dict()
+        ram_dict.update({"data": f"ОЗУ: Всего: {memory_info['total'] / (1024 ** 3):.2f} | "
+                                 f"Доступно: {memory_info['available'] / (1024 ** 3):.2f} | "
+                                 f"Использовано: {memory_info['used'] / (1024 ** 3):.2f} ГБ",
+
+                         "check_string": f"all_{memory_info['total'] / (1024 ** 3):.2f}_"
+                                         f"avalible_{memory_info['available'] / (1024 ** 3):.2f}_"
+                                         f"used_{memory_info['used'] / (1024 ** 3):.2f}",
+                         "test_id": TEST_SYSTEM_INFO_TYPES.RAM_STATS})
+
+        result_list.append(ram_dict)
 
         # BIOS
         bios_info = CSystemInfo.get_bios_info()
-        self.ui.label_bios_info.setText(f"BIOS: {bios_info['manufacturer']} | {bios_info['version']} | "
-                                        f"SN: {bios_info['serial_number']} | Date: {bios_info['release_date']}")
+        bios_dict = dict()
+        bios_dict.update({"data": f"BIOS: {bios_info['manufacturer']} | {bios_info['version']} | "
+                                  f"SN: {bios_info['serial_number']} | Date: {bios_info['release_date']}",
 
+                          "check_string":
+                              f"manufacturer_{bios_info['manufacturer']}_"
+                              f"version_{bios_info['version']}_"
+                              f"sn_{bios_info['serial_number']}_"
+                              f"releasedate_{bios_info['release_date']}",
+
+                          "test_id": TEST_SYSTEM_INFO_TYPES.BIOS_STATS})
+
+        result_list.append(bios_dict)
+
+        #
         # cpu
-        self.ui.label_cpu_info.setText(f"CPU: {CSystemInfo.get_cpu_info()}")
+        cpu_dict = dict()
+        cpu_dict.update({"data": f"CPU: {CSystemInfo.get_cpu_info()}",
 
+                         "check_string":
+                             f"cpu_{CSystemInfo.get_cpu_info()}",
+
+                         "test_id": TEST_SYSTEM_INFO_TYPES.CPU_STATS})
+
+        result_list.append(cpu_dict)
+
+        #
         # OS
-        self.ui.label_os_info.setText(f"OS: {platform.system()} {platform.release()} {platform.version()} | "
-                                      f"{CSystemInfo.get_computer_name()}")
+        os_dict = dict()
+        os_dict.update({"data": f"OS: {platform.system()} {platform.release()} {platform.version()} | "
+                                f"{CSystemInfo.get_computer_name()}",
 
-        # остальные тесты
+                        "check_string":
+                            f"system_{platform.system()}_"
+                            f"release_{platform.release()}_"
+                            f"version_{platform.version()}_"
+                            f"comp_name_{CSystemInfo.get_computer_name()}",
+
+                        "test_id": TEST_SYSTEM_INFO_TYPES.OS_STATS})
+
+        result_list.append(os_dict)
+
+        # # остальные тесты
+
+        # LAN test
+        lan_dict = dict()
+        response = CSystemInfo.check_lan_connectivity()
+        if response:
+            string = "LAN Test: <span style=\" font-size:14pt; font-weight:700; color:#83ff37;\">пройден успешно!</span>"
+        else:
+            string = "LAN Test: <span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">не пройден!</span>"
+
+        lan_dict.update({"data": string,
+
+                         "check_string":
+                             f"result_{"success" if response > 0 else "fail"}",
+
+                         "test_id": TEST_SYSTEM_INFO_TYPES.LAN_STATS})
+
+        result_list.append(lan_dict)
+
+        # WLAN test
+        wifi_dict = dict()
+        available_networks = None
+        try:
+            available_networks = CSystemInfo.scan_wifi()
+            if isinstance(available_networks, list):
+                string = f"WIFI Test: <span style=\" font-size:14pt; font-weight:700; color:#83ff37;\">пройден успешно! <span style=\" color:black;\">Сети видны: [{", ".join(available_networks)}]</span>"
+            else:
+                string = "WIFI Test: <span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">не пройден! <span style=\" color:black;\">Нет доступных сетей.</span>"
+        except:
+            string = "WIFI Test: <span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">WIFI модуль не обнаружен!</span>"
+
+        if available_networks is not None:
+            wifi_dict.update({"data": string,
+
+                              "check_string":
+                                  f"result_{"success" if len(available_networks) > 0 else "fail"}",
+
+                              "test_id": TEST_SYSTEM_INFO_TYPES.WIFI_STATS})
+
+        result_list.append(wifi_dict)
+        #
+        # bt test
+        bt_dict = dict()
+        try:
+            bt_result = CSystemInfo.scan_bluetooth_devices()
+            if isinstance(bt_result, list):
+                string = f"Bluetooth Test: <span style=\" font-size:14pt; font-weight:700; color:#83ff37;\">пройден успешно! <span style=\" color:black;\">Сети видны: [{", ".join(bt_result)}].</span>"
+            else:
+                string = "Bluetooth Test: <span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">не пройден!</span>"
+        except:
+            string = "Bluetooth Test: <span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">BT модуль не обнаружен!</span>"
+
+        bt_dict.update({"data": string,
+
+                        "check_string":
+                            f"result_{"success" if response > 0 else "fail"}",
+
+                        "test_id": TEST_SYSTEM_INFO_TYPES.BT_STATS})
+
+        result_list.append(bt_dict)
+
+        return result_list
+
+    def load_data(self, data_list: list):
 
         unit = self.ui.textBrowser_lan_port
         unit.clear()
-        unit.append("Тестирование запущено!!")
+        unit.append("Результаты получены!")
 
-        # lan
-        response = CSystemInfo.check_lan_connectivity()
-        if response:
-            unit.append("LAN Test: <span style=\" font-size:14pt; font-weight:700; color:#83ff37;\">пройден успешно!</span>")
-        else:
-            unit.append("LAN Test: <span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">не пройден!</span>")
+        for item_dict in data_list:
+            test_type = item_dict.get("test_id", None)
+            data = item_dict.get("data", None)
+            if test_type is None or data is None:
+                continue
 
-        # wifi test
-        wifi = CSystemInfo.scan_wifi()
-        print(wifi)
-        unit.append(
-            "WIFI Test: <span style=\" font-size:14pt; font-weight:700; color:#83ff37;\">пройден успешно!</span>")
+            # ram
+            match test_type:
+                case TEST_SYSTEM_INFO_TYPES.RAM_STATS:
+                    self.ui.label_ram_info.setText(data)
+
+            # bios
+                case TEST_SYSTEM_INFO_TYPES.BIOS_STATS:
+                    self.ui.label_bios_info.setText(data)
+
+            # cpu
+                case TEST_SYSTEM_INFO_TYPES.CPU_STATS:
+                    self.ui.label_cpu_info.setText(data)
+            # os
+                case TEST_SYSTEM_INFO_TYPES.OS_STATS:
+                    self.ui.label_os_info.setText(data)
+
+            # остальные тесты
+            # lan
+                case TEST_SYSTEM_INFO_TYPES.LAN_STATS:
+                    unit.append(data)
+            # wifi
+                case TEST_SYSTEM_INFO_TYPES.WIFI_STATS:
+                    unit.append(data)
+            # BT
+                case TEST_SYSTEM_INFO_TYPES.BT_STATS:
+                    unit.append(data)
+
 
         # # disks
         # drivers = CSystemInfo.get_drives_info()

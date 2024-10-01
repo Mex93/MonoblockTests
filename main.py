@@ -85,6 +85,9 @@ class MainWindow(QMainWindow):
             btn_unit.set_enabled(False)
 
         self.ui.comboBox_config_get.currentIndexChanged.connect(self.on_changed_config)
+        self.ui.pushButton_exit.clicked.connect(self.set_close)
+        self.ui.pushButton_clear.clicked.connect(self.on_user_pressed_clear_all_test)
+        self.ui.pushButton_launchall.clicked.connect(self.on_user_pressed_start_all_test)
 
         only_config_name = self.main_config.get_only_config_name()
         if len(only_config_name):
@@ -105,10 +108,41 @@ class MainWindow(QMainWindow):
 
         self.ui.comboBox_config_get.setCurrentIndex(-1)
 
+    def on_user_pressed_start_all_test(self):
+        current_test = self.ctest_process.is_test_launch()
+        if current_test != TEST_TYPE.TEST_NONE:
+            self.ctest_process.stop_test()
+
+        test_list = CButtoms.get_all_tests()
+        if test_list is None:
+            send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
+                             text="Ошибка в обработчике старта теста!\n"
+                                  "Список с тестами из класса кнопок пуст!\n\n",
+                             title="Внимание!",
+                             variant_yes="Закрыть", variant_no="", callback=lambda: self.set_close())
+            return
+
+        for test in test_list:
+            self.ctest_process.add_test_in_launch(test)
+
+        first_test = test_list[0]
+        self.ctest_process.start_test(first_test)
+        CButtoms.set_buttoms_default_color()
+        self.show_test_window(first_test)
+
+    def on_user_pressed_clear_all_test(self):
+        current_test = self.ctest_process.is_test_launch()
+        if current_test != TEST_TYPE.TEST_NONE:
+            self.ctest_process.stop_test()
+
+        CButtoms.set_buttoms_default_color()
+
     def on_user_presed_launch_test(self, test_type: TEST_TYPE):
         print(f"Запущен тест: {test_type}")
 
-        self.show_test_window(TEST_TYPE.TEST_SYSTEM_INFO)
+        if test_type == TEST_TYPE.TEST_SYSTEM_INFO:
+            self.show_test_window(TEST_TYPE.TEST_SYSTEM_INFO)
+
         # if test_type == TEST_TYPE.TEST_SYSTEM_INFO:
         #     print("wdfqeq")
         #     print(CSystemInfo.get_drives_info())
@@ -179,16 +213,55 @@ class MainWindow(QMainWindow):
             self.main_config.save_last_config(text)
 
             # LOAD
-            CSystemInfo.set_test_used(
-                self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.SYS_INFO_TEST_USED))
-            CSystemInfo.set_bios_stats(
-                self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.BIOS_CHECK))
-            CSystemInfo.set_cpu_stats(
-                self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.CPU_CHECK))
-            CSystemInfo.set_ram_stats(
-                self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.RAM_CHECK))
-            CSystemInfo.set_disk_stats(
-                self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.DISK_CHECK))
+            # Sys Info
+            # check
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.SYS_INFO_TEST_USED,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.SYS_INFO_TEST_USED))
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.BT_CHECK,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.BIOS_CHECK))
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.CPU_CHECK,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.CPU_CHECK))
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.RAM_CHECK,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.RAM_CHECK))
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.DISK_CHECK,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.DISK_CHECK))
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.WLAN_CHECK,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.WLAN_CHECK))
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.BT_CHECK,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.BT_CHECK))
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.LAN_CHECK,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.LAN_CHECK))
+
+            # string
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.BIOS_STRING,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.BIOS_STRING))
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.CPU_STRING,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.CPU_STRING))
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.RAM_STRING,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.RAM_STRING))
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.DISK_STRING,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.DISK_STRING))
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.WLAN_STRING,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.WLAN_STRING))
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.BT_STRING,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.BT_STRING))
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.LAN_STRING,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.LAN_STRING))
 
             CButtoms.set_clear_callbacks_for_all()
 
@@ -197,7 +270,7 @@ class MainWindow(QMainWindow):
             for index, block_data in enumerate(block_datas):
                 bname, btype = block_datas[index]
                 if btype == TEST_TYPE.TEST_SYSTEM_INFO:
-                    if CSystemInfo.is_test_used():
+                    if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.SYS_INFO_TEST_USED) is True:
                         btn_unit = CButtoms.get_unit_from_index(btn_index)
                         btn_unit.set_callback(btype, self.on_user_presed_launch_test)
                         btn_unit.set_name(bname)
@@ -229,11 +302,70 @@ class MainWindow(QMainWindow):
         return None
 
     def show_test_window(self, test_type: TEST_TYPE):
+
         match test_type:
             case TEST_TYPE.TEST_SYSTEM_INFO:
-                self.ctest_window_sys_info.load_data()
+                self.ctest_window_sys_info.set_default_string()
                 self.ctest_window_sys_info.show()
                 self.ctest_window_sys_info.setFocus()
+
+                data = self.ctest_window_sys_info.get_data()
+                self.ctest_window_sys_info.load_data(data)
+
+    def on_test_phb_break_all_test(self, test_type: TEST_TYPE):
+        current_test = self.ctest_process.is_test_launch()
+        if current_test != TEST_TYPE.TEST_NONE:
+            self.ctest_process.stop_test()
+        if test_type == TEST_TYPE.TEST_SYSTEM_INFO:
+            self.ctest_window_sys_info.close()
+
+        print("нажата прервать все тесты")
+
+        if test_type.TEST_SYSTEM_INFO:
+            pass
+
+    def on_test_phb_success(self, test_type: TEST_TYPE):
+
+        current_test = self.ctest_process.is_test_launch()
+        if current_test != TEST_TYPE.TEST_NONE:
+            self.ctest_process.set_result_test(current_test, TEST_RESULT.SUCCESS)
+            next_test = self.ctest_process.get_next_test(current_test)
+            if next_test is None:
+                self.ctest_process.stop_test()
+                print("тест завершён так как дальше нету")
+            else:
+                print("Я ещё нашёл тесты")
+                self.ctest_process.switch_launch_test(next_test)
+                self.show_test_window(next_test)
+
+        btn_unit: CButtoms = CButtoms.get_unit_from_test_type(test_type)
+        if btn_unit is not None:
+            btn_unit.set_btn_color_green()
+
+        if test_type == TEST_TYPE.TEST_SYSTEM_INFO:
+            self.ctest_window_sys_info.close()
+
+        if test_type.TEST_SYSTEM_INFO:
+            print("нажата success")
+
+    def on_test_phb_fail(self, test_type: TEST_TYPE):
+
+        current_test = self.ctest_process.is_test_launch()
+        if current_test != TEST_TYPE.TEST_NONE:
+            self.ctest_process.set_result_test(current_test, TEST_RESULT.FAIL)
+
+        btn_unit: CButtoms = CButtoms.get_unit_from_test_type(test_type)
+        if btn_unit is not None:
+            btn_unit.set_btn_color_red()
+
+        if test_type == TEST_TYPE.TEST_SYSTEM_INFO:
+            self.ctest_window_sys_info.close()
+
+        if test_type.TEST_SYSTEM_INFO:
+            print("нажата fail")
+
+    def closeEvent(self, e):
+        e.accept()
 
     @staticmethod
     def set_close():

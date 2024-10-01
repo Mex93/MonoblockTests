@@ -24,7 +24,7 @@ class Ui_TestSysInfoWindow(object):
     def setupUi(self, TestSysInfoWindow):
         if not TestSysInfoWindow.objectName():
             TestSysInfoWindow.setObjectName(u"TestSysInfoWindow")
-        TestSysInfoWindow.resize(1920, 1080)
+        TestSysInfoWindow.resize(1211, 755)
         self.centralwidget = QWidget(TestSysInfoWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout_6 = QVBoxLayout(self.centralwidget)
@@ -120,10 +120,6 @@ class Ui_TestSysInfoWindow(object):
 
         self.horizontalLayout_2.addWidget(self.textBrowser_lan_port)
 
-        self.horizontalSpacer_7 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_2.addItem(self.horizontalSpacer_7)
-
 
         self.verticalLayout_2.addWidget(self.groupBox)
 
@@ -202,7 +198,7 @@ class Ui_TestSysInfoWindow(object):
         TestSysInfoWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(TestSysInfoWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1920, 22))
+        self.menubar.setGeometry(QRect(0, 0, 1211, 22))
         TestSysInfoWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(TestSysInfoWindow)
         self.statusbar.setObjectName(u"statusbar")
