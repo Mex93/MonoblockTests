@@ -4,17 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="first">
-      <change afterPath="$PROJECT_DIR$/components/CExternalDisplay.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/test_external_display.ui" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/video_player.py" afterDir="false" />
+    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="external display">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CConfig.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CConfig.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CSystemInfo.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSystemInfo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CTests.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CTests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/configs/test.ini" beforeDir="false" afterPath="$PROJECT_DIR$/configs/test.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/enuuuums.py" beforeDir="false" afterPath="$PROJECT_DIR$/enuuuums.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +42,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
-    "last_opened_file_path": "C:/Users/Ryazanov/PycharmProjects/MonoblockTests"
+    "last_opened_file_path": "C:/Users/Ryazanov/PycharmProjects/MonoblockTests/components"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -153,12 +144,29 @@
       <option name="project" value="LOCAL" />
       <updated>1727769637090</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="external display">
+      <option name="closed" value="true" />
+      <created>1727788061923</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1727788061923</updated>
+    </task>
+    <task id="LOCAL-00008" summary="external display">
+      <option name="closed" value="true" />
+      <created>1727789802603</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1727789802603</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="first" />
-    <option name="LAST_COMMIT_MESSAGE" value="first" />
+    <MESSAGE value="external display" />
+    <option name="LAST_COMMIT_MESSAGE" value="external display" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -175,7 +183,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/components/CExternalDisplay.py</url>
-          <line>67</line>
+          <line>66</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>
