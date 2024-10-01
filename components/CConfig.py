@@ -1,7 +1,8 @@
 import configparser
 from os import path, listdir
 from components.CExternalDisplay import CExternalDisplay
-from enuuuums import CONFIG_PARAMS, SYS_INFO_PARAMS, BLOCKS_DATA, EXTERNAL_DISPLAY_PARAMS
+from enuuuums import (CONFIG_PARAMS, SYS_INFO_PARAMS, BLOCKS_DATA,
+                      EXTERNAL_DISPLAY_PARAMS, SPEAKER_PARAMS)
 
 
 class ConfigError(Exception):
@@ -161,6 +162,14 @@ class CNewConfig:
                         f"extend \n; {",".join(monitor_mode_list)}")
         self.add_params(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST, EXTERNAL_DISPLAY_PARAMS.WINDOW_SWITCH_TO, str,
                         f"clone \n; {",".join(monitor_mode_list)}")
+
+        # Speaker test
+        self.add_params(BLOCKS_DATA.SPEAKER_TEST, SPEAKER_PARAMS.SPEAKER_TEST_USED, bool, "true")
+        self.add_params(BLOCKS_DATA.SPEAKER_TEST, SPEAKER_PARAMS.AUDIO_PATCH_LEFT, str,
+                        "content/test_left_channel.mp4")
+
+        self.add_params(BLOCKS_DATA.SPEAKER_TEST, SPEAKER_PARAMS.AUDIO_PATCH_RIGHT, str,
+                        "content/test_right_channel.mp4")
 
         blist = CParameters.get_blocks_list()
         for block in blist:

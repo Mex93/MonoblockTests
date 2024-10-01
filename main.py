@@ -12,6 +12,7 @@ from components.CTests import CTests, TEST_TYPE, CTestProcess, TEST_RESULT
 from components.CConfig_Main import CMainConfig
 from components.CSystemInfo import CSystemInfo, CSystemInfoWindow
 from components.CExternalDisplay import CExternalDisplayWindow, CExternalDisplay, EXTERNAL_DISPLAY_PARAMS
+from components.CSpeaker import CSpeakerTestWindow, CSpeakerTest, SPEAKER_PARAMS
 from components.CButtons import CButtoms
 
 
@@ -60,6 +61,7 @@ class MainWindow(QMainWindow):
 
         self.ctest_window_sys_info = CSystemInfoWindow(self)
         self.ctest_window_external_display = CExternalDisplayWindow(self)
+        self.ctest_window_speaker_window = CSpeakerTestWindow(self)
 
         filtred_files = CNewConfig.get_configs_list_in_folder()
         if filtred_files is not None:
@@ -148,6 +150,9 @@ class MainWindow(QMainWindow):
             self.show_test_window(test_type)
 
         elif test_type == TEST_TYPE.TEST_EXTERNAL_DISPLAY:
+            self.show_test_window(test_type)
+
+        elif test_type == TEST_TYPE.TEST_SPEAKER_MIC:
             self.show_test_window(test_type)
 
     def on_changed_config(self):
@@ -243,6 +248,19 @@ class MainWindow(QMainWindow):
                                             self.cconfig_unit.get_config_value(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST,
                                                                                EXTERNAL_DISPLAY_PARAMS.WINDOW_SWITCH_TO))
 
+            # Speaker test
+            # check
+            CExternalDisplay.set_test_stats(SPEAKER_PARAMS.SPEAKER_TEST_USED,
+                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
+                                                                               SPEAKER_PARAMS.SPEAKER_TEST_USED))
+            # string
+            CExternalDisplay.set_test_stats(SPEAKER_PARAMS.AUDIO_PATCH_LEFT,
+                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
+                                                                               SPEAKER_PARAMS.AUDIO_PATCH_LEFT))
+            CExternalDisplay.set_test_stats(SPEAKER_PARAMS.AUDIO_PATCH_RIGHT,
+                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
+                                                                               SPEAKER_PARAMS.AUDIO_PATCH_RIGHT))
+
             CButtoms.set_clear_callbacks_for_all()
 
             block_datas = CTests.get_config_block_data()
@@ -259,6 +277,14 @@ class MainWindow(QMainWindow):
                         btn_index += 1
                 elif btype == TEST_TYPE.TEST_EXTERNAL_DISPLAY:
                     if CExternalDisplay.get_test_stats(EXTERNAL_DISPLAY_PARAMS.EXTD_TEST_USED) is True:
+                        btn_unit = CButtoms.get_unit_from_index(btn_index)
+                        btn_unit.set_callback(btype, self.on_user_presed_launch_test)
+                        btn_unit.set_name(bname)
+                        btn_unit.set_enabled(True)
+                        btn_unit.set_hidden(False)
+                        btn_index += 1
+                elif btype == TEST_TYPE.TEST_SPEAKER_MIC:
+                    if CExternalDisplay.get_test_stats(SPEAKER_PARAMS.SPEAKER_TEST_USED) is True:
                         btn_unit = CButtoms.get_unit_from_index(btn_index)
                         btn_unit.set_callback(btype, self.on_user_presed_launch_test)
                         btn_unit.set_name(bname)
@@ -311,7 +337,17 @@ class MainWindow(QMainWindow):
                                      variant_yes="Закрыть", variant_no="", callback=None)
                 else:
                     self.ctest_window_external_display.setFocus()
-                    CExternalDisplay.setup_window_for_dual_monitor()
+
+            case TEST_TYPE.TEST_SPEAKER_MIC:
+                result = self.ctest_window_speaker_window.window_show()
+                if not result:
+                    send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
+                                     text="Ошибка в файле конфигурации для аудио!\n"
+                                          "Один или несколько параметров ошибочны!\n\n",
+                                     title="Внимание!",
+                                     variant_yes="Закрыть", variant_no="", callback=None)
+                else:
+                    self.ctest_window_speaker_window.setFocus()
 
     def on_test_phb_break_all_test(self, test_type: TEST_TYPE):
         current_test = self.ctest_process.is_test_launch()
@@ -361,6 +397,8 @@ class MainWindow(QMainWindow):
             self.ctest_window_sys_info.close()
         elif current_test == TEST_TYPE.TEST_EXTERNAL_DISPLAY:
             self.ctest_window_external_display.close()
+        elif current_test == TEST_TYPE.TEST_SPEAKER_MIC:
+            self.ctest_window_speaker_window.close()
 
     def closeEvent(self, e):
         e.accept()

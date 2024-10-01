@@ -45,6 +45,7 @@ class BLOCKS_DATA:
     PROGRAM_SETTING = "program"
     SYS_INFO_TEST = "sys_info_test"
     EXTERNAL_DISPLAY_TEST = "external_display_test"
+    SPEAKER_TEST = "speaker_test"
 
 
 class CONFIG_PARAMS:

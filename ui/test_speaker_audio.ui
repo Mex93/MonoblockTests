@@ -44,7 +44,7 @@
             </spacer>
            </item>
            <item>
-            <widget class="QMediaPlayer" name="graphicsView"/>
+            <widget class="QMediaPlayer" name="audio_player"/>
            </item>
            <item>
             <spacer name="horizontalSpacer_7">
