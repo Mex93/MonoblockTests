@@ -324,19 +324,22 @@ class MainWindow(QMainWindow):
         if test_type.TEST_SYSTEM_INFO:
             pass
 
+    def set_next_test(self, current_test: TEST_TYPE):
+        next_test = self.ctest_process.get_next_test(current_test)
+        if next_test is None:
+            self.ctest_process.stop_test()
+            print("тест завершён так как дальше нету")
+        else:
+            print("Я ещё нашёл тесты")
+            self.ctest_process.switch_launch_test(next_test)
+            self.show_test_window(next_test)
+
     def on_test_phb_success(self, test_type: TEST_TYPE):
 
         current_test = self.ctest_process.is_test_launch()
         if current_test != TEST_TYPE.TEST_NONE:
             self.ctest_process.set_result_test(current_test, TEST_RESULT.SUCCESS)
-            next_test = self.ctest_process.get_next_test(current_test)
-            if next_test is None:
-                self.ctest_process.stop_test()
-                print("тест завершён так как дальше нету")
-            else:
-                print("Я ещё нашёл тесты")
-                self.ctest_process.switch_launch_test(next_test)
-                self.show_test_window(next_test)
+            self.set_next_test(current_test)
 
         btn_unit: CButtoms = CButtoms.get_unit_from_test_type(test_type)
         if btn_unit is not None:
@@ -353,6 +356,7 @@ class MainWindow(QMainWindow):
         current_test = self.ctest_process.is_test_launch()
         if current_test != TEST_TYPE.TEST_NONE:
             self.ctest_process.set_result_test(current_test, TEST_RESULT.FAIL)
+            self.set_next_test(current_test)
 
         btn_unit: CButtoms = CButtoms.get_unit_from_test_type(test_type)
         if btn_unit is not None:
