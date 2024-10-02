@@ -50,10 +50,12 @@ class BLOCKS_DATA:
 
 class CONFIG_PARAMS:
     CONFIG_NAME = "config_name"
+    DISPLAY_RESOLUTION = "display_resolution"
 
 
 class SYS_INFO_PARAMS:
     SYS_INFO_TEST_USED = "sys_info_used"
+    SYS_INFO_NOT_WINDOW_TEST = "not_open_window_test"
     BIOS_CHECK = "bios_check"
     CPU_CHECK = "cpu_check"
     RAM_CHECK = "ram_check"
@@ -61,6 +63,9 @@ class SYS_INFO_PARAMS:
     WLAN_CHECK = "wlan_check"
     BT_CHECK = "bt_check"
     LAN_CHECK = "lan_check"
+    OS_CHECK = "os_check"
+
+    LAN_IP = "lan_ip"
 
     BIOS_STRING = "bios_string"
     CPU_STRING = "cpu_string"

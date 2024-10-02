@@ -175,8 +175,33 @@ class MainWindow(QMainWindow):
                     f"Код ошибки: 'on_changed_config -> [Error Read Data]'")
                 self.close()
                 return
+            display_resolution = self.cconfig_unit.get_config_value(BLOCKS_DATA.PROGRAM_SETTING,
+                                                                   CONFIG_PARAMS.DISPLAY_RESOLUTION)
+            if len(display_resolution):
+                if display_resolution.find("x") != -1:
+                    height: str
+                    width: str
+
+                    height, width = display_resolution.split("x")
+                    if height.isnumeric() and width.isnumeric():
+                        display_resolution = [int(height), int(width)]
+
+            if isinstance(display_resolution, list):
+                self.ctest_window_external_display.resize(*display_resolution)
+            else:
+                # на всю длинну если не задано
+                CExternalDisplay.set_test_stats(CONFIG_PARAMS.DISPLAY_RESOLUTION, "full-screen")
+                # send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_WARNING,
+                #                  text="Ошибка в обработке размера окна из конфига!\n"
+                #                       f"Ошибка в размере: '{display_resolution}'!\n\n"
+                #                       f"Окна для тестов будут открываться в стандартном разрешении, "
+                #                       f"заданном при проектировании",
+                #                  title="Внимание!",
+                #                  variant_yes="Закрыть", variant_no="", callback=None)
+
             config_human_name = self.cconfig_unit.get_config_value(BLOCKS_DATA.PROGRAM_SETTING,
                                                                    CONFIG_PARAMS.CONFIG_NAME)
+
             self.ui.label_monoblock_config_name.setText(f"Тест моноблоков: {config_human_name}")
             self.main_config.save_last_config(text)
 
@@ -186,7 +211,8 @@ class MainWindow(QMainWindow):
             CSystemInfo.set_test_stats(SYS_INFO_PARAMS.SYS_INFO_TEST_USED,
                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
                                                                           SYS_INFO_PARAMS.SYS_INFO_TEST_USED))
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.BT_CHECK,
+
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.BIOS_CHECK,
                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
                                                                           SYS_INFO_PARAMS.BIOS_CHECK))
             CSystemInfo.set_test_stats(SYS_INFO_PARAMS.CPU_CHECK,
@@ -207,6 +233,16 @@ class MainWindow(QMainWindow):
             CSystemInfo.set_test_stats(SYS_INFO_PARAMS.LAN_CHECK,
                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
                                                                           SYS_INFO_PARAMS.LAN_CHECK))
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.OS_CHECK,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.OS_CHECK))
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.SYS_INFO_NOT_WINDOW_TEST,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.SYS_INFO_NOT_WINDOW_TEST))
+
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.LAN_IP,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.LAN_IP))
 
             # string
             CSystemInfo.set_test_stats(SYS_INFO_PARAMS.BIOS_STRING,
@@ -240,6 +276,7 @@ class MainWindow(QMainWindow):
             CExternalDisplay.set_test_stats(EXTERNAL_DISPLAY_PARAMS.VIDEO_PATCH,
                                             self.cconfig_unit.get_config_value(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST,
                                                                                EXTERNAL_DISPLAY_PARAMS.VIDEO_PATCH))
+
             CExternalDisplay.set_test_stats(EXTERNAL_DISPLAY_PARAMS.WINDOW_DEFAULT,
                                             self.cconfig_unit.get_config_value(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST,
                                                                                EXTERNAL_DISPLAY_PARAMS.WINDOW_DEFAULT))
@@ -283,14 +320,14 @@ class MainWindow(QMainWindow):
                         btn_unit.set_enabled(True)
                         btn_unit.set_hidden(False)
                         btn_index += 1
-                elif btype == TEST_TYPE.TEST_SPEAKER_MIC:
-                    if CExternalDisplay.get_test_stats(SPEAKER_PARAMS.SPEAKER_TEST_USED) is True:
-                        btn_unit = CButtoms.get_unit_from_index(btn_index)
-                        btn_unit.set_callback(btype, self.on_user_presed_launch_test)
-                        btn_unit.set_name(bname)
-                        btn_unit.set_enabled(True)
-                        btn_unit.set_hidden(False)
-                        btn_index += 1
+                # elif btype == TEST_TYPE.TEST_SPEAKER_MIC:
+                #     if CExternalDisplay.get_test_stats(SPEAKER_PARAMS.SPEAKER_TEST_USED) is True:
+                #         btn_unit = CButtoms.get_unit_from_index(btn_index)
+                #         btn_unit.set_callback(btype, self.on_user_presed_launch_test)
+                #         btn_unit.set_name(bname)
+                #         btn_unit.set_enabled(True)
+                #         btn_unit.set_hidden(False)
+                #         btn_index += 1
 
             # отключаем лишние
             btn_size = CButtoms.get_current_size()

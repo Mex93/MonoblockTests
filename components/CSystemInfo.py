@@ -2,7 +2,8 @@ import platform
 from psutil import disk_partitions, virtual_memory, disk_usage, net_if_addrs
 from wmi import WMI
 from os import system
-import subprocess
+import subprocess, ipaddress
+
 from socket import AF_INET
 from win32com.client import GetObject
 from bluetooth import discover_devices
@@ -21,7 +22,7 @@ class CSystemInfo:
     __test_dict = dict()
 
     @classmethod
-    def get_test_stats(cls, test_name: SYS_INFO_PARAMS) -> bool | None:
+    def get_test_stats(cls, test_name: SYS_INFO_PARAMS) -> bool | str | int | None:
         return cls.__test_dict.get(test_name, None)
 
     @classmethod
@@ -117,12 +118,19 @@ class CSystemInfo:
         return interface_info
 
     @staticmethod
-    def check_lan_connectivity() -> bool:
-        # Пинговать известный адрес (например, 8.8.8.8 - Google DNS)
-        hostname = "192.168.5.1"
-        response = system("ping -n 1 " + hostname)
-        if response == 0:
-            return True
+    def check_lan_connectivity(ip: str) -> bool | None:
+        try:
+            ip_object = ipaddress.ip_address(ip)
+            # Пинговать известный адрес (например, 8.8.8.8 - Google DNS)
+            response = system("ping -n 1 " + ip)
+            if response == 0:
+                return True
+            else:
+                return False
+
+        except ValueError:
+            print(f"check_lan_connectivity -> The IP address '{ip}' is not valid")
+            return None
 
     @staticmethod
     def scan_wifi() -> bool | list:
@@ -199,136 +207,220 @@ class CSystemInfoWindow(QMainWindow):
         self.ui.label_os_info.setText("-")
 
     @staticmethod
-    def get_data() -> list:
+    def get_data() -> list | None:
         # ram
         result_list = list()
-
-        memory_info = CSystemInfo.get_memory_info()
+        on_test_count = 0
         ram_dict = dict()
-        ram_dict.update({"data": f"ОЗУ: Всего: {memory_info['total'] / (1024 ** 3):.2f} | "
-                                 f"Доступно: {memory_info['available'] / (1024 ** 3):.2f} | "
-                                 f"Использовано: {memory_info['used'] / (1024 ** 3):.2f} ГБ",
+        if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.RAM_CHECK) is True:
+            memory_info = CSystemInfo.get_memory_info()
 
-                         "check_string": f"all_{memory_info['total'] / (1024 ** 3):.2f}_"
-                                         f"avalible_{memory_info['available'] / (1024 ** 3):.2f}_"
-                                         f"used_{memory_info['used'] / (1024 ** 3):.2f}",
-                         "test_id": TEST_SYSTEM_INFO_TYPES.RAM_STATS})
+            ram_dict.update({"data": f"ОЗУ: Всего: {memory_info['total'] / (1024 ** 3):.2f} | "
+                                     f"Доступно: {memory_info['available'] / (1024 ** 3):.2f} | "
+                                     f"Использовано: {memory_info['used'] / (1024 ** 3):.2f} ГБ",
+
+                             "check_string": f"all_{memory_info['total'] / (1024 ** 3):.2f}_"
+                                             f"avalible_{memory_info['available'] / (1024 ** 3):.2f}_"
+                                             f"used_{memory_info['used'] / (1024 ** 3):.2f}",
+                             "test_id": TEST_SYSTEM_INFO_TYPES.RAM_STATS})
+            on_test_count += 1
+        else:
+            ram_dict.update({"data": f"ОЗУ: Проверка отключена",
+
+                             "check_string": f"all_none",
+                             "test_id": TEST_SYSTEM_INFO_TYPES.RAM_STATS})
 
         result_list.append(ram_dict)
 
-        # BIOS
-        bios_info = CSystemInfo.get_bios_info()
         bios_dict = dict()
-        bios_dict.update({"data": f"BIOS: {bios_info['manufacturer']} | {bios_info['version']} | "
-                                  f"SN: {bios_info['serial_number']} | Date: {bios_info['release_date']}",
+        if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.BIOS_CHECK) is True:
+            # BIOS
+            bios_info = CSystemInfo.get_bios_info()
+            bios_dict.update({"data": f"BIOS: {bios_info['manufacturer']} | {bios_info['version']} | "
+                                      f"SN: {bios_info['serial_number']} | Date: {bios_info['release_date']}",
 
-                          "check_string":
-                              f"manufacturer_{bios_info['manufacturer']}_"
-                              f"version_{bios_info['version']}_"
-                              f"sn_{bios_info['serial_number']}_"
-                              f"releasedate_{bios_info['release_date']}",
+                              "check_string":
+                                  f"manufacturer_{bios_info['manufacturer']}_"
+                                  f"version_{bios_info['version']}_"
+                                  f"sn_{bios_info['serial_number']}_"
+                                  f"releasedate_{bios_info['release_date']}",
 
-                          "test_id": TEST_SYSTEM_INFO_TYPES.BIOS_STATS})
+                              "test_id": TEST_SYSTEM_INFO_TYPES.BIOS_STATS})
+            on_test_count += 1
+        else:
+            bios_dict.update({"data": f"BIOS: Проверка отключена",
+
+                              "check_string":
+                                  f"manufacturer_none",
+
+                              "test_id": TEST_SYSTEM_INFO_TYPES.BIOS_STATS})
 
         result_list.append(bios_dict)
 
         #
         # cpu
         cpu_dict = dict()
-        cpu_dict.update({"data": f"CPU: {CSystemInfo.get_cpu_info()}",
+        if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.CPU_CHECK) is True:
 
-                         "check_string":
-                             f"cpu_{CSystemInfo.get_cpu_info()}",
+            cpu_dict.update({"data": f"CPU: {CSystemInfo.get_cpu_info()}",
 
-                         "test_id": TEST_SYSTEM_INFO_TYPES.CPU_STATS})
+                             "check_string":
+                                 f"cpu_{CSystemInfo.get_cpu_info()}",
+
+                             "test_id": TEST_SYSTEM_INFO_TYPES.CPU_STATS})
+        else:
+            cpu_dict.update({"data": f"CPU: Проверка отключена",
+
+                             "check_string":
+                                 f"cpu_none",
+
+                             "test_id": TEST_SYSTEM_INFO_TYPES.CPU_STATS})
+            on_test_count += 1
 
         result_list.append(cpu_dict)
 
         #
         # OS
         os_dict = dict()
-        os_dict.update({"data": f"OS: {platform.system()} {platform.release()} {platform.version()} | "
-                                f"{CSystemInfo.get_computer_name()}",
+        if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.OS_CHECK) is True:
 
-                        "check_string":
-                            f"system_{platform.system()}_"
-                            f"release_{platform.release()}_"
-                            f"version_{platform.version()}_"
-                            f"comp_name_{CSystemInfo.get_computer_name()}",
+            os_dict.update({"data": f"OS: {platform.system()} {platform.release()} {platform.version()} | "
+                                    f"{CSystemInfo.get_computer_name()}",
 
-                        "test_id": TEST_SYSTEM_INFO_TYPES.OS_STATS})
+                            "check_string":
+                                f"system_{platform.system()}_"
+                                f"release_{platform.release()}_"
+                                f"version_{platform.version()}_"
+                                f"comp_name_{CSystemInfo.get_computer_name()}",
+
+                            "test_id": TEST_SYSTEM_INFO_TYPES.OS_STATS})
+            on_test_count += 1
+        else:
+            os_dict.update({"data": f"OS: Проверка отключена",
+
+                            "check_string":
+                                f"system_none",
+
+                            "test_id": TEST_SYSTEM_INFO_TYPES.OS_STATS})
 
         result_list.append(os_dict)
 
         # # остальные тесты
-
         # LAN test
         lan_dict = dict()
-        response = CSystemInfo.check_lan_connectivity()
-        if response:
-            string = "LAN Test: <span style=\" font-size:14pt; font-weight:700; color:#83ff37;\">пройден успешно!</span>"
+        if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.LAN_CHECK) is True:
+            check_ip = CSystemInfo.get_test_stats(SYS_INFO_PARAMS.LAN_IP)
+            response = CSystemInfo.check_lan_connectivity(check_ip)
+            if response is None:
+                string = "LAN Test: <span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">IP невалидный</span>"
+                ip_check_result = "not_valid_ip"
+            elif response is True:
+                string = "LAN Test: <span style=\" font-size:14pt; font-weight:700; color:#83ff37;\">пройден успешно!</span>"
+                ip_check_result = "success"
+            else:
+                string = "LAN Test: <span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">не пройден!</span>"
+                ip_check_result = "fail"
+
+            lan_dict.update({"data": string,
+
+                             "check_string":
+                                 f"result_{ip_check_result}",
+
+                             "test_id": TEST_SYSTEM_INFO_TYPES.LAN_STATS})
+            on_test_count += 1
         else:
-            string = "LAN Test: <span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">не пройден!</span>"
+            lan_dict.update({"data": "LAN Test: Проверка отключена",
 
-        lan_dict.update({"data": string,
+                             "check_string":
+                                 f"result_none",
 
-                         "check_string":
-                             f"result_{"success" if response > 0 else "fail"}",
-
-                         "test_id": TEST_SYSTEM_INFO_TYPES.LAN_STATS})
+                             "test_id": TEST_SYSTEM_INFO_TYPES.LAN_STATS})
 
         result_list.append(lan_dict)
 
         # WLAN test
         wifi_dict = dict()
-        available_networks = None
-        try:
-            available_networks = CSystemInfo.scan_wifi()
-            if isinstance(available_networks, list):
-                string = f"WIFI Test: <span style=\" font-size:14pt; font-weight:700; color:#83ff37;\">пройден успешно! <span style=\" color:black;\">Сети видны: [{", ".join(available_networks)}]</span>"
-            else:
-                string = "WIFI Test: <span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">не пройден! <span style=\" color:black;\">Нет доступных сетей.</span>"
-        except:
-            string = "WIFI Test: <span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">WIFI модуль не обнаружен!</span>"
+        if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.WLAN_CHECK) is True:
 
-        if available_networks is not None:
+            available_networks = None
+            try:
+                available_networks = CSystemInfo.scan_wifi()
+                if isinstance(available_networks, list):
+                    string = f"WIFI Test: <span style=\" font-size:14pt; font-weight:700; color:#83ff37;\">пройден успешно! <span style=\" color:black;\">Сети видны: [{", ".join(available_networks)}]</span>"
+                else:
+                    string = "WIFI Test: <span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">не пройден! <span style=\" color:black;\">Нет доступных сетей.</span>"
+            except:
+                string = "WIFI Test: <span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">WIFI модуль не обнаружен!</span>"
+
+            if not available_networks:
+                available_networks = list()
+
             wifi_dict.update({"data": string,
 
                               "check_string":
                                   f"result_{"success" if len(available_networks) > 0 else "fail"}",
 
                               "test_id": TEST_SYSTEM_INFO_TYPES.WIFI_STATS})
+            on_test_count += 1
+        else:
+            wifi_dict.update({"data": "WIFI Test: Проверка отключена",
+
+                              "check_string":
+                                  f"result_none",
+
+                              "test_id": TEST_SYSTEM_INFO_TYPES.WIFI_STATS})
 
         result_list.append(wifi_dict)
+
         #
-        # bt test
+        # BT test
         bt_dict = dict()
-        try:
-            bt_result = CSystemInfo.scan_bluetooth_devices()
-            if isinstance(bt_result, list):
-                string = f"Bluetooth Test: <span style=\" font-size:14pt; font-weight:700; color:#83ff37;\">пройден успешно! <span style=\" color:black;\">Сети видны: [{", ".join(bt_result)}].</span>"
-            else:
-                string = "Bluetooth Test: <span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">не пройден!</span>"
-        except:
-            string = "Bluetooth Test: <span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">BT модуль не обнаружен!</span>"
+        if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.BT_CHECK) is True:
+            bt_result = None
+            try:
+                bt_result = CSystemInfo.scan_bluetooth_devices()
+                if isinstance(bt_result, list):
+                    string = f"Bluetooth Test: <span style=\" font-size:14pt; font-weight:700; color:#83ff37;\">пройден успешно! <span style=\" color:black;\">Сети видны: [{", ".join(bt_result)}].</span>"
+                else:
+                    string = "Bluetooth Test: <span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">не пройден! Сети не видны</span>"
+            except:
+                string = "Bluetooth Test: <span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">BT модуль не обнаружен!</span>"
 
-        bt_dict.update({"data": string,
+            if not bt_result:
+                bt_result = list()
 
-                        "check_string":
-                            f"result_{"success" if response > 0 else "fail"}",
+            bt_dict.update({"data": string,
 
-                        "test_id": TEST_SYSTEM_INFO_TYPES.BT_STATS})
+                            "check_string":
+                                f"result_{"success" if len(bt_result) > 0 else "fail"}",
+
+                            "test_id": TEST_SYSTEM_INFO_TYPES.BT_STATS})
+            on_test_count += 1
+        else:
+            bt_dict.update({"data": "Bluetooth Test: Проверка отключена",
+
+                            "check_string":
+                                f"result_none",
+
+                            "test_id": TEST_SYSTEM_INFO_TYPES.BT_STATS})
 
         result_list.append(bt_dict)
 
-        return result_list
+        if on_test_count > 0:
+            return result_list
 
-    def load_data(self, data_list: list):
+        return None
+
+    def load_data(self, data_list: list | None):
 
         unit = self.ui.textBrowser_lan_port
         unit.clear()
-        unit.append("Результаты получены!")
 
+        if data_list is None:
+            unit.append("Ни один из тестов не запущен!")
+            return
+
+        unit.append("Результаты получены!")
         for item_dict in data_list:
             test_type = item_dict.get("test_id", None)
             data = item_dict.get("data", None)

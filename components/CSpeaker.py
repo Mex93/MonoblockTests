@@ -23,21 +23,21 @@ class CSpeakerTest:
 class CSpeakerTestWindow(QMainWindow):
     def __init__(self, main_window, parent=None):
         super().__init__(parent)
-        self.__main_window = main_window
-        self.ui = Ui_TestAudioWindow()
-        self.ui.setupUi(self)
-
-        self.setWindowModality(Qt.WindowModality.ApplicationModal)
-
-        self.ui.pushButton_success.clicked.connect(
-            lambda: self.__main_window.on_test_phb_success(TEST_TYPE.TEST_SPEAKER_MIC))
-        self.ui.pushButton_fail.clicked.connect(
-            lambda: self.__main_window.on_test_phb_fail(TEST_TYPE.TEST_SPEAKER_MIC))
-
-        self.ui.pushButton_all_test_break.clicked.connect(
-            lambda: self.__main_window.on_test_phb_break_all_test(TEST_TYPE.TEST_SPEAKER_MIC))
-
-        self.setWindowTitle(f'Меню теста')
+        # self.__main_window = main_window
+        # self.ui = Ui_TestAudioWindow()
+        # self.ui.setupUi(self)
+        #
+        # self.setWindowModality(Qt.WindowModality.ApplicationModal)
+        #
+        # self.ui.pushButton_success.clicked.connect(
+        #     lambda: self.__main_window.on_test_phb_success(TEST_TYPE.TEST_SPEAKER_MIC))
+        # self.ui.pushButton_fail.clicked.connect(
+        #     lambda: self.__main_window.on_test_phb_fail(TEST_TYPE.TEST_SPEAKER_MIC))
+        #
+        # self.ui.pushButton_all_test_break.clicked.connect(
+        #     lambda: self.__main_window.on_test_phb_break_all_test(TEST_TYPE.TEST_SPEAKER_MIC))
+        #
+        # self.setWindowTitle(f'Меню теста')
 
     def window_show(self) -> bool:
         patch_left = CSpeakerTest.get_test_stats(SPEAKER_PARAMS.AUDIO_PATCH_LEFT)

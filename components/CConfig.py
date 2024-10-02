@@ -94,7 +94,24 @@ class CNewConfig:
             pname = unit.get_params_name()
             dtype = unit.get_data_type()
 
-            var = dtype(handler.get(bname, pname))
+            var: str | bool | int
+            var = handler.get(bname, pname)
+            if dtype == bool:
+                var.lower()
+                if var in ("false", "", "none"):
+                    var = False
+                elif var in ("true", "1", " "):
+                    var = True
+            elif dtype == str:
+                pass
+            elif dtype == int:
+                try:
+                    if not var.isnumeric():
+                        raise ValueError("load_config -> INT -> IS NOT INT")
+                    var = int(var)
+                except Exception as err:
+                    print(err)
+                    var = -666
             self.__data_dict.update({f'{bname}-{pname}': var})
 
     def get_config_value(self, block_name: str, param_name: str) -> None | int | str | bool:
@@ -103,7 +120,7 @@ class CNewConfig:
     def create_config_data(self):
         patch = self.get_config_patch()
         handler = self.get_config_handler()
-        with open(patch, 'w') as config_file:
+        with open(patch, 'w', encoding="utf-8") as config_file:
             for unit in self.__data_units:
                 bname = unit.get_blocks_name()
                 pname = unit.get_params_name()
@@ -113,7 +130,7 @@ class CNewConfig:
             handler.write(config_file)
 
     def save_config(self):
-        with open(self.get_config_patch(), 'w') as config_file:
+        with open(self.get_config_patch(), 'w', encoding="utf-8") as config_file:
             self.get_config_handler().write(config_file)
 
     @classmethod
@@ -133,8 +150,13 @@ class CNewConfig:
     def init_params(self):
 
         self.add_params(BLOCKS_DATA.PROGRAM_SETTING, CONFIG_PARAMS.CONFIG_NAME, str, "-")
+        self.add_params(BLOCKS_DATA.PROGRAM_SETTING, CONFIG_PARAMS.DISPLAY_RESOLUTION, str,
+                        "1920x1080\n"
+                        "; Допустите ошибку, что бы окно автоматом масштабировалось на весь экран.\n"
+                        "; Оставьте так, если хотите задать нужный размер для тестовых окон принудительно.\n"
+                        "; Тестовые окна: это External Display, Brightness итд. Там, где есть картинка.")
 
-        #sys info
+        # sys info
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.SYS_INFO_TEST_USED, bool, "true")
 
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.BIOS_CHECK, bool, "true")
@@ -144,6 +166,12 @@ class CNewConfig:
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.WLAN_CHECK, bool, "true")
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.BT_CHECK, bool, "true")
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.LAN_CHECK, bool, "true")
+        self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.OS_CHECK, bool, "true")
+        self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.SYS_INFO_NOT_WINDOW_TEST, bool,
+                        "true\n"
+                        "; Если True, то тест будет выполняться без открытия окна.")
+
+        self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.LAN_IP, str, "192.168.5.1")
 
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.BIOS_STRING, str, "-")
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.CPU_STRING, str, "-")
@@ -155,13 +183,14 @@ class CNewConfig:
 
         # external display
         self.add_params(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST, EXTERNAL_DISPLAY_PARAMS.EXTD_TEST_USED, bool, "true")
-        self.add_params(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST, EXTERNAL_DISPLAY_PARAMS.VIDEO_PATCH, str, "content/external_display_vid.mp4")
+        self.add_params(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST, EXTERNAL_DISPLAY_PARAMS.VIDEO_PATCH, str,
+                        "content/external_display_vid.mp4")
 
         monitor_mode_list = CExternalDisplay.get_monitor_mode_avalible()
         self.add_params(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST, EXTERNAL_DISPLAY_PARAMS.WINDOW_DEFAULT, str,
-                        f"extend \n; {",".join(monitor_mode_list)}")
+                        f"extend\n; {",".join(monitor_mode_list)}")
         self.add_params(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST, EXTERNAL_DISPLAY_PARAMS.WINDOW_SWITCH_TO, str,
-                        f"clone \n; {",".join(monitor_mode_list)}")
+                        f"clone\n; {",".join(monitor_mode_list)}")
 
         # Speaker test
         self.add_params(BLOCKS_DATA.SPEAKER_TEST, SPEAKER_PARAMS.SPEAKER_TEST_USED, bool, "true")

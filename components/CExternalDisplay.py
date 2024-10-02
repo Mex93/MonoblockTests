@@ -5,7 +5,7 @@ from PySide6.QtCore import QUrl, Qt
 
 import subprocess
 
-from enuuuums import EXTERNAL_DISPLAY_PARAMS, TEST_TYPE
+from enuuuums import EXTERNAL_DISPLAY_PARAMS, TEST_TYPE, CONFIG_PARAMS
 from ui.test_external_display import Ui_TestExternalDisplayWindow
 
 
@@ -76,8 +76,14 @@ class CExternalDisplayWindow(QMainWindow):
                     if patch.find(".mp4") != -1 or patch.find(".avi") != -1:
                         CExternalDisplay.setup_window_for_dual_monitor()
                         self.player.setSource(QUrl.fromLocalFile(patch))
+
+                        # потому что в общей куче
+                        display_resolution_list = CExternalDisplay.get_test_stats(CONFIG_PARAMS.DISPLAY_RESOLUTION)
                         self.player.play()
-                        self.show()
+                        if isinstance(display_resolution_list, str):
+                            self.showMaximized()
+                        else:
+                            self.show()
 
                         return True
 
