@@ -67,6 +67,7 @@ class SYS_INFO_PARAMS:
 
     LAN_IP = "lan_ip"
 
+    OS_STRING = "os_string"
     BIOS_STRING = "bios_string"
     CPU_STRING = "cpu_string"
     RAM_STRING = "ram_string"

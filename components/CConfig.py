@@ -180,6 +180,7 @@ class CNewConfig:
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.WLAN_STRING, str, "-")
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.BT_STRING, str, "-")
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.LAN_STRING, str, "-")
+        self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.OS_STRING, bool, "-")
 
         # external display
         self.add_params(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST, EXTERNAL_DISPLAY_PARAMS.EXTD_TEST_USED, bool, "true")

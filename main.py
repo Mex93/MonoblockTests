@@ -3,8 +3,10 @@ from sys import argv, exit
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtGui import QFontDatabase
+from PySide6.QtCore import QUrl, Qt
 
 from ui.untitled import Ui_MainWindow
+from ui.get_check_string_window import Ui_MainWindow as Ui_StringWindow
 from common import send_message_box, SMBOX_ICON_TYPE, get_about_text, get_rules_text
 
 from components.CConfig import CNewConfig, CParameters, BLOCKS_DATA, SYS_INFO_PARAMS, CONFIG_PARAMS
@@ -17,6 +19,7 @@ from components.CButtons import CButtoms
 
 
 # pyside6-uic .\ui\untitled.ui -o .\ui\untitled.py
+# pyside6-uic .\ui\get_check_string_window.ui -o .\ui\get_check_string_window.py
 # pyside6-uic .\ui\test_sys_info.ui -o .\ui\test_sys_info.py
 # pyside6-uic .\ui\test_external_display.ui -o .\ui\test_external_display.py
 # pyside6-uic .\ui\test_speaker_audio.ui -o .\ui\test_speaker_audio.py
@@ -59,6 +62,7 @@ class MainWindow(QMainWindow):
         self.cconfig_unit.init_params()
         self.ctest_process = CTestProcess()
 
+        self.cmain_window_get_string = CStringWindow(self)
         self.ctest_window_sys_info = CSystemInfoWindow(self)
         self.ctest_window_external_display = CExternalDisplayWindow(self)
         self.ctest_window_speaker_window = CSpeakerTestWindow(self)
@@ -94,6 +98,7 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_exit.clicked.connect(self.set_close)
         self.ui.pushButton_clear.clicked.connect(self.on_user_pressed_clear_all_test)
         self.ui.pushButton_launchall.clicked.connect(self.on_user_pressed_start_all_test)
+        self.ui.pushButton_get_strings.clicked.connect(self.on_user_pressed_check_string)
 
         only_config_name = self.main_config.get_only_config_name()
         if len(only_config_name):
@@ -113,6 +118,33 @@ class MainWindow(QMainWindow):
                 return
 
         self.ui.comboBox_config_get.setCurrentIndex(-1)
+
+    def get_window_title(self) -> str:
+        return self.windowTitle()
+
+    def on_user_pressed_check_string(self):
+        data = self.ctest_window_sys_info.get_data()
+        string_window = self.cmain_window_get_string
+        string_window.ui.textBrowser_set_string.append("Получение информации...\n")
+        if data is None:
+            string_window.ui.textBrowser_set_string.append("Все тесты отключены. "
+                                                           "Для получения нужных строк сравнения ключите нужные Вам тесты!")
+        else:
+            for item_dict in data:
+                test_type = item_dict.get("test_id", None)
+                item_data = item_dict.get("only_data", None)
+                item_check_string = item_dict.get("check_string", None)
+                if None in (test_type, item_data, item_check_string):
+                    continue
+                test_name = CSystemInfo.get_sub_test_name_from_type(test_type)
+                if test_name is not None:
+                    string_window.ui.textBrowser_set_string.append(f"Тест '{test_name}'\n"
+                                                                   f"Строка информации: {item_data}\n"
+                                                                   f"Строка проверки: {item_check_string}\n")
+
+            string_window.ui.textBrowser_set_string.append("Примечание: Строка проверки копируется полностью в конфиг")
+
+        string_window.show()
 
     def on_user_pressed_start_all_test(self):
         current_test = self.ctest_process.is_test_launch()
@@ -176,7 +208,7 @@ class MainWindow(QMainWindow):
                 self.close()
                 return
             display_resolution = self.cconfig_unit.get_config_value(BLOCKS_DATA.PROGRAM_SETTING,
-                                                                   CONFIG_PARAMS.DISPLAY_RESOLUTION)
+                                                                    CONFIG_PARAMS.DISPLAY_RESOLUTION)
             if len(display_resolution):
                 if display_resolution.find("x") != -1:
                     height: str
@@ -237,6 +269,11 @@ class MainWindow(QMainWindow):
             CSystemInfo.set_test_stats(SYS_INFO_PARAMS.OS_CHECK,
                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
                                                                           SYS_INFO_PARAMS.OS_CHECK))
+
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.OS_STRING,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.OS_STRING))
+
             CSystemInfo.set_test_stats(SYS_INFO_PARAMS.SYS_INFO_NOT_WINDOW_TEST,
                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
                                                                           SYS_INFO_PARAMS.SYS_INFO_NOT_WINDOW_TEST))
@@ -444,6 +481,18 @@ class MainWindow(QMainWindow):
     @staticmethod
     def set_close():
         exit()
+
+
+class CStringWindow(QMainWindow):
+    def __init__(self, main_window: MainWindow, parent=None):
+        super().__init__(parent)
+        self.__main_window = main_window
+        self.ui = Ui_StringWindow()
+        self.ui.setupUi(self)
+
+        # self.setWindowModality(Qt.WindowModality.ApplicationModal)
+
+        self.setWindowTitle(main_window.get_window_title())
 
 
 if __name__ == '__main__':

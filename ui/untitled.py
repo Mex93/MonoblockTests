@@ -58,13 +58,24 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer_2)
 
+        self.pushButton_get_strings = QPushButton(self.centralwidget)
+        self.pushButton_get_strings.setObjectName(u"pushButton_get_strings")
+        font1 = QFont()
+        font1.setPointSize(15)
+        self.pushButton_get_strings.setFont(font1)
+        self.pushButton_get_strings.setStyleSheet(u"padding:10px")
+        icon1 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.Computer))
+        self.pushButton_get_strings.setIcon(icon1)
+        self.pushButton_get_strings.setIconSize(QSize(40, 40))
+        self.pushButton_get_strings.setFlat(True)
+
+        self.horizontalLayout.addWidget(self.pushButton_get_strings)
+
 
         self.verticalLayout_2.addLayout(self.horizontalLayout)
 
         self.comboBox_config_get = QComboBox(self.centralwidget)
         self.comboBox_config_get.setObjectName(u"comboBox_config_get")
-        font1 = QFont()
-        font1.setPointSize(15)
         self.comboBox_config_get.setFont(font1)
 
         self.verticalLayout_2.addWidget(self.comboBox_config_get)
@@ -219,6 +230,7 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.action_info.setText(QCoreApplication.translate("MainWindow", u"\u041e \u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c\u0435", None))
         self.label_monoblock_config_name.setText(QCoreApplication.translate("MainWindow", u"\u0422\u0435\u0441\u0442 \u043c\u043e\u043d\u043e\u0431\u043b\u043e\u043a\u043e\u0432:", None))
+        self.pushButton_get_strings.setText("")
         self.groupBox_2.setTitle(QCoreApplication.translate("MainWindow", u"\u041e\u043f\u0446\u0438\u0438:", None))
         self.pushButton_launchall.setText(QCoreApplication.translate("MainWindow", u"\u0417\u0430\u043f\u0443\u0441\u0442\u0438\u0442\u044c \u0432\u0441\u0435", None))
         self.pushButton_clear.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u044c \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442", None))
