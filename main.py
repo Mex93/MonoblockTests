@@ -188,6 +188,7 @@ class MainWindow(QMainWindow):
 
             if isinstance(display_resolution, list):
                 self.ctest_window_external_display.resize(*display_resolution)
+
             else:
                 # на всю длинну если не задано
                 CExternalDisplay.set_test_stats(CONFIG_PARAMS.DISPLAY_RESOLUTION, "full-screen")

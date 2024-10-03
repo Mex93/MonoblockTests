@@ -51,7 +51,7 @@ class CExternalDisplayWindow(QMainWindow):
         self.__main_window = main_window
         self.ui = Ui_TestExternalDisplayWindow()
         self.ui.setupUi(self)
-
+        self.center()
         # self.ui.graphicsView
         self.player = QMediaPlayer()
         self.audio_output = QAudioOutput()
@@ -68,6 +68,23 @@ class CExternalDisplayWindow(QMainWindow):
 
         self.setWindowTitle(f'Меню теста')
 
+    def center(self):
+        """
+        Центрируем экран
+        :return:
+        """
+        # Получаем размеры экрана
+        screen = self.screen().availableGeometry()
+        screen_center = screen.center()
+
+        # Получаем текущие размеры окна
+        window_rect = self.frameGeometry()
+
+        # Устанавливаем новое положение окна по центру экрана
+
+        window_rect.moveCenter(screen_center)
+        # self.move(window_rect.topLeft())
+
     def window_show(self) -> bool:
         patch = CExternalDisplay.get_test_stats(EXTERNAL_DISPLAY_PARAMS.VIDEO_PATCH)
         if patch is not None:
@@ -77,7 +94,9 @@ class CExternalDisplayWindow(QMainWindow):
                         CExternalDisplay.setup_window_for_dual_monitor()
                         self.player.setSource(QUrl.fromLocalFile(patch))
 
-                        # потому что в общей куче
+                        # потому что в общей куче конфигов
+                        # если задан список, то значит у нас есть указанные размеры
+                        # если строка то открываем на полный экран
                         display_resolution_list = CExternalDisplay.get_test_stats(CONFIG_PARAMS.DISPLAY_RESOLUTION)
                         self.player.play()
                         if isinstance(display_resolution_list, str):
