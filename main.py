@@ -123,7 +123,7 @@ class MainWindow(QMainWindow):
         return self.windowTitle()
 
     def on_user_pressed_check_string(self):
-        data = self.ctest_window_sys_info.get_data()
+        data, fail_tests_count, all_used_test_count = self.ctest_window_sys_info.get_data()
         string_window = self.cmain_window_get_string
         string_window.ui.textBrowser_set_string.append("Получение информации...\n")
         if data is None:
@@ -141,6 +141,10 @@ class MainWindow(QMainWindow):
                     string_window.ui.textBrowser_set_string.append(f"Тест '{test_name}'\n"
                                                                    f"Строка информации: {item_data}\n"
                                                                    f"Строка проверки: {item_check_string}\n")
+
+            string_window.ui.textBrowser_set_string.append(f"Всего тестов активировано: {all_used_test_count}\n"
+                                                           f"Тестов провалено: {fail_tests_count}\n"
+                                                           f"Тестов успешно: {all_used_test_count- fail_tests_count}\n")
 
             string_window.ui.textBrowser_set_string.append("Примечание: Строка проверки копируется полностью в конфиг")
 
@@ -398,8 +402,8 @@ class MainWindow(QMainWindow):
                 self.ctest_window_sys_info.show()
                 self.ctest_window_sys_info.setFocus()
 
-                data = self.ctest_window_sys_info.get_data()
-                self.ctest_window_sys_info.load_data(data)
+                data, fail_tests_count, all_used_test_count = self.ctest_window_sys_info.get_data()
+                self.ctest_window_sys_info.load_data(data, fail_tests_count, all_used_test_count)
 
             case TEST_TYPE.TEST_EXTERNAL_DISPLAY:
                 result = self.ctest_window_external_display.window_show()

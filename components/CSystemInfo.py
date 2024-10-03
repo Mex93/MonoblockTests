@@ -9,7 +9,7 @@ from win32com.client import GetObject
 from bluetooth import discover_devices
 from enuuuums import TEST_TYPE, TEST_SYSTEM_INFO_TYPES, SYS_INFO_PARAMS
 from PySide6.QtWidgets import QMainWindow
-from PySide6.QtGui import QFontDatabase
+from PySide6.QtGui import QFontDatabase, QTextCursor
 from PySide6.QtCore import Qt
 
 import PySide6.QtCore as qc
@@ -50,7 +50,6 @@ class CSystemInfo:
                 return "Disk Test"
             case _:
                 return ""
-
 
     @staticmethod
     # Получаем название компьютера
@@ -230,40 +229,42 @@ class CSystemInfoWindow(QMainWindow):
         self.ui.label_os_info.setText("-")
 
     @staticmethod
-    def get_data() -> list | None:
+    def get_data() -> tuple[list, int, int] | None:
         # ram
         result_list = list()
         on_test_count = 0
+        is_test_fail_count = 0
         ram_dict = dict()
 
-        def get_checked_string(to_check_string: str, params_type: SYS_INFO_PARAMS) -> str:
+        def get_checked_string(to_check_string: str, params_type: SYS_INFO_PARAMS) -> tuple[str, bool]:
             saved_string = CSystemInfo.get_test_stats(params_type)
             if isinstance(saved_string, str):
                 if len(saved_string):
                     if saved_string == to_check_string:
-                        return ("<span style=\" font-size:14pt; font-weight:700; color:#83ff37;\">Тест пройден "
-                                "успешно!</span>")
+                        return ("<span style=\" font-size:14pt; font-weight:700; color:#8fdd60;\">Сравнение "
+                                "успешно!</span>"), True
 
-            return (f"<span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">Тест не пройден!</span> "
-                    f"Check_string: {saved_string}")
+            return (f"<span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">Сравнение не пройдено!</span> "
+                    f"Check_string: {saved_string}"), False
 
         test_name = CSystemInfo.get_sub_test_name_from_type(TEST_SYSTEM_INFO_TYPES.RAM_STATS)
         if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.RAM_CHECK) is True:
             memory_info = CSystemInfo.get_memory_info()
 
-            check_string = f"all_{memory_info['total'] / (1024 ** 3):.2f}_" \
-                           f"avalible_{memory_info['available'] / (1024 ** 3):.2f}_" \
-                           f"used_{memory_info['used'] / (1024 ** 3):.2f}"
+            check_string = f"all_{memory_info['total'] / (1024 ** 3):.2f}"
 
-            test_result_string = get_checked_string(check_string, SYS_INFO_PARAMS.RAM_STRING)
+            test_result_string, result_test = get_checked_string(check_string, SYS_INFO_PARAMS.RAM_STRING)
+
+            if not result_test:
+                is_test_fail_count += 1
 
             ram_dict.update({"data": f"{test_name}: Всего: {memory_info['total'] / (1024 ** 3):.2f} | "
                                      f"Доступно: {memory_info['available'] / (1024 ** 3):.2f} | "
                                      f"Использовано: {memory_info['used'] / (1024 ** 3):.2f} ГБ {test_result_string}",
 
                              "only_data": f"Всего: {memory_info['total'] / (1024 ** 3):.2f} | "
-                                     f"Доступно: {memory_info['available'] / (1024 ** 3):.2f} | "
-                                     f"Использовано: {memory_info['used'] / (1024 ** 3):.2f} ГБ",
+                                          f"Доступно: {memory_info['available'] / (1024 ** 3):.2f} | "
+                                          f"Использовано: {memory_info['used'] / (1024 ** 3):.2f} ГБ",
 
                              "check_string": check_string,
                              "test_id": TEST_SYSTEM_INFO_TYPES.RAM_STATS})
@@ -289,13 +290,14 @@ class CSystemInfoWindow(QMainWindow):
                            f"sn_{bios_info['serial_number']}_" \
                            f"releasedate_{bios_info['release_date']}"
 
-            test_result_string = get_checked_string(check_string, SYS_INFO_PARAMS.BIOS_STRING)
-
+            test_result_string, result_test = get_checked_string(check_string, SYS_INFO_PARAMS.BIOS_STRING)
+            if not result_test:
+                is_test_fail_count += 1
             bios_dict.update({"data": f"{test_name}: {bios_info['manufacturer']} | {bios_info['version']} | "
                                       f"SN: {bios_info['serial_number']} | Date: {bios_info['release_date']} {test_result_string}",
 
                               "only_data": f"{bios_info['manufacturer']} | {bios_info['version']} | "
-                                      f"SN: {bios_info['serial_number']} | Date: {bios_info['release_date']}",
+                                           f"SN: {bios_info['serial_number']} | Date: {bios_info['release_date']}",
 
                               "check_string":
                                   check_string,
@@ -320,8 +322,9 @@ class CSystemInfoWindow(QMainWindow):
         if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.CPU_CHECK) is True:
 
             check_string = f"cpu_{CSystemInfo.get_cpu_info()}"
-            test_result_string = get_checked_string(check_string, SYS_INFO_PARAMS.CPU_STRING)
-
+            test_result_string, result_test = get_checked_string(check_string, SYS_INFO_PARAMS.CPU_STRING)
+            if not result_test:
+                is_test_fail_count += 1
             cpu_dict.update({"data": f"{test_name}: {CSystemInfo.get_cpu_info()} {test_result_string}",
 
                              "only_data": f"{CSystemInfo.get_cpu_info()}",
@@ -351,15 +354,16 @@ class CSystemInfoWindow(QMainWindow):
                            f"version_{platform.version()}_" \
                            f"comp_name_{CSystemInfo.get_computer_name()}"
 
-            test_result_string = get_checked_string(check_string, SYS_INFO_PARAMS.OS_STRING)
-
+            test_result_string, result_test = get_checked_string(check_string, SYS_INFO_PARAMS.OS_STRING)
+            if not result_test:
+                is_test_fail_count += 1
             os_dict.update({"data": f"{test_name}: {platform.system()} {platform.release()} {platform.version()} | "
                                     f"{CSystemInfo.get_computer_name()} {test_result_string}",
 
                             "check_string":
                                 check_string,
                             "only_data": f"{platform.system()} {platform.release()} {platform.version()} | "
-                                    f"{CSystemInfo.get_computer_name()}",
+                                         f"{CSystemInfo.get_computer_name()}",
 
                             "test_id": TEST_SYSTEM_INFO_TYPES.OS_STATS})
             on_test_count += 1
@@ -382,20 +386,22 @@ class CSystemInfoWindow(QMainWindow):
 
             check_ip = CSystemInfo.get_test_stats(SYS_INFO_PARAMS.LAN_IP)
             response = CSystemInfo.check_lan_connectivity(check_ip)
-
+            is_on = False
             if response is None:
                 string = f"{test_name}: IP невалидный"
                 ip_check_result = "not_valid_ip"
             elif response is True:
                 string = f"{test_name}: пройден успешно!"
                 ip_check_result = "success"
+                is_on = True
             else:
                 string = f"{test_name}: не пройден!"
                 ip_check_result = "fail"
 
             check_string = f"result_{ip_check_result}"
-            test_result_string = get_checked_string(check_string, SYS_INFO_PARAMS.LAN_STRING)
-
+            test_result_string, result_test = get_checked_string(check_string, SYS_INFO_PARAMS.LAN_STRING)
+            if not result_test or not is_on:
+                is_test_fail_count += 1
             lan_dict.update({"data": string + " " + test_result_string,
                              "only_data": string,
                              "check_string":
@@ -419,11 +425,12 @@ class CSystemInfoWindow(QMainWindow):
         if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.WLAN_CHECK) is True:
 
             available_networks = None
-
+            is_on = False
             try:
                 available_networks = CSystemInfo.scan_wifi()
                 if isinstance(available_networks, list):
                     string = f"{test_name}: пройден успешно! Сети видны: [{", ".join(available_networks)}]"
+                    is_on = True
                 else:
                     string = f"{test_name}: не пройден! Нет доступных сетей."
             except:
@@ -434,7 +441,9 @@ class CSystemInfoWindow(QMainWindow):
 
             check_string = f"result_{"success" if len(available_networks) > 0 else "fail"}"
 
-            test_result_string = get_checked_string(check_string, SYS_INFO_PARAMS.WLAN_STRING)
+            test_result_string, result_test = get_checked_string(check_string, SYS_INFO_PARAMS.WLAN_STRING)
+            if not result_test or not is_on:
+                is_test_fail_count += 1
             wifi_dict.update({"data": string + " " + test_result_string,
                               "only_data": string,
                               "check_string":
@@ -458,11 +467,12 @@ class CSystemInfoWindow(QMainWindow):
         test_name = CSystemInfo.get_sub_test_name_from_type(TEST_SYSTEM_INFO_TYPES.BT_STATS)
         if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.BT_CHECK) is True:
             bt_result = None
-
+            is_on = False
             try:
                 bt_result = CSystemInfo.scan_bluetooth_devices()
                 if isinstance(bt_result, list):
                     string = f"{test_name}: пройден успешно! Сети видны: [{", ".join(bt_result)}]."
+                    is_on = True
                 else:
                     string = f"{test_name}: не пройден! Сети не видны"
             except:
@@ -472,7 +482,9 @@ class CSystemInfoWindow(QMainWindow):
                 bt_result = list()
 
             check_string = f"result_{"success" if len(bt_result) > 0 else "fail"}"
-            test_result_string = get_checked_string(check_string, SYS_INFO_PARAMS.BT_STRING)
+            test_result_string, result_test = get_checked_string(check_string, SYS_INFO_PARAMS.BT_STRING)
+            if not result_test or not is_on:
+                is_test_fail_count += 1
             bt_dict.update({"data": string + " " + test_result_string,
                             "only_data": string,
                             "check_string":
@@ -491,11 +503,11 @@ class CSystemInfoWindow(QMainWindow):
         result_list.append(bt_dict)
 
         if on_test_count > 0:
-            return result_list
+            return result_list, is_test_fail_count, on_test_count
 
         return None
 
-    def load_data(self, data_list: list | None):
+    def load_data(self, data_list: list | None, fails_count: int, all_test_count: int):
 
         unit = self.ui.textBrowser_lan_port
         unit.clear()
@@ -537,6 +549,12 @@ class CSystemInfoWindow(QMainWindow):
                 # BT
                 case TEST_SYSTEM_INFO_TYPES.BT_STATS:
                     unit.append(data)
+
+        unit.append(f"\nВсего тестов активировано: {all_test_count}\n"
+                    f"Тестов провалено: {fails_count}\n"
+                    f"Тестов успешно: {all_test_count - fails_count}\n")
+
+        unit.moveCursor(QTextCursor.Start)
 
         # # disks
         # drivers = CSystemInfo.get_drives_info()
