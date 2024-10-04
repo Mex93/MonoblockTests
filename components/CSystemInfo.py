@@ -12,8 +12,6 @@ from PySide6.QtWidgets import QMainWindow
 from PySide6.QtGui import QFontDatabase, QTextCursor
 from PySide6.QtCore import Qt
 
-import PySide6.QtCore as qc
-
 from ui.test_sys_info import Ui_TestSysInfoWindow
 
 
@@ -47,7 +45,7 @@ class CSystemInfo:
             case TEST_SYSTEM_INFO_TYPES.BIOS_STATS:
                 return "BIOS"
             case TEST_SYSTEM_INFO_TYPES.DISKS_STATS:
-                return "Disk Test"
+                return "Drive Test"
             case _:
                 return ""
 
@@ -61,8 +59,10 @@ class CSystemInfo:
     def get_drives_only_disk_char():
         drives = []
         partitions = disk_partitions()
+        print(partitions)
         for partition in partitions:
-            drives.append(partition.device)
+            drives.append([partition.device, partition.maxfile])
+
         return drives
 
     @staticmethod
@@ -72,23 +72,25 @@ class CSystemInfo:
         return cpus[0].Name
 
     @staticmethod
-    def get_drives_info():
+    def get_drives_info() -> list | None:
         drives_info = []
         partitions = disk_partitions()
         for partition in partitions:
             try:
                 partition_info = disk_usage(partition.mountpoint)
-                drive_details = {
-                    'device': partition.device,
-                    'mountpoint': partition.mountpoint,
-                    'total': partition_info.total,
-                    'used': partition_info.used,
-                    'free': partition_info.free,
-                }
-                drives_info.append(drive_details)
+                # drive_details = {
+                #     'device': partition.device,
+                #     'mountpoint': partition.mountpoint,
+                #     'total': partition_info.total,
+                #     'used': partition_info.used,
+                #     'free': partition_info.free,
+                # }
+                # drives_info.append(drive_details)
+                drives_info.append(f"{partition_info.total / (1024 ** 3):.2f}")
             except Exception as e:
                 print(f"Не удалось получить информацию о диске {partition.device}: {e}")
-        return drives_info
+        if len(drives_info) > 0:
+            return drives_info
 
     # Получаем объем оперативной памяти
     @staticmethod
@@ -251,7 +253,7 @@ class CSystemInfoWindow(QMainWindow):
         if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.RAM_CHECK) is True:
             memory_info = CSystemInfo.get_memory_info()
 
-            check_string = f"all_{memory_info['total'] / (1024 ** 3):.2f}"
+            check_string = f"all_{memory_info['total'] / (1024 ** 3):.2f}".replace(" ", "_")
 
             test_result_string, result_test = get_checked_string(check_string, SYS_INFO_PARAMS.RAM_STRING)
 
@@ -288,7 +290,7 @@ class CSystemInfoWindow(QMainWindow):
             check_string = f"manufacturer_{bios_info['manufacturer']}_" \
                            f"version_{bios_info['version']}_" \
                            f"sn_{bios_info['serial_number']}_" \
-                           f"releasedate_{bios_info['release_date']}"
+                           f"releasedate_{bios_info['release_date']}".replace(" ", "_")
 
             test_result_string, result_test = get_checked_string(check_string, SYS_INFO_PARAMS.BIOS_STRING)
             if not result_test:
@@ -321,7 +323,7 @@ class CSystemInfoWindow(QMainWindow):
         test_name = CSystemInfo.get_sub_test_name_from_type(TEST_SYSTEM_INFO_TYPES.CPU_STATS)
         if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.CPU_CHECK) is True:
 
-            check_string = f"cpu_{CSystemInfo.get_cpu_info()}"
+            check_string = f"cpu_{CSystemInfo.get_cpu_info()}".replace(" ", "_")
             test_result_string, result_test = get_checked_string(check_string, SYS_INFO_PARAMS.CPU_STRING)
             if not result_test:
                 is_test_fail_count += 1
@@ -332,6 +334,9 @@ class CSystemInfoWindow(QMainWindow):
                                  check_string,
 
                              "test_id": TEST_SYSTEM_INFO_TYPES.CPU_STATS})
+
+            on_test_count += 1
+
         else:
             cpu_dict.update({"data": f"{test_name}: Проверка отключена",
 
@@ -340,7 +345,6 @@ class CSystemInfoWindow(QMainWindow):
                                  f"result_none",
 
                              "test_id": TEST_SYSTEM_INFO_TYPES.CPU_STATS})
-            on_test_count += 1
 
         result_list.append(cpu_dict)
 
@@ -352,7 +356,7 @@ class CSystemInfoWindow(QMainWindow):
             check_string = f"system_{platform.system()}_" \
                            f"release_{platform.release()}_" \
                            f"version_{platform.version()}_" \
-                           f"comp_name_{CSystemInfo.get_computer_name()}"
+                           f"comp_name_{CSystemInfo.get_computer_name()}".replace(" ", "_")
 
             test_result_string, result_test = get_checked_string(check_string, SYS_INFO_PARAMS.OS_STRING)
             if not result_test:
@@ -502,6 +506,87 @@ class CSystemInfoWindow(QMainWindow):
 
         result_list.append(bt_dict)
 
+        disk_dict = dict()
+
+        test_name = CSystemInfo.get_sub_test_name_from_type(TEST_SYSTEM_INFO_TYPES.DISKS_STATS)
+        if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.DISK_CHECK) is True:
+            disk_initials_result_list = None
+            is_on = False
+
+            try:
+                disk_initials_result_list = CSystemInfo.get_drives_info()
+                if isinstance(disk_initials_result_list, list):
+
+                    string = f"{test_name}: пройден успешно! Диски видны: [{", ".join(disk_initials_result_list)}]."
+                    is_on = True
+                else:
+                    string = f"{test_name}: не пройден! Диски не видны"
+            except:
+                string = f"{test_name}: Диски не обнаружены!"
+
+            test_result_string = str()
+            result_test = False
+            if len(disk_initials_result_list) > 0:
+                check_string = f"drivers_{",".join(disk_initials_result_list)}"
+                saved_string = CSystemInfo.get_test_stats(SYS_INFO_PARAMS.DISK_STRING)
+                # Список объёмов дисков приходит списокм строк. Тупо объём
+                # В строке для сравнения из конфига строка с объёмом через запятую
+                # Просто дробим её на отельные списик строк и потом ищем
+                # в списке реальных устройств строку с объёмом для каждой строки списка строки сравнения
+                if isinstance(saved_string, str):
+                    if len(saved_string) > 0:
+                        if saved_string.find("drivers_") != -1:
+                            try:
+                                find_string = saved_string.replace("drivers_", "").split(",")
+                                is_all_find = True
+                                for find_disk in find_string:
+                                    is_find = False
+                                    for real_driver in disk_initials_result_list:
+                                        if find_disk == real_driver:
+                                            is_find = True
+                                            # Нашли устройство в реальных устройствах, значит прерываем
+                                            break
+
+                                    if not is_find:
+                                        # Устройство из списка строк строки сравнения не найдено
+                                        # в реальных устройствах
+                                        is_all_find = False
+                                        break
+
+                                if is_all_find:  # Все строки в списке реальных выданных устройств найдены
+                                    result_test = True
+                            except:
+                                pass
+                if not result_test:
+                    test_result_string = (
+                        f"<span style=\"font-size:14pt;font-weight:700;color:#ff5733;\">Сравнение не пройдено!</span> "
+                        f"Check_string: {saved_string}")
+            else:
+                check_string = f"drivers_fail"
+
+            if result_test:
+                test_result_string = ("<span style=\" font-size:14pt; font-weight:700; color:#8fdd60;\">Сравнение "
+                                      "успешно!</span>")
+
+            if not result_test or not is_on:
+                is_test_fail_count += 1
+
+            disk_dict.update({"data": string + " " + test_result_string,
+                              "only_data": string,
+                              "check_string": check_string,
+
+                              "test_id": TEST_SYSTEM_INFO_TYPES.DISKS_STATS})
+            on_test_count += 1
+        else:
+            disk_dict.update({"data": f"{test_name}: Проверка отключена",
+                              "only_data": "Проверка отключена",
+                              "check_string":
+                              f"result_none",
+
+                              "test_id": TEST_SYSTEM_INFO_TYPES.DISKS_STATS})
+
+        result_list.append(disk_dict)
+
         if on_test_count > 0:
             return result_list, is_test_fail_count, on_test_count
 
@@ -549,8 +634,18 @@ class CSystemInfoWindow(QMainWindow):
                 # BT
                 case TEST_SYSTEM_INFO_TYPES.BT_STATS:
                     unit.append(data)
+                # disk
+                case TEST_SYSTEM_INFO_TYPES.DISKS_STATS:
+                    unit.append(data)
 
-        unit.append(f"\nВсего тестов активировано: {all_test_count}\n"
+        if all_test_count > 0:
+            unit.append(" ")
+            if fails_count == 0:
+                unit.append("<span style=\" font-size:14pt; font-weight:700; color:#8fdd60;\">Тест успешно "
+                            "выполнен!</span>")
+            else:
+                unit.append("<span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">Тест не выполнен!</span>")
+        unit.append(f"Всего тестов активировано: {all_test_count}\n"
                     f"Тестов провалено: {fails_count}\n"
                     f"Тестов успешно: {all_test_count - fails_count}\n")
 

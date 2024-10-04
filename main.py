@@ -123,31 +123,34 @@ class MainWindow(QMainWindow):
         return self.windowTitle()
 
     def on_user_pressed_check_string(self):
-        data, fail_tests_count, all_used_test_count = self.ctest_window_sys_info.get_data()
+        result = self.ctest_window_sys_info.get_data()
         string_window = self.cmain_window_get_string
-        string_window.ui.textBrowser_set_string.append("Получение информации...\n")
-        if data is None:
-            string_window.ui.textBrowser_set_string.append("Все тесты отключены. "
-                                                           "Для получения нужных строк сравнения ключите нужные Вам тесты!")
+        if result:
+            data, fail_tests_count, all_used_test_count = self.ctest_window_sys_info.get_data()
+            string_window.ui.textBrowser_set_string.append("Получение информации...\n")
+            if data is None:
+                string_window.ui.textBrowser_set_string.append("Все тесты отключены. "
+                                                               "Для получения нужных строк сравнения ключите нужные Вам тесты!")
+            else:
+                for item_dict in data:
+                    test_type = item_dict.get("test_id", None)
+                    item_data = item_dict.get("only_data", None)
+                    item_check_string = item_dict.get("check_string", None)
+                    if None in (test_type, item_data, item_check_string):
+                        continue
+                    test_name = CSystemInfo.get_sub_test_name_from_type(test_type)
+                    if test_name is not None:
+                        string_window.ui.textBrowser_set_string.append(f"Тест '{test_name}'\n"
+                                                                       f"Строка информации: {item_data}\n"
+                                                                       f"Строка проверки: {item_check_string}\n")
+
+                string_window.ui.textBrowser_set_string.append(f"Всего тестов активировано: {all_used_test_count}\n"
+                                                               f"Тестов провалено: {fail_tests_count}\n"
+                                                               f"Тестов успешно: {all_used_test_count - fail_tests_count}\n")
+
+                string_window.ui.textBrowser_set_string.append("Примечание: Строка проверки копируется полностью в конфиг")
         else:
-            for item_dict in data:
-                test_type = item_dict.get("test_id", None)
-                item_data = item_dict.get("only_data", None)
-                item_check_string = item_dict.get("check_string", None)
-                if None in (test_type, item_data, item_check_string):
-                    continue
-                test_name = CSystemInfo.get_sub_test_name_from_type(test_type)
-                if test_name is not None:
-                    string_window.ui.textBrowser_set_string.append(f"Тест '{test_name}'\n"
-                                                                   f"Строка информации: {item_data}\n"
-                                                                   f"Строка проверки: {item_check_string}\n")
-
-            string_window.ui.textBrowser_set_string.append(f"Всего тестов активировано: {all_used_test_count}\n"
-                                                           f"Тестов провалено: {fail_tests_count}\n"
-                                                           f"Тестов успешно: {all_used_test_count- fail_tests_count}\n")
-
-            string_window.ui.textBrowser_set_string.append("Примечание: Строка проверки копируется полностью в конфиг")
-
+            string_window.ui.textBrowser_set_string.append("Все тесты отключены!\n")
         string_window.show()
 
     def on_user_pressed_start_all_test(self):
@@ -170,7 +173,7 @@ class MainWindow(QMainWindow):
         first_test = test_list[0]
         self.ctest_process.start_test(first_test)
         CButtoms.set_buttoms_default_color()
-        self.show_test_window(first_test)
+        self.show_test_window_no_window(first_test)
 
     def on_user_pressed_clear_all_test(self):
         current_test = self.ctest_process.is_test_launch()
@@ -183,13 +186,13 @@ class MainWindow(QMainWindow):
         print(f"Запущен тест: {test_type}")
 
         if test_type == TEST_TYPE.TEST_SYSTEM_INFO:
-            self.show_test_window(test_type)
+            self.show_test_window_with_window(test_type)
 
         elif test_type == TEST_TYPE.TEST_EXTERNAL_DISPLAY:
-            self.show_test_window(test_type)
+            self.show_test_window_with_window(test_type)
 
         elif test_type == TEST_TYPE.TEST_SPEAKER_MIC:
-            self.show_test_window(test_type)
+            self.show_test_window_with_window(test_type)
 
     def on_changed_config(self):
         text = self.ui.comboBox_config_get.currentText()
@@ -394,16 +397,67 @@ class MainWindow(QMainWindow):
                 return index
         return None
 
-    def show_test_window(self, test_type: TEST_TYPE):
+    def show_test_window_no_window(self, test_type: TEST_TYPE):
+        """
+            Разница с без окна и с окном в показе окна. Без показа тест автоматом проходит без открытия, но не для всех тестов.
+            Для других тестов вызывается только окно, там где это нужно
 
+            В тестах без открытия окна, а именно в автоматических, после авто завершения теста идёт вызов следующего,
+            пока не закончится
+
+        :param test_type:
+        :return:
+        """
         match test_type:
             case TEST_TYPE.TEST_SYSTEM_INFO:
                 self.ctest_window_sys_info.set_default_string()
+                btn_unit: CButtoms = CButtoms.get_unit_from_test_type(test_type)
+                if btn_unit is not None:
+                    current_test = self.ctest_process.is_test_launch()
+                    if current_test != TEST_TYPE.TEST_NONE:
+                        result = self.ctest_window_sys_info.get_data()
+                        if result:
+                            data, fail_tests_count, all_used_test_count = self.ctest_window_sys_info.get_data()
+                            if all_used_test_count > 0:
+                                if fail_tests_count == 0:
+                                    btn_unit.set_btn_color_green()
+                                else:
+                                    btn_unit.set_btn_color_red()
+                            else:
+                                btn_unit.set_btn_color_red()
+                            self.set_next_test(current_test)
+                        else:
+                            btn_unit.set_btn_color_red()
+                            self.set_next_test(current_test)
+
+            case TEST_TYPE.TEST_EXTERNAL_DISPLAY:
+                self.show_test_window_with_window(test_type)
+            case TEST_TYPE.TEST_SPEAKER_MIC:
+                self.show_test_window_with_window(test_type)
+
+    def show_test_window_with_window(self, test_type: TEST_TYPE):
+        """
+                   Разница с без окна и с окном в показе окна. Без показа тест автоматом проходит без открытия, но не для всех тестов.
+                   Для других тестов вызывается только окно, там где это нужно
+
+                   В тестах без открытия окна, а именно в автоматических, после авто завершения теста идёт вызов следующего,
+                   пока не закончится
+
+               :param test_type:
+               :return:
+               """
+        match test_type:
+            case TEST_TYPE.TEST_SYSTEM_INFO:
+                self.ctest_window_sys_info.set_default_string()
+
                 self.ctest_window_sys_info.show()
                 self.ctest_window_sys_info.setFocus()
-
-                data, fail_tests_count, all_used_test_count = self.ctest_window_sys_info.get_data()
-                self.ctest_window_sys_info.load_data(data, fail_tests_count, all_used_test_count)
+                result = self.ctest_window_sys_info.get_data()
+                if result:
+                    data, fail_tests_count, all_used_test_count = result
+                    self.ctest_window_sys_info.load_data(data, fail_tests_count, all_used_test_count)
+                    return
+                self.ctest_window_sys_info.load_data(None, 0, 0)
 
             case TEST_TYPE.TEST_EXTERNAL_DISPLAY:
                 result = self.ctest_window_external_display.window_show()
@@ -437,13 +491,15 @@ class MainWindow(QMainWindow):
 
     def set_next_test(self, current_test: TEST_TYPE):
         next_test = self.ctest_process.get_next_test(current_test)
+
         if next_test is None:
             self.ctest_process.stop_test()
             print("тест завершён так как дальше нету")
         else:
             print("Я ещё нашёл тесты")
             self.ctest_process.switch_launch_test(next_test)
-            self.show_test_window(next_test)
+
+            self.show_test_window_no_window(next_test)
 
     def on_test_phb_success(self, test_type: TEST_TYPE):
 
