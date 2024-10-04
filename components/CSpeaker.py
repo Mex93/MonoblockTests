@@ -4,6 +4,10 @@ from PySide6.QtMultimedia import QMediaPlayer
 from PySide6.QtCore import QUrl, Qt
 from PySide6.QtGui import QIcon
 
+import pyaudio
+import wave
+
+from common import send_message_box, SMBOX_ICON_TYPE
 from enuuuums import SPEAKER_PARAMS, TEST_TYPE, AUDIO_CHANNEL, AUDIO_STATUS
 from ui.test_speaker_audio import Ui_TestAudioWindow
 
@@ -22,27 +26,37 @@ class CSpeakerTest:
 
 
 class CSpeakerTestWindow(QMainWindow):
-    def __init__(self, main_window, parent=None):
+    # Настройки Audio
+    CHUNK = 1024
+    FORMAT = pyaudio.paInt16
+    CHANNELS = 1
+    RATE = 44100
+    sample_rate = 44.1e3
+
+    def __init__(self, main_window, test_type: TEST_TYPE, parent=None):
         super().__init__(parent)
         self.__main_window = main_window
         self.ui = Ui_TestAudioWindow()
         self.ui.setupUi(self)
 
+        self.precord = pyaudio.PyAudio()
+        self.frames = []  # Инициализировать массив для хранения кадров
+        self.start_record = False
+        self.record_completed = False
+        self.play_record = False
+        self.stream: pyaudio.PyAudio | None = None
         self.left_channel_player = MediaPlayer(AUDIO_CHANNEL.CHANNEL_LEFT)
         self.right_channel_player = MediaPlayer(AUDIO_CHANNEL.CHANNEL_RIGHT)
 
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
 
         self.ui.pushButton_success.clicked.connect(
-            lambda: self.__main_window.on_test_phb_success(TEST_TYPE.TEST_SPEAKER_MIC))
+            lambda: self.__main_window.on_test_phb_success(test_type))
         self.ui.pushButton_fail.clicked.connect(
-            lambda: self.__main_window.on_test_phb_fail(TEST_TYPE.TEST_SPEAKER_MIC))
+            lambda: self.__main_window.on_test_phb_fail(test_type))
 
         self.ui.pushButton_all_test_break.clicked.connect(
-            lambda: self.__main_window.on_test_phb_break_all_test(TEST_TYPE.TEST_SPEAKER_MIC))
-
-        self.ui.pushButton_play.clicked.connect(
-            self.on_user_pressed_micro_play)
+            lambda: self.__main_window.on_test_phb_break_all_test(test_type))
 
         self.ui.pushButton_record.clicked.connect(
             self.on_user_pressed_micro_record)
@@ -56,6 +70,45 @@ class CSpeakerTestWindow(QMainWindow):
         self.ui.horizontalSlider_volume.valueChanged.connect(self.on_user_choise_volume)
 
         self.setWindowTitle(f'Меню теста')
+
+    def on_user_pressed_micro_record(self):
+        print("micro record")
+        if not self.start_record:
+            try:
+                self.frames.clear()
+                self.stream = self.precord.open(format=self.FORMAT, channels=self.CHANNELS,
+                                                rate=self.RATE, input=True,
+                                                )
+
+                self.stream.start_stream()
+                self.start_record = True
+
+                for i in range(0, int(self.RATE / self.CHUNK * 3)):
+                    data = self.stream.read(self.CHUNK)
+                    self.frames.append(data)
+
+                self.stream.stop_stream()
+                self.stream.close()
+                filename = "content/output_sound.wav"
+                wf = wave.open(filename, 'wb')
+                wf.setnchannels(self.CHANNELS)
+                wf.setsampwidth(self.precord.get_sample_size(self.FORMAT))
+                wf.setframerate(self.sample_rate)
+                wf.writeframes(b''.join(self.frames))
+                wf.close()
+                return
+
+            except OSError:
+                send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
+                                 text="Нет источника записи звука!\n",
+                                 title="Внимание!",
+                                 variant_yes="Закрыть", variant_no="", callback=None)
+                return
+        else:
+            self.stream.stop_stream()
+            self.stream.close()
+            self.start_record = False
+
 
     def on_user_choise_volume(self):
         current_slider_pos = self.ui.horizontalSlider_volume.value()
@@ -80,12 +133,6 @@ class CSpeakerTestWindow(QMainWindow):
                 icon = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.AudioVolumeMuted))
             if icon:
                 self.ui.pushButton_right.setIcon(icon)
-
-    def on_user_pressed_micro_play(self):
-        print("micro play")
-
-    def on_user_pressed_micro_record(self):
-        print("micro record")
 
     def on_user_pressed_play_left(self):
         print("play left")
@@ -116,13 +163,13 @@ class CSpeakerTestWindow(QMainWindow):
         self.right_channel_player.start_play()
         self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_RIGHT, AUDIO_STATUS.STATUS_PLAY)
 
-    def window_show(self) -> bool:
+    def window_show(self, test_type: TEST_TYPE) -> bool:
         patch_left = CSpeakerTest.get_test_stats(SPEAKER_PARAMS.AUDIO_PATCH_LEFT)
         patch_right = CSpeakerTest.get_test_stats(SPEAKER_PARAMS.AUDIO_PATCH_RIGHT)
         if None not in (patch_left, patch_right):
             if isinstance(patch_left, str) and isinstance(patch_right, str):
                 if patch_left.find("content") != -1 and patch_right.find("content") != -1:
-                    if patch_left.find(".mp3") != -1 or patch_right.find(".mp3") != -1:
+                    if patch_left.find(".mp3") != -1 and patch_right.find(".mp3") != -1:
                         self.left_channel_player.load_file(patch_left)
                         self.right_channel_player.load_file(patch_right)
                         self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_RIGHT, AUDIO_STATUS.STATUS_STOP)
@@ -131,11 +178,20 @@ class CSpeakerTestWindow(QMainWindow):
                         self.left_channel_player.set_volume(1.0)  # * .01
                         self.right_channel_player.set_volume(1.0)  # * .01
                         self.ui.horizontalSlider_volume.setValue(100)
+                        if test_type == TEST_TYPE.TEST_HEADSET_MIC:
+                            self.ui.groupBox.setTitle("Тест динамиков и микрофона")
+                        elif test_type == TEST_TYPE.TEST_SPEAKER_MIC:
+                            self.ui.groupBox.setTitle("Тест наушников и микрофона")
                         self.show()
                         return True
 
     def closeEvent(self, e):
         MediaPlayer.stop_any_play()
+
+        if self.stream is not None:
+            self.stream.stop_stream()
+            self.stream.close()
+
         e.accept()
 
 

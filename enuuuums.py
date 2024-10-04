@@ -98,6 +98,7 @@ class EXTERNAL_DISPLAY_PARAMS:
 
 class SPEAKER_PARAMS:
     SPEAKER_TEST_USED = "speaker_test_used"
+    HEADSET_TEST_USED = "headset_test_used"
     AUDIO_PATCH_LEFT = "audio_patch_left"
     AUDIO_PATCH_RIGHT = "audio_patch_right"
 

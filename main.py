@@ -65,7 +65,8 @@ class MainWindow(QMainWindow):
         self.cmain_window_get_string = CStringWindow(self)
         self.ctest_window_sys_info = CSystemInfoWindow(self)
         self.ctest_window_external_display = CExternalDisplayWindow(self)
-        self.ctest_window_speaker_window = CSpeakerTestWindow(self)
+        self.ctest_window_speaker_window = CSpeakerTestWindow(self, TEST_TYPE.TEST_SPEAKER_MIC)
+        self.ctest_window_headset_window = CSpeakerTestWindow(self, TEST_TYPE.TEST_HEADSET_MIC)
 
         filtred_files = CNewConfig.get_configs_list_in_folder()
         if filtred_files is not None:
@@ -192,6 +193,9 @@ class MainWindow(QMainWindow):
             self.show_test_window_with_window(test_type)
 
         elif test_type == TEST_TYPE.TEST_SPEAKER_MIC:
+            self.show_test_window_with_window(test_type)
+
+        elif test_type == TEST_TYPE.TEST_HEADSET_MIC:
             self.show_test_window_with_window(test_type)
 
     def on_changed_config(self):
@@ -332,7 +336,7 @@ class MainWindow(QMainWindow):
 
             # Speaker test
             # check
-            CExternalDisplay.set_test_stats(SPEAKER_PARAMS.SPEAKER_TEST_USED,
+            CSpeakerTest.set_test_stats(SPEAKER_PARAMS.SPEAKER_TEST_USED,
                                             self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
                                                                                SPEAKER_PARAMS.SPEAKER_TEST_USED))
             # string
@@ -342,6 +346,9 @@ class MainWindow(QMainWindow):
             CSpeakerTest.set_test_stats(SPEAKER_PARAMS.AUDIO_PATCH_RIGHT,
                                             self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
                                                                                SPEAKER_PARAMS.AUDIO_PATCH_RIGHT))
+            CSpeakerTest.set_test_stats(SPEAKER_PARAMS.HEADSET_TEST_USED,
+                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
+                                                                           SPEAKER_PARAMS.HEADSET_TEST_USED))
 
             CButtoms.set_clear_callbacks_for_all()
 
@@ -366,7 +373,16 @@ class MainWindow(QMainWindow):
                         btn_unit.set_hidden(False)
                         btn_index += 1
                 elif btype == TEST_TYPE.TEST_SPEAKER_MIC:
-                    if CExternalDisplay.get_test_stats(SPEAKER_PARAMS.SPEAKER_TEST_USED) is True:
+                    if CSpeakerTest.get_test_stats(SPEAKER_PARAMS.SPEAKER_TEST_USED) is True:
+                        btn_unit = CButtoms.get_unit_from_index(btn_index)
+                        btn_unit.set_callback(btype, self.on_user_presed_launch_test)
+                        btn_unit.set_name(bname)
+                        btn_unit.set_enabled(True)
+                        btn_unit.set_hidden(False)
+                        btn_index += 1
+
+                elif btype == TEST_TYPE.TEST_HEADSET_MIC:
+                    if CSpeakerTest.get_test_stats(SPEAKER_PARAMS.HEADSET_TEST_USED) is True:
                         btn_unit = CButtoms.get_unit_from_index(btn_index)
                         btn_unit.set_callback(btype, self.on_user_presed_launch_test)
                         btn_unit.set_name(bname)
@@ -434,6 +450,8 @@ class MainWindow(QMainWindow):
                 self.show_test_window_with_window(test_type)
             case TEST_TYPE.TEST_SPEAKER_MIC:
                 self.show_test_window_with_window(test_type)
+            case TEST_TYPE.TEST_HEADSET_MIC:
+                self.show_test_window_with_window(test_type)
 
     def show_test_window_with_window(self, test_type: TEST_TYPE):
         """
@@ -472,7 +490,7 @@ class MainWindow(QMainWindow):
                     self.ctest_window_external_display.setFocus()
 
             case TEST_TYPE.TEST_SPEAKER_MIC:
-                result = self.ctest_window_speaker_window.window_show()
+                result = self.ctest_window_speaker_window.window_show(test_type)
                 if not result:
                     send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
                                      text="Ошибка в файле конфигурации для аудио!\n"
@@ -481,6 +499,17 @@ class MainWindow(QMainWindow):
                                      variant_yes="Закрыть", variant_no="", callback=None)
                 else:
                     self.ctest_window_speaker_window.setFocus()
+
+            case TEST_TYPE.TEST_HEADSET_MIC:
+                result = self.ctest_window_headset_window.window_show(test_type)
+                if not result:
+                    send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
+                                     text="Ошибка в файле конфигурации для аудио в наушниках!\n"
+                                          "Один или несколько параметров ошибочны!\n\n",
+                                     title="Внимание!",
+                                     variant_yes="Закрыть", variant_no="", callback=None)
+                else:
+                    self.ctest_window_headset_window.setFocus()
 
     def on_test_phb_break_all_test(self, test_type: TEST_TYPE):
         current_test = self.ctest_process.is_test_launch()
@@ -534,6 +563,8 @@ class MainWindow(QMainWindow):
             self.ctest_window_external_display.close()
         elif current_test == TEST_TYPE.TEST_SPEAKER_MIC:
             self.ctest_window_speaker_window.close()
+        elif current_test == TEST_TYPE.TEST_HEADSET_MIC:
+            self.ctest_window_headset_window.close()
 
     def closeEvent(self, e):
         e.accept()

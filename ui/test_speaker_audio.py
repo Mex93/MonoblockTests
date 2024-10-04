@@ -54,6 +54,15 @@ class Ui_TestAudioWindow(object):
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
+        self.pushButton_right = QPushButton(self.groupBox)
+        self.pushButton_right.setObjectName(u"pushButton_right")
+        self.pushButton_right.setFont(font)
+        icon = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.AudioVolumeHigh))
+        self.pushButton_right.setIcon(icon)
+        self.pushButton_right.setIconSize(QSize(40, 40))
+
+        self.gridLayout.addWidget(self.pushButton_right, 0, 2, 1, 1)
+
         self.label = QLabel(self.groupBox)
         self.label.setObjectName(u"label")
         font1 = QFont()
@@ -66,18 +75,10 @@ class Ui_TestAudioWindow(object):
         self.pushButton_left = QPushButton(self.groupBox)
         self.pushButton_left.setObjectName(u"pushButton_left")
         self.pushButton_left.setFont(font)
-        icon = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.AudioVolumeHigh))
         self.pushButton_left.setIcon(icon)
         self.pushButton_left.setIconSize(QSize(40, 40))
 
         self.gridLayout.addWidget(self.pushButton_left, 0, 1, 1, 1)
-
-        self.label_2 = QLabel(self.groupBox)
-        self.label_2.setObjectName(u"label_2")
-        self.label_2.setFont(font1)
-        self.label_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.gridLayout.addWidget(self.label_2, 1, 0, 1, 1)
 
         self.pushButton_record = QPushButton(self.groupBox)
         self.pushButton_record.setObjectName(u"pushButton_record")
@@ -88,26 +89,12 @@ class Ui_TestAudioWindow(object):
 
         self.gridLayout.addWidget(self.pushButton_record, 1, 1, 1, 1)
 
-        self.pushButton_right = QPushButton(self.groupBox)
-        self.pushButton_right.setObjectName(u"pushButton_right")
-        self.pushButton_right.setFont(font)
-        self.pushButton_right.setIcon(icon)
-        self.pushButton_right.setIconSize(QSize(40, 40))
+        self.label_2 = QLabel(self.groupBox)
+        self.label_2.setObjectName(u"label_2")
+        self.label_2.setFont(font1)
+        self.label_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.gridLayout.addWidget(self.pushButton_right, 0, 2, 1, 1)
-
-        self.pushButton_play = QPushButton(self.groupBox)
-        self.pushButton_play.setObjectName(u"pushButton_play")
-        self.pushButton_play.setFont(font)
-        icon2 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.MediaPlaybackStart))
-        self.pushButton_play.setIcon(icon2)
-        self.pushButton_play.setIconSize(QSize(40, 40))
-        self.pushButton_play.setCheckable(False)
-        self.pushButton_play.setAutoExclusive(False)
-        self.pushButton_play.setAutoDefault(False)
-        self.pushButton_play.setFlat(False)
-
-        self.gridLayout.addWidget(self.pushButton_play, 1, 2, 1, 1)
+        self.gridLayout.addWidget(self.label_2, 1, 0, 1, 1)
 
 
         self.horizontalLayout_3.addLayout(self.gridLayout)
@@ -121,11 +108,23 @@ class Ui_TestAudioWindow(object):
 
         self.horizontalLayout_5.addItem(self.horizontalSpacer_9)
 
+        self.label_3 = QLabel(self.groupBox)
+        self.label_3.setObjectName(u"label_3")
+        self.label_3.setFont(font1)
+
+        self.horizontalLayout_5.addWidget(self.label_3)
+
         self.horizontalSlider_volume = QSlider(self.groupBox)
         self.horizontalSlider_volume.setObjectName(u"horizontalSlider_volume")
         self.horizontalSlider_volume.setOrientation(Qt.Orientation.Horizontal)
 
         self.horizontalLayout_5.addWidget(self.horizontalSlider_volume)
+
+        self.label_4 = QLabel(self.groupBox)
+        self.label_4.setObjectName(u"label_4")
+        self.label_4.setFont(font1)
+
+        self.horizontalLayout_5.addWidget(self.label_4)
 
         self.horizontalSpacer_10 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
@@ -210,12 +209,13 @@ class Ui_TestAudioWindow(object):
     def retranslateUi(self, TestAudioWindow):
         TestAudioWindow.setWindowTitle(QCoreApplication.translate("TestAudioWindow", u"Test_Audio", None))
         self.groupBox.setTitle(QCoreApplication.translate("TestAudioWindow", u"\u0422\u0435\u0441\u0442 \u0437\u0432\u0443\u043a\u0430 \u0414\u0438\u043d\u0430\u043c\u0438\u043a\u0438:", None))
+        self.pushButton_right.setText(QCoreApplication.translate("TestAudioWindow", u"\u041f\u0440\u0430\u0432\u044b\u0439 \u043a\u0430\u043d\u0430\u043b", None))
         self.label.setText(QCoreApplication.translate("TestAudioWindow", u"\u0417\u0432\u0443\u043a:", None))
         self.pushButton_left.setText(QCoreApplication.translate("TestAudioWindow", u"\u041b\u0435\u0432\u044b\u0439 \u043a\u0430\u043d\u0430\u043b", None))
-        self.label_2.setText(QCoreApplication.translate("TestAudioWindow", u"\u0417\u0430\u043f\u0438\u0441\u044c:", None))
         self.pushButton_record.setText(QCoreApplication.translate("TestAudioWindow", u"\u0417\u0430\u043f\u0438\u0441\u0430\u0442\u044c", None))
-        self.pushButton_right.setText(QCoreApplication.translate("TestAudioWindow", u"\u041f\u0440\u0430\u0432\u044b\u0439 \u043a\u0430\u043d\u0430\u043b", None))
-        self.pushButton_play.setText(QCoreApplication.translate("TestAudioWindow", u"\u0412\u043e\u0441\u043f\u0440\u043e\u0438\u0437\u0432\u0435\u0441\u0442\u0438", None))
+        self.label_2.setText(QCoreApplication.translate("TestAudioWindow", u"\u0417\u0430\u043f\u0438\u0441\u044c:", None))
+        self.label_3.setText(QCoreApplication.translate("TestAudioWindow", u"-", None))
+        self.label_4.setText(QCoreApplication.translate("TestAudioWindow", u"+", None))
         self.pushButton_success.setText(QCoreApplication.translate("TestAudioWindow", u"\u0423\u0441\u043f\u0435\u0445", None))
         self.pushButton_fail.setText(QCoreApplication.translate("TestAudioWindow", u"\u041e\u0448\u0438\u0431\u043a\u0430", None))
         self.pushButton_all_test_break.setText(QCoreApplication.translate("TestAudioWindow", u"\u041f\u0440\u0435\u0440\u0432\u0430\u0442\u044c \u0442\u0435\u0441\u0442\u044b", None))

@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="external display">
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="speaker">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CConfig.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CConfig.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/CSpeaker.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSpeaker.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CSystemInfo.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSystemInfo.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/configs/test.ini" beforeDir="false" afterPath="$PROJECT_DIR$/configs/test.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/enuuuums.py" beforeDir="false" afterPath="$PROJECT_DIR$/enuuuums.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
@@ -226,7 +225,15 @@
       <option name="project" value="LOCAL" />
       <updated>1728021561147</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="speaker">
+      <option name="closed" value="true" />
+      <created>1728044345978</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1728044345978</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -246,7 +253,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="first" />
     <MESSAGE value="external display" />
-    <option name="LAST_COMMIT_MESSAGE" value="external display" />
+    <MESSAGE value="speaker" />
+    <option name="LAST_COMMIT_MESSAGE" value="speaker" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -195,11 +195,12 @@ class CNewConfig:
 
         # Speaker test
         self.add_params(BLOCKS_DATA.SPEAKER_TEST, SPEAKER_PARAMS.SPEAKER_TEST_USED, bool, "true")
+        self.add_params(BLOCKS_DATA.SPEAKER_TEST, SPEAKER_PARAMS.HEADSET_TEST_USED, bool, "true")
         self.add_params(BLOCKS_DATA.SPEAKER_TEST, SPEAKER_PARAMS.AUDIO_PATCH_LEFT, str,
-                        "content/test_left_channel.mp4")
+                        "content/audio_test_left.mp3")
 
         self.add_params(BLOCKS_DATA.SPEAKER_TEST, SPEAKER_PARAMS.AUDIO_PATCH_RIGHT, str,
-                        "content/test_right_channel.mp4")
+                        "content/audio_test_right.mp3")
 
         blist = CParameters.get_blocks_list()
         for block in blist:
