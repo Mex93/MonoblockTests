@@ -1,9 +1,11 @@
+
 from sys import argv, exit
+from os.path import isdir as file_isdir
 
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtGui import QFontDatabase
-from PySide6.QtCore import QUrl, Qt
+
 
 from ui.untitled import Ui_MainWindow
 from ui.get_check_string_window import Ui_MainWindow as Ui_StringWindow
@@ -45,6 +47,14 @@ class MainWindow(QMainWindow):
                 send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
                                  text="Ошибка в главном файле конфигурации!\n"
                                       "Один или несколько параметров ошибочны!",
+                                 title="Внимание!",
+                                 variant_yes="Закрыть", variant_no="", callback=lambda: self.set_close())
+                return
+
+            if not file_isdir("content"):
+                send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
+                                 text="Ошибка проверки компонентов!\n\n"
+                                      "В директории должна быть папка 'content'. В этой директории лежат тестовые файлы!",
                                  title="Внимание!",
                                  variant_yes="Закрыть", variant_no="", callback=lambda: self.set_close())
                 return
@@ -354,41 +364,30 @@ class MainWindow(QMainWindow):
 
             block_datas = CTests.get_config_block_data()
             btn_index = 0
-            for index, block_data in enumerate(block_datas):
-                bname, btype = block_datas[index]
-                if btype == TEST_TYPE.TEST_SYSTEM_INFO:
-                    if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.SYS_INFO_TEST_USED) is True:
-                        btn_unit = CButtoms.get_unit_from_index(btn_index)
-                        btn_unit.set_callback(btype, self.on_user_presed_launch_test)
-                        btn_unit.set_name(bname)
-                        btn_unit.set_enabled(True)
-                        btn_unit.set_hidden(False)
-                        btn_index += 1
-                elif btype == TEST_TYPE.TEST_EXTERNAL_DISPLAY:
-                    if CExternalDisplay.get_test_stats(EXTERNAL_DISPLAY_PARAMS.EXTD_TEST_USED) is True:
-                        btn_unit = CButtoms.get_unit_from_index(btn_index)
-                        btn_unit.set_callback(btype, self.on_user_presed_launch_test)
-                        btn_unit.set_name(bname)
-                        btn_unit.set_enabled(True)
-                        btn_unit.set_hidden(False)
-                        btn_index += 1
-                elif btype == TEST_TYPE.TEST_SPEAKER_MIC:
-                    if CSpeakerTest.get_test_stats(SPEAKER_PARAMS.SPEAKER_TEST_USED) is True:
-                        btn_unit = CButtoms.get_unit_from_index(btn_index)
-                        btn_unit.set_callback(btype, self.on_user_presed_launch_test)
-                        btn_unit.set_name(bname)
-                        btn_unit.set_enabled(True)
-                        btn_unit.set_hidden(False)
-                        btn_index += 1
 
-                elif btype == TEST_TYPE.TEST_HEADSET_MIC:
-                    if CSpeakerTest.get_test_stats(SPEAKER_PARAMS.HEADSET_TEST_USED) is True:
-                        btn_unit = CButtoms.get_unit_from_index(btn_index)
-                        btn_unit.set_callback(btype, self.on_user_presed_launch_test)
-                        btn_unit.set_name(bname)
-                        btn_unit.set_enabled(True)
-                        btn_unit.set_hidden(False)
-                        btn_index += 1
+            tests_list = \
+                [
+                  [CSystemInfo, TEST_TYPE.TEST_SYSTEM_INFO, SYS_INFO_PARAMS.SYS_INFO_TEST_USED, None],
+                  [CExternalDisplay, TEST_TYPE.TEST_EXTERNAL_DISPLAY, EXTERNAL_DISPLAY_PARAMS.EXTD_TEST_USED, None],
+                  [CSpeakerTest, TEST_TYPE.TEST_SPEAKER_MIC, SPEAKER_PARAMS.SPEAKER_TEST_USED, None],
+                  [CSpeakerTest, TEST_TYPE.TEST_HEADSET_MIC, SPEAKER_PARAMS.HEADSET_TEST_USED, None]
+                ]
+
+            # name insert
+            for test in tests_list:
+                test[3] = CTests.get_test_name_from_test_type(test[1])
+
+            # buffering tests
+            for index, test in enumerate(tests_list):
+                test_class, btype, on_params, bname = test
+
+                if test_class.get_test_stats(on_params) is True:
+                    btn_unit = CButtoms.get_unit_from_index(btn_index)
+                    btn_unit.set_callback(btype, self.on_user_presed_launch_test)
+                    btn_unit.set_name(bname)
+                    btn_unit.set_enabled(True)
+                    btn_unit.set_hidden(False)
+                    btn_index += 1
 
             # отключаем лишние
             btn_size = CButtoms.get_current_size()

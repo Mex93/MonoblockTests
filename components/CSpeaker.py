@@ -1,14 +1,17 @@
+
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtMultimedia import QAudioOutput
 from PySide6.QtMultimedia import QMediaPlayer
 from PySide6.QtCore import QUrl, Qt
 from PySide6.QtGui import QIcon
+from os.path import isfile as file_isfile
 
-import pyaudio
-import wave
-
+from pyaudio import PyAudio, paInt16
+from wave import open as wave_open
+from threading import Timer as threading_Timer
+from threading import Thread as threading_Thread
 from common import send_message_box, SMBOX_ICON_TYPE
-from enuuuums import SPEAKER_PARAMS, TEST_TYPE, AUDIO_CHANNEL, AUDIO_STATUS
+from enuuuums import SPEAKER_PARAMS, TEST_TYPE, AUDIO_CHANNEL, AUDIO_STATUS, AUDIO_TEST_RECORD_STATE
 from ui.test_speaker_audio import Ui_TestAudioWindow
 
 
@@ -28,7 +31,7 @@ class CSpeakerTest:
 class CSpeakerTestWindow(QMainWindow):
     # Настройки Audio
     CHUNK = 1024
-    FORMAT = pyaudio.paInt16
+    FORMAT = paInt16
     CHANNELS = 1
     RATE = 44100
     sample_rate = 44.1e3
@@ -38,13 +41,13 @@ class CSpeakerTestWindow(QMainWindow):
         self.__main_window = main_window
         self.ui = Ui_TestAudioWindow()
         self.ui.setupUi(self)
+        self.path_to_record_audio = "content/output_sound.wav"
+        self.precord = PyAudio()
+        self.record_state: AUDIO_TEST_RECORD_STATE = AUDIO_TEST_RECORD_STATE.STATE_NONE
+        self.play_record_timer: threading_Timer | None = None
+        self.stream: PyAudio | None = None
+        self.all_channel_player = MediaPlayer(AUDIO_CHANNEL.CHANNEL_ALL)
 
-        self.precord = pyaudio.PyAudio()
-        self.frames = []  # Инициализировать массив для хранения кадров
-        self.start_record = False
-        self.record_completed = False
-        self.play_record = False
-        self.stream: pyaudio.PyAudio | None = None
         self.left_channel_player = MediaPlayer(AUDIO_CHANNEL.CHANNEL_LEFT)
         self.right_channel_player = MediaPlayer(AUDIO_CHANNEL.CHANNEL_RIGHT)
 
@@ -73,42 +76,95 @@ class CSpeakerTestWindow(QMainWindow):
 
     def on_user_pressed_micro_record(self):
         print("micro record")
-        if not self.start_record:
-            try:
-                self.frames.clear()
-                self.stream = self.precord.open(format=self.FORMAT, channels=self.CHANNELS,
-                                                rate=self.RATE, input=True,
-                                                )
+        if self.record_state == AUDIO_TEST_RECORD_STATE.STATE_NONE:
 
-                self.stream.start_stream()
-                self.start_record = True
+            self.record_state = AUDIO_TEST_RECORD_STATE.STATE_RECORD
+            self.set_record_btn_current_status()
+            self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_RIGHT, AUDIO_STATUS.STATUS_STOP)
+            self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_LEFT, AUDIO_STATUS.STATUS_STOP)
+            MediaPlayer.stop_any_play()
 
-                for i in range(0, int(self.RATE / self.CHUNK * 3)):
-                    data = self.stream.read(self.CHUNK)
-                    self.frames.append(data)
+            thread = threading_Thread(target=self.start_record_script)
+            thread.start()
+        else:
+            self.stop_record_stream()
+            self.set_default_record_play()
 
-                self.stream.stop_stream()
-                self.stream.close()
-                filename = "content/output_sound.wav"
-                wf = wave.open(filename, 'wb')
+    def start_record_script(self):
+        try:
+            frames = list()
+            self.stream = self.precord.open(format=self.FORMAT, channels=self.CHANNELS,
+                                            rate=self.RATE, input=True,
+                                            )
+
+            self.stream.start_stream()
+
+            for i in range(0, int(self.RATE / self.CHUNK * 3)):
+                data = self.stream.read(self.CHUNK)
+                frames.append(data)
+
+            self.stream.stop_stream()
+            self.stream.close()
+
+            if self.record_state == AUDIO_TEST_RECORD_STATE.STATE_RECORD:
+                wf = wave_open(self.path_to_record_audio, 'wb')
                 wf.setnchannels(self.CHANNELS)
                 wf.setsampwidth(self.precord.get_sample_size(self.FORMAT))
                 wf.setframerate(self.sample_rate)
-                wf.writeframes(b''.join(self.frames))
+                wf.writeframes(b''.join(frames))
                 wf.close()
-                return
 
-            except OSError:
-                send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
-                                 text="Нет источника записи звука!\n",
-                                 title="Внимание!",
-                                 variant_yes="Закрыть", variant_no="", callback=None)
-                return
-        else:
+                self.record_state = AUDIO_TEST_RECORD_STATE.STATE_PLAY
+                self.set_record_btn_current_status()
+                self.play_record_timer = threading_Timer(2.5, self.on_stop_record_play_time)
+                self.play_record_timer.start()
+                self.all_channel_player.start_play()
+
+            return
+
+        except OSError:
+            send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
+                             text="Нет источника записи звука!\n",
+                             title="Внимание!",
+                             variant_yes="Закрыть", variant_no="", callback=None)
+            return
+
+    def stop_record_stream(self):
+        """Если запущен поток"""
+        if self.stream is not None:
             self.stream.stop_stream()
             self.stream.close()
-            self.start_record = False
 
+    def on_stop_record_play_time(self):
+        """Вызов после колнца таймера"""
+        self.set_default_record_play()
+        self.stop_record_stream()
+        self.set_record_btn_current_status()
+        self.all_channel_player.stop_play()
+
+    def set_default_record_play(self):
+        """Сброс записи и таймера"""
+        print("вызов")
+        self.record_state = AUDIO_TEST_RECORD_STATE.STATE_NONE
+        if self.play_record_timer is not None:
+            if self.play_record_timer.is_alive():
+                self.play_record_timer.cancel()
+            self.play_record_timer = None
+
+    def set_record_btn_current_status(self):
+        icon = None
+        match self.record_state:
+            case AUDIO_TEST_RECORD_STATE.STATE_NONE:
+                icon = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.AudioInputMicrophone))
+                self.ui.pushButton_record.setText("Записать")
+            case AUDIO_TEST_RECORD_STATE.STATE_RECORD:
+                icon = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.MediaRecord))
+                self.ui.pushButton_record.setText("Записываю...")
+            case AUDIO_TEST_RECORD_STATE.STATE_PLAY:
+                icon = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.AudioVolumeMedium))
+                self.ui.pushButton_record.setText("Воспроизвожу...")
+        if icon:
+            self.ui.pushButton_record.setIcon(icon)
 
     def on_user_choise_volume(self):
         current_slider_pos = self.ui.horizontalSlider_volume.value()
@@ -170,28 +226,29 @@ class CSpeakerTestWindow(QMainWindow):
             if isinstance(patch_left, str) and isinstance(patch_right, str):
                 if patch_left.find("content") != -1 and patch_right.find("content") != -1:
                     if patch_left.find(".mp3") != -1 and patch_right.find(".mp3") != -1:
-                        self.left_channel_player.load_file(patch_left)
-                        self.right_channel_player.load_file(patch_right)
-                        self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_RIGHT, AUDIO_STATUS.STATUS_STOP)
-                        self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_LEFT, AUDIO_STATUS.STATUS_STOP)
-
-                        self.left_channel_player.set_volume(1.0)  # * .01
-                        self.right_channel_player.set_volume(1.0)  # * .01
-                        self.ui.horizontalSlider_volume.setValue(100)
-                        if test_type == TEST_TYPE.TEST_HEADSET_MIC:
-                            self.ui.groupBox.setTitle("Тест динамиков и микрофона")
-                        elif test_type == TEST_TYPE.TEST_SPEAKER_MIC:
-                            self.ui.groupBox.setTitle("Тест наушников и микрофона")
-                        self.show()
-                        return True
+                        if file_isfile(patch_left) and file_isfile(patch_right):
+                            self.left_channel_player.load_file(patch_left)
+                            self.right_channel_player.load_file(patch_right)
+                            self.all_channel_player.load_file(self.path_to_record_audio)
+                            self.all_channel_player.set_volume(1.0)
+                            self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_RIGHT, AUDIO_STATUS.STATUS_STOP)
+                            self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_LEFT, AUDIO_STATUS.STATUS_STOP)
+                            self.set_record_btn_current_status()
+                            self.left_channel_player.set_volume(1.0)  # * .01
+                            self.right_channel_player.set_volume(1.0)  # * .01
+                            self.ui.horizontalSlider_volume.setValue(100)
+                            if test_type == TEST_TYPE.TEST_SPEAKER_MIC:
+                                self.ui.groupBox.setTitle("Тест динамиков и микрофона")
+                            elif test_type == TEST_TYPE.TEST_HEADSET_MIC:
+                                self.ui.groupBox.setTitle("Тест наушников и микрофона(В наушниках)")
+                            self.show()
+                            return True
 
     def closeEvent(self, e):
         MediaPlayer.stop_any_play()
 
-        if self.stream is not None:
-            self.stream.stop_stream()
-            self.stream.close()
-
+        self.stop_record_stream()
+        self.set_default_record_play()
         e.accept()
 
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1035</width>
-    <height>388</height>
+    <height>404</height>
    </rect>
   </property>
   <property name="font">
@@ -130,7 +130,7 @@
                 <string>Записать</string>
                </property>
                <property name="icon">
-                <iconset theme="QIcon::ThemeIcon::MediaRecord"/>
+                <iconset theme="QIcon::ThemeIcon::AudioInputMicrophone"/>
                </property>
                <property name="iconSize">
                 <size>

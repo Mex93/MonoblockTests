@@ -3,6 +3,7 @@ from PySide6.QtMultimedia import QAudioOutput
 from PySide6.QtMultimedia import QMediaPlayer
 from PySide6.QtCore import QUrl, Qt
 
+from os.path import isfile as file_isfile
 import subprocess
 
 from enuuuums import EXTERNAL_DISPLAY_PARAMS, TEST_TYPE, CONFIG_PARAMS
@@ -44,6 +45,7 @@ class CExternalDisplay:
         if wmode is not None:
             if cls.is_monitor_mode_avalible(wmode):
                 subprocess.Popen(f'displayswitch /{wmode}')
+
 
 class CExternalDisplayWindow(QMainWindow):
     def __init__(self, main_window, parent=None):
@@ -91,20 +93,21 @@ class CExternalDisplayWindow(QMainWindow):
             if isinstance(patch, str):
                 if patch.find("content") != -1:
                     if patch.find(".mp4") != -1 or patch.find(".avi") != -1:
-                        CExternalDisplay.setup_window_for_dual_monitor()
-                        self.player.setSource(QUrl.fromLocalFile(patch))
+                        if file_isfile(patch):
+                            CExternalDisplay.setup_window_for_dual_monitor()
+                            self.player.setSource(QUrl.fromLocalFile(patch))
 
-                        # потому что в общей куче конфигов
-                        # если задан список, то значит у нас есть указанные размеры
-                        # если строка то открываем на полный экран
-                        display_resolution_list = CExternalDisplay.get_test_stats(CONFIG_PARAMS.DISPLAY_RESOLUTION)
-                        self.player.play()
-                        if isinstance(display_resolution_list, str):
-                            self.showMaximized()
-                        else:
-                            self.show()
+                            # потому что в общей куче конфигов
+                            # если задан список, то значит у нас есть указанные размеры
+                            # если строка то открываем на полный экран
+                            display_resolution_list = CExternalDisplay.get_test_stats(CONFIG_PARAMS.DISPLAY_RESOLUTION)
+                            self.player.play()
+                            if isinstance(display_resolution_list, str):
+                                self.showMaximized()
+                            else:
+                                self.show()
 
-                        return True
+                            return True
 
     def closeEvent(self, e):
         self.player.stop()

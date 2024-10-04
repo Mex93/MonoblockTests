@@ -18,6 +18,13 @@ class AUDIO_CHANNEL(IntEnum):
     CHANNEL_NONE = auto(),
     CHANNEL_LEFT = auto(),
     CHANNEL_RIGHT = auto(),
+    CHANNEL_ALL = auto(),
+
+
+class AUDIO_TEST_RECORD_STATE(IntEnum):
+    STATE_NONE = auto(),
+    STATE_RECORD = auto(),
+    STATE_PLAY = auto(),
 
 
 class AUDIO_STATUS(IntEnum):
