@@ -5,12 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="external display">
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CSpeaker.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSpeaker.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/CSystemInfo.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSystemInfo.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/configs/test.ini" beforeDir="false" afterPath="$PROJECT_DIR$/configs/test.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/enuuuums.py" beforeDir="false" afterPath="$PROJECT_DIR$/enuuuums.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/test_sys_info.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_sys_info.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/test_sys_info.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_sys_info.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_speaker_audio.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_speaker_audio.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_speaker_audio.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_speaker_audio.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,11 +51,12 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "master",
-    "last_opened_file_path": "C:/Users/Ryazanov/PycharmProjects/MonoblockTests"
+    "last_opened_file_path": "C:/Users/Ryazanov/PycharmProjects/MonoblockTests/content"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Ryazanov\PycharmProjects\MonoblockTests\content" />
       <recent name="C:\Users\Ryazanov\PycharmProjects\MonoblockTests\components" />
       <recent name="C:\Users\Ryazanov\PycharmProjects\MonoblockTests\ui" />
       <recent name="C:\Users\Ryazanov\PycharmProjects\MonoblockTests" />
@@ -214,7 +218,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727952116222</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="external display">
+      <option name="closed" value="true" />
+      <created>1728021561147</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1728021561147</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -241,7 +253,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/components/CSystemInfo.py</url>
-          <line>510</line>
+          <line>515</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>

@@ -336,10 +336,10 @@ class MainWindow(QMainWindow):
                                             self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
                                                                                SPEAKER_PARAMS.SPEAKER_TEST_USED))
             # string
-            CExternalDisplay.set_test_stats(SPEAKER_PARAMS.AUDIO_PATCH_LEFT,
+            CSpeakerTest.set_test_stats(SPEAKER_PARAMS.AUDIO_PATCH_LEFT,
                                             self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
                                                                                SPEAKER_PARAMS.AUDIO_PATCH_LEFT))
-            CExternalDisplay.set_test_stats(SPEAKER_PARAMS.AUDIO_PATCH_RIGHT,
+            CSpeakerTest.set_test_stats(SPEAKER_PARAMS.AUDIO_PATCH_RIGHT,
                                             self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
                                                                                SPEAKER_PARAMS.AUDIO_PATCH_RIGHT))
 
@@ -365,14 +365,14 @@ class MainWindow(QMainWindow):
                         btn_unit.set_enabled(True)
                         btn_unit.set_hidden(False)
                         btn_index += 1
-                # elif btype == TEST_TYPE.TEST_SPEAKER_MIC:
-                #     if CExternalDisplay.get_test_stats(SPEAKER_PARAMS.SPEAKER_TEST_USED) is True:
-                #         btn_unit = CButtoms.get_unit_from_index(btn_index)
-                #         btn_unit.set_callback(btype, self.on_user_presed_launch_test)
-                #         btn_unit.set_name(bname)
-                #         btn_unit.set_enabled(True)
-                #         btn_unit.set_hidden(False)
-                #         btn_index += 1
+                elif btype == TEST_TYPE.TEST_SPEAKER_MIC:
+                    if CExternalDisplay.get_test_stats(SPEAKER_PARAMS.SPEAKER_TEST_USED) is True:
+                        btn_unit = CButtoms.get_unit_from_index(btn_index)
+                        btn_unit.set_callback(btype, self.on_user_presed_launch_test)
+                        btn_unit.set_name(bname)
+                        btn_unit.set_enabled(True)
+                        btn_unit.set_hidden(False)
+                        btn_index += 1
 
             # отключаем лишние
             btn_size = CButtoms.get_current_size()

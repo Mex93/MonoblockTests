@@ -17,15 +17,13 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QGridLayout, QGroupBox, QHBoxLayout,
     QLabel, QMainWindow, QPushButton, QSizePolicy,
-    QSpacerItem, QVBoxLayout, QWidget)
-
-from PySide6.QtMultimedia import QMediaPlayer
+    QSlider, QSpacerItem, QVBoxLayout, QWidget)
 
 class Ui_TestAudioWindow(object):
     def setupUi(self, TestAudioWindow):
         if not TestAudioWindow.objectName():
             TestAudioWindow.setObjectName(u"TestAudioWindow")
-        TestAudioWindow.resize(1141, 555)
+        TestAudioWindow.resize(1035, 388)
         font = QFont()
         font.setPointSize(15)
         TestAudioWindow.setFont(font)
@@ -45,21 +43,12 @@ class Ui_TestAudioWindow(object):
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer_6)
 
-        self.audio_player = QMediaPlayer(self.groupBox)
-        self.audio_player.setObjectName(u"audio_player")
-
-        self.horizontalLayout_2.addWidget(self.audio_player)
-
         self.horizontalSpacer_7 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer_7)
 
 
         self.verticalLayout.addLayout(self.horizontalLayout_2)
-
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.verticalLayout.addItem(self.verticalSpacer)
 
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
@@ -126,9 +115,24 @@ class Ui_TestAudioWindow(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_3)
 
-        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.horizontalLayout_5 = QHBoxLayout()
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.horizontalSpacer_9 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.verticalLayout.addItem(self.verticalSpacer_2)
+        self.horizontalLayout_5.addItem(self.horizontalSpacer_9)
+
+        self.horizontalSlider_volume = QSlider(self.groupBox)
+        self.horizontalSlider_volume.setObjectName(u"horizontalSlider_volume")
+        self.horizontalSlider_volume.setOrientation(Qt.Orientation.Horizontal)
+
+        self.horizontalLayout_5.addWidget(self.horizontalSlider_volume)
+
+        self.horizontalSpacer_10 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_5.addItem(self.horizontalSpacer_10)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_5)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")

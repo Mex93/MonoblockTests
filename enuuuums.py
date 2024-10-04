@@ -14,6 +14,18 @@ class TEST_ARRAY_ID(IntEnum):
     ARRAY_CONFIG_BLOCK_NAME = 2,
 
 
+class AUDIO_CHANNEL(IntEnum):
+    CHANNEL_NONE = auto(),
+    CHANNEL_LEFT = auto(),
+    CHANNEL_RIGHT = auto(),
+
+
+class AUDIO_STATUS(IntEnum):
+    STATUS_NONE = auto(),
+    STATUS_PLAY = auto(),
+    STATUS_STOP = auto(),
+
+
 class TEST_TYPE(IntEnum):
     TEST_NONE = auto(),
     TEST_SYSTEM_INFO = auto(),

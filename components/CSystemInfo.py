@@ -92,6 +92,10 @@ class CSystemInfo:
         if len(drives_info) > 0:
             return drives_info
 
+    @staticmethod
+    def get_uninitialized_disks():
+       return []
+
     # Получаем объем оперативной памяти
     @staticmethod
     def get_ram():
@@ -249,6 +253,7 @@ class CSystemInfoWindow(QMainWindow):
             return (f"<span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">Сравнение не пройдено!</span> "
                     f"Check_string: {saved_string}"), False
 
+        print(CSystemInfo.get_uninitialized_disks())
         test_name = CSystemInfo.get_sub_test_name_from_type(TEST_SYSTEM_INFO_TYPES.RAM_STATS)
         if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.RAM_CHECK) is True:
             memory_info = CSystemInfo.get_memory_info()
