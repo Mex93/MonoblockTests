@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="speaker">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="готов speaker test">
       <change beforePath="$PROJECT_DIR$/components/CSpeaker.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSpeaker.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/content/output_sound.wav" beforeDir="false" afterPath="$PROJECT_DIR$/content/output_sound.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -237,7 +234,15 @@
       <option name="project" value="LOCAL" />
       <updated>1728072271380</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="готов speaker test">
+      <option name="closed" value="true" />
+      <created>1728110720317</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1728110720317</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -258,14 +263,15 @@
     <MESSAGE value="first" />
     <MESSAGE value="external display" />
     <MESSAGE value="speaker" />
-    <option name="LAST_COMMIT_MESSAGE" value="speaker" />
+    <MESSAGE value="готов speaker test" />
+    <option name="LAST_COMMIT_MESSAGE" value="готов speaker test" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/components/CSystemInfo.py</url>
-          <line>515</line>
+          <line>514</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">

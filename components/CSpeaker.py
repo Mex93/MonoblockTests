@@ -1,4 +1,3 @@
-import threading
 
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtMultimedia import QAudioOutput
@@ -150,7 +149,6 @@ class CSpeakerTestWindow(QMainWindow):
 
     def set_default_record_play(self):
         """Сброс записи и таймера"""
-        print("вызов")
         self.record_state = AUDIO_TEST_RECORD_STATE.STATE_NONE
         if self.play_record_timer is not None:
             if self.play_record_timer.is_alive():
@@ -233,8 +231,7 @@ class CSpeakerTestWindow(QMainWindow):
                 if patch_left.find("content") != -1 and patch_right.find("content") != -1:
                     if patch_left.find(".mp3") != -1 and patch_right.find(".mp3") != -1:
                         if file_isfile(patch_left) and file_isfile(patch_right):
-                            self.thread_start = False
-                            self.thread_id = None
+                            self.kill_thread_or_set_default()
                             self.left_channel_player.load_file(patch_left)
                             self.right_channel_player.load_file(patch_right)
                             self.all_channel_player.load_file(self.path_to_record_audio)
@@ -252,11 +249,14 @@ class CSpeakerTestWindow(QMainWindow):
                             self.show()
                             return True
 
-    def closeEvent(self, e):
+    def kill_thread_or_set_default(self):
         if self.thread_start:
-            # self.thread_id.join()
+            self.thread_id.join()
             self.thread_start = False
             self.thread_id = None
+
+    def closeEvent(self, e):
+        self.kill_thread_or_set_default()
         MediaPlayer.stop_any_play()
 
         self.stop_record_stream()
