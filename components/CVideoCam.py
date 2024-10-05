@@ -1,12 +1,13 @@
 from PySide6.QtWidgets import QMainWindow
-from PySide6.QtMultimedia import QAudioOutput
-from PySide6.QtMultimedia import QMediaPlayer
-from PySide6.QtCore import QUrl, Qt
+from PySide6.QtCore import Qt, QTimer
 
-from os.path import isfile as file_isfile
-import subprocess
-from components.CExternalDisplay import CExternalDisplay
-from enuuuums import VIDEO_CAM_PARAMS, TEST_TYPE, CONFIG_PARAMS
+from PySide6.QtGui import QImage, QPixmap
+
+from cv2 import VideoCapture as cv2_VideoCapture
+from cv2 import cvtColor as cv2_cvtColor
+from cv2 import COLOR_BGR2RGB as cv2_COLOR_BGR2RGB
+
+from enuuuums import VIDEO_CAM_PARAMS, TEST_TYPE
 from ui.test_videocam import Ui_TestVideoCamWindow
 
 
@@ -30,11 +31,13 @@ class CVideoCamWindow(QMainWindow):
         self.ui = Ui_TestVideoCamWindow()
         self.ui.setupUi(self)
         self.center()
-        # self.ui.graphicsView
-        self.player = QMediaPlayer()
-        self.audio_output = QAudioOutput()
-        self.player.setAudioOutput(self.audio_output)
-        self.player.setVideoOutput(self.ui.videobox)
+
+        self.start_capture = False
+        # Таймер для обновления кадров
+        self.capture = None  # 0 — это индекс для первой камеры
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_frame)  # сколько навесиш раз функцию столько и будет вызываться
+
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.ui.pushButton_success.clicked.connect(
             lambda: self.__main_window.on_test_phb_success(TEST_TYPE.TEST_FRONT_CAMERA))
@@ -63,6 +66,20 @@ class CVideoCamWindow(QMainWindow):
         window_rect.moveCenter(screen_center)
         # self.move(window_rect.topLeft())
 
+    def update_frame(self):
+        if self.start_capture:
+            ret, frame = self.capture.read()
+            if ret:
+                # Преобразуем цветовую схему BGR в RGB
+                frame = cv2_cvtColor(frame, cv2_COLOR_BGR2RGB)
+
+                # Создаем QImage из массива numpy
+                h, w, _ = frame.shape
+                qImg = QImage(frame.data, w, h, w * 3, QImage.Format_RGB888)
+
+                # Устанавливаем изображение в QLabel
+                self.ui.label_video.setPixmap(QPixmap.fromImage(qImg))
+
     def window_show(self) -> bool:
         # self.player.setSource(QUrl.fromLocalFile(patch))
 
@@ -70,15 +87,25 @@ class CVideoCamWindow(QMainWindow):
         # если задан список, то значит у нас есть указанные размеры
         # если строка то открываем на полный экран
         # Это не ошибка. В конфиге экстер дисплея сидит конфиг дисплей резолюшн
-        display_resolution_list = CExternalDisplay.get_test_stats(CONFIG_PARAMS.DISPLAY_RESOLUTION)
-        #self.player.play()
-        if isinstance(display_resolution_list, str):
-            self.showMaximized()
-        else:
-            self.show()
+        self.ui.label_video.setText("Получение данных...")
+        self.show()
+
+        if not self.start_capture:
+            # если камера была включена не один раз
+
+            self.start_capture = True
+            self.capture = cv2_VideoCapture(0)  # 0 — это индекс для первой камеры
+            self.timer.start(20)  # Обновляем каждые 20 мс
 
         return True
 
     def closeEvent(self, e):
-        # self.player.stop()
+        # Освобождаем камеру при закрытии окна
+        if self.start_capture:
+            self.start_capture = False
+            self.timer.stop()
+
+            if self.capture.isOpened():
+                self.capture.release()
+                del self.capture
         e.accept()

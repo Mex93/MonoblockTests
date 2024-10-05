@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1165</width>
-    <height>714</height>
+    <width>891</width>
+    <height>593</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,7 +37,14 @@
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
-              <widget class="QVideoWidget" name="videobox"/>
+              <widget class="QLabel" name="label_video">
+               <property name="text">
+                <string>VIDEO_PLACE</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>
@@ -187,13 +194,6 @@ padding: 20%;</string>
    </layout>
   </widget>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QVideoWidget</class>
-   <extends>QGraphicsView</extends>
-   <header>PySide6.QtMultimediaWidgets</header>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="res.qrc"/>
  </resources>

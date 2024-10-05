@@ -5,10 +5,10 @@ class CTests:
     tests_params = (
         ["Информация о системе", TEST_TYPE.TEST_SYSTEM_INFO, "test_system_info"],
         ["Кнопки", TEST_TYPE.TEST_HARDWARE_BTN, "test_buttons"],
-        ["Динамики и микро", TEST_TYPE.TEST_SPEAKER_MIC, "test_speaker_and_micro"],
+        ["Динамики и микрофон", TEST_TYPE.TEST_SPEAKER_MIC, "test_speaker_and_micro"],
         ["Дисплей", TEST_TYPE.TEST_DISPLAY, "test_display"],
         ["Второй дисплей", TEST_TYPE.TEST_EXTERNAL_DISPLAY, "test_external_display"],
-        ["Наушники и микро", TEST_TYPE.TEST_HEADSET_MIC, "test_headset_and_micro"],
+        ["Наушники и микрофон", TEST_TYPE.TEST_HEADSET_MIC, "test_headset_and_micro"],
         ["Флешки", TEST_TYPE.TEST_REMOVABLE_DEVICE, "test_removable_device"],
         ["Цвета", TEST_TYPE.TEST_BRIGHTNESS, "test_brightness"],
         ["Передняя камера", TEST_TYPE.TEST_FRONT_CAMERA, "test_front_camera"],

@@ -235,7 +235,6 @@ class MainWindow(QMainWindow):
 
             if isinstance(display_resolution, list):
                 self.ctest_window_external_display.resize(*display_resolution)
-                self.ctest_window_video_cam.resize(*display_resolution)
 
             else:
                 # на всю длинну если не задано
@@ -489,7 +488,7 @@ class MainWindow(QMainWindow):
                 result = self.ctest_window_video_cam.window_show()
                 if not result:
                     send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
-                                     text="Ошибка в файле конфигурации для видео!\n"
+                                     text="Ошибка видео потока! Возможно камера занята или не найдена.\n"
                                           "Один или несколько параметров ошибочны!\n\n"
                                      ,
                                      title="Внимание!",
