@@ -2,7 +2,7 @@ import configparser
 from os import path, listdir
 from components.CExternalDisplay import CExternalDisplay
 from enuuuums import (CONFIG_PARAMS, SYS_INFO_PARAMS, BLOCKS_DATA,
-                      EXTERNAL_DISPLAY_PARAMS, SPEAKER_PARAMS)
+                      EXTERNAL_DISPLAY_PARAMS, SPEAKER_PARAMS, VIDEO_CAM_PARAMS)
 
 
 class ConfigError(Exception):
@@ -157,7 +157,7 @@ class CNewConfig:
                         "; Тестовые окна: это External Display, Brightness итд. Там, где есть картинка.")
 
         # sys info
-        self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.SYS_INFO_TEST_USED, bool, "true")
+        self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.TEST_USED, bool, "true")
 
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.BIOS_CHECK, bool, "true")
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.CPU_CHECK, bool, "true")
@@ -167,9 +167,6 @@ class CNewConfig:
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.BT_CHECK, bool, "true")
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.LAN_CHECK, bool, "true")
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.OS_CHECK, bool, "true")
-        self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.SYS_INFO_NOT_WINDOW_TEST, bool,
-                        "true\n"
-                        "; Если True, то тест будет выполняться без открытия окна.")
 
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.LAN_IP, str, "192.168.5.1")
 
@@ -183,7 +180,7 @@ class CNewConfig:
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.OS_STRING, bool, "-")
 
         # external display
-        self.add_params(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST, EXTERNAL_DISPLAY_PARAMS.EXTD_TEST_USED, bool, "true")
+        self.add_params(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST, EXTERNAL_DISPLAY_PARAMS.TEST_USED, bool, "true")
         self.add_params(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST, EXTERNAL_DISPLAY_PARAMS.VIDEO_PATCH, str,
                         "content/external_display_vid.mp4")
 
@@ -192,6 +189,9 @@ class CNewConfig:
                         f"extend\n; {",".join(monitor_mode_list)}")
         self.add_params(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST, EXTERNAL_DISPLAY_PARAMS.WINDOW_SWITCH_TO, str,
                         f"clone\n; {",".join(monitor_mode_list)}")
+
+        # VideoCam test
+        self.add_params(BLOCKS_DATA.VIDEO_CAM_TEST, VIDEO_CAM_PARAMS.TEST_USED, bool, "true")
 
         # Speaker test
         self.add_params(BLOCKS_DATA.SPEAKER_TEST, SPEAKER_PARAMS.SPEAKER_TEST_USED, bool, "true")

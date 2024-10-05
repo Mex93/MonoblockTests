@@ -11,8 +11,17 @@ class CTests:
         ["Наушники и микро", TEST_TYPE.TEST_HEADSET_MIC, "test_headset_and_micro"],
         ["Флешки", TEST_TYPE.TEST_REMOVABLE_DEVICE, "test_removable_device"],
         ["Цвета", TEST_TYPE.TEST_BRIGHTNESS, "test_brightness"],
-        ["Передняя камера", TEST_TYPE.TEST_FRONT_PHOTO, "test_front_phonto"],
+        ["Передняя камера", TEST_TYPE.TEST_FRONT_CAMERA, "test_front_camera"],
     )
+
+    @classmethod
+    def get_avalible_test_list(cls) -> list:
+        return [TEST_TYPE.TEST_SYSTEM_INFO,
+                TEST_TYPE.TEST_EXTERNAL_DISPLAY,
+                TEST_TYPE.TEST_SPEAKER_MIC,
+                TEST_TYPE.TEST_FRONT_CAMERA,
+                TEST_TYPE.TEST_HEADSET_MIC,
+               ]
 
     @classmethod
     def get_test_name_from_test_type(cls, test_type: TEST_TYPE) -> str | None:

@@ -43,7 +43,7 @@ class TEST_TYPE(IntEnum):
     TEST_HEADSET_MIC = auto(),
     TEST_REMOVABLE_DEVICE = auto(),
     TEST_BRIGHTNESS = auto(),
-    TEST_FRONT_PHOTO = auto(),
+    TEST_FRONT_CAMERA = auto(),
     TEST_BLUETOOTH = auto(),
     TEST_LAN_PORT = auto(),
     TEST_WIFI = auto(),
@@ -65,6 +65,7 @@ class BLOCKS_DATA:
     SYS_INFO_TEST = "sys_info_test"
     EXTERNAL_DISPLAY_TEST = "external_display_test"
     SPEAKER_TEST = "speaker_test"
+    VIDEO_CAM_TEST = "videocam_test"
 
 
 class CONFIG_PARAMS:
@@ -73,8 +74,7 @@ class CONFIG_PARAMS:
 
 
 class SYS_INFO_PARAMS:
-    SYS_INFO_TEST_USED = "sys_info_used"
-    SYS_INFO_NOT_WINDOW_TEST = "not_open_window_test"
+    TEST_USED = "test_used"
     BIOS_CHECK = "bios_check"
     CPU_CHECK = "cpu_check"
     RAM_CHECK = "ram_check"
@@ -97,15 +97,19 @@ class SYS_INFO_PARAMS:
 
 
 class EXTERNAL_DISPLAY_PARAMS:
-    EXTD_TEST_USED = "ext_display_used"
+    TEST_USED = "test_used"
     VIDEO_PATCH = "video_patch"
     WINDOW_DEFAULT = "window_switch_def"
     WINDOW_SWITCH_TO = "window_switch_to"
 
 
+class VIDEO_CAM_PARAMS:
+    TEST_USED = "test_used"
+
+
 class SPEAKER_PARAMS:
-    SPEAKER_TEST_USED = "speaker_test_used"
-    HEADSET_TEST_USED = "headset_test_used"
+    SPEAKER_TEST_USED = "test_used"
+    HEADSET_TEST_USED = "test_used"
     AUDIO_PATCH_LEFT = "audio_patch_left"
     AUDIO_PATCH_RIGHT = "audio_patch_right"
 

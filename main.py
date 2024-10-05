@@ -1,11 +1,9 @@
-
 from sys import argv, exit
 from os.path import isdir as file_isdir
 
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtGui import QFontDatabase
-
 
 from ui.untitled import Ui_MainWindow
 from ui.get_check_string_window import Ui_MainWindow as Ui_StringWindow
@@ -17,6 +15,7 @@ from components.CConfig_Main import CMainConfig
 from components.CSystemInfo import CSystemInfo, CSystemInfoWindow
 from components.CExternalDisplay import CExternalDisplayWindow, CExternalDisplay, EXTERNAL_DISPLAY_PARAMS
 from components.CSpeaker import CSpeakerTestWindow, CSpeakerTest, SPEAKER_PARAMS
+from components.CVideoCam import CVideoCam, CVideoCamWindow, VIDEO_CAM_PARAMS
 from components.CButtons import CButtoms
 
 
@@ -24,6 +23,7 @@ from components.CButtons import CButtoms
 # pyside6-uic .\ui\get_check_string_window.ui -o .\ui\get_check_string_window.py
 # pyside6-uic .\ui\test_sys_info.ui -o .\ui\test_sys_info.py
 # pyside6-uic .\ui\test_external_display.ui -o .\ui\test_external_display.py
+# pyside6-uic .\ui\test_videocam.ui -o .\ui\test_videocam.py
 # pyside6-uic .\ui\test_speaker_audio.ui -o .\ui\test_speaker_audio.py
 # pyside6-rcc .\ui\res.qrc -o .\ui\res_rc.py
 # Press the green button in the gutter to run the script.
@@ -75,6 +75,7 @@ class MainWindow(QMainWindow):
         self.cmain_window_get_string = CStringWindow(self)
         self.ctest_window_sys_info = CSystemInfoWindow(self)
         self.ctest_window_external_display = CExternalDisplayWindow(self)
+        self.ctest_window_video_cam = CVideoCamWindow(self)
         self.ctest_window_speaker_window = CSpeakerTestWindow(self, TEST_TYPE.TEST_SPEAKER_MIC)
         self.ctest_window_headset_window = CSpeakerTestWindow(self, TEST_TYPE.TEST_HEADSET_MIC)
 
@@ -159,7 +160,8 @@ class MainWindow(QMainWindow):
                                                                f"Тестов провалено: {fail_tests_count}\n"
                                                                f"Тестов успешно: {all_used_test_count - fail_tests_count}\n")
 
-                string_window.ui.textBrowser_set_string.append("Примечание: Строка проверки копируется полностью в конфиг")
+                string_window.ui.textBrowser_set_string.append(
+                    "Примечание: Строка проверки копируется полностью в конфиг")
         else:
             string_window.ui.textBrowser_set_string.append("Все тесты отключены!\n")
         string_window.show()
@@ -195,18 +197,10 @@ class MainWindow(QMainWindow):
 
     def on_user_presed_launch_test(self, test_type: TEST_TYPE):
         print(f"Запущен тест: {test_type}")
-
-        if test_type == TEST_TYPE.TEST_SYSTEM_INFO:
-            self.show_test_window_with_window(test_type)
-
-        elif test_type == TEST_TYPE.TEST_EXTERNAL_DISPLAY:
-            self.show_test_window_with_window(test_type)
-
-        elif test_type == TEST_TYPE.TEST_SPEAKER_MIC:
-            self.show_test_window_with_window(test_type)
-
-        elif test_type == TEST_TYPE.TEST_HEADSET_MIC:
-            self.show_test_window_with_window(test_type)
+        test_list = CTests.get_avalible_test_list()
+        if len(test_list):
+            if test_type in test_list:
+                self.show_test_window_with_window(test_type)
 
     def on_changed_config(self):
         text = self.ui.comboBox_config_get.currentText()
@@ -241,9 +235,11 @@ class MainWindow(QMainWindow):
 
             if isinstance(display_resolution, list):
                 self.ctest_window_external_display.resize(*display_resolution)
+                self.ctest_window_video_cam.resize(*display_resolution)
 
             else:
                 # на всю длинну если не задано
+                # задаётся и для видео кам теста через конфиг экстерн дисплея
                 CExternalDisplay.set_test_stats(CONFIG_PARAMS.DISPLAY_RESOLUTION, "full-screen")
                 # send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_WARNING,
                 #                  text="Ошибка в обработке размера окна из конфига!\n"
@@ -262,9 +258,9 @@ class MainWindow(QMainWindow):
             # LOAD
             # Sys Info
             # check
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.SYS_INFO_TEST_USED,
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.TEST_USED,
                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.SYS_INFO_TEST_USED))
+                                                                          SYS_INFO_PARAMS.TEST_USED))
 
             CSystemInfo.set_test_stats(SYS_INFO_PARAMS.BIOS_CHECK,
                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
@@ -295,10 +291,6 @@ class MainWindow(QMainWindow):
                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
                                                                           SYS_INFO_PARAMS.OS_STRING))
 
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.SYS_INFO_NOT_WINDOW_TEST,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.SYS_INFO_NOT_WINDOW_TEST))
-
             CSystemInfo.set_test_stats(SYS_INFO_PARAMS.LAN_IP,
                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
                                                                           SYS_INFO_PARAMS.LAN_IP))
@@ -328,9 +320,9 @@ class MainWindow(QMainWindow):
 
             # External display
             # check
-            CExternalDisplay.set_test_stats(EXTERNAL_DISPLAY_PARAMS.EXTD_TEST_USED,
+            CExternalDisplay.set_test_stats(EXTERNAL_DISPLAY_PARAMS.TEST_USED,
                                             self.cconfig_unit.get_config_value(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST,
-                                                                               EXTERNAL_DISPLAY_PARAMS.EXTD_TEST_USED))
+                                                                               EXTERNAL_DISPLAY_PARAMS.TEST_USED))
             # string
             CExternalDisplay.set_test_stats(EXTERNAL_DISPLAY_PARAMS.VIDEO_PATCH,
                                             self.cconfig_unit.get_config_value(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST,
@@ -347,18 +339,24 @@ class MainWindow(QMainWindow):
             # Speaker test
             # check
             CSpeakerTest.set_test_stats(SPEAKER_PARAMS.SPEAKER_TEST_USED,
-                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
-                                                                               SPEAKER_PARAMS.SPEAKER_TEST_USED))
+                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
+                                                                           SPEAKER_PARAMS.SPEAKER_TEST_USED))
             # string
             CSpeakerTest.set_test_stats(SPEAKER_PARAMS.AUDIO_PATCH_LEFT,
-                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
-                                                                               SPEAKER_PARAMS.AUDIO_PATCH_LEFT))
+                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
+                                                                           SPEAKER_PARAMS.AUDIO_PATCH_LEFT))
             CSpeakerTest.set_test_stats(SPEAKER_PARAMS.AUDIO_PATCH_RIGHT,
-                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
-                                                                               SPEAKER_PARAMS.AUDIO_PATCH_RIGHT))
+                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
+                                                                           SPEAKER_PARAMS.AUDIO_PATCH_RIGHT))
             CSpeakerTest.set_test_stats(SPEAKER_PARAMS.HEADSET_TEST_USED,
                                         self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
                                                                            SPEAKER_PARAMS.HEADSET_TEST_USED))
+
+            # VideoCam test
+            # check
+            CVideoCam.set_test_stats(VIDEO_CAM_PARAMS.TEST_USED,
+                                     self.cconfig_unit.get_config_value(BLOCKS_DATA.VIDEO_CAM_TEST,
+                                                                        VIDEO_CAM_PARAMS.TEST_USED))
 
             CButtoms.set_clear_callbacks_for_all()
 
@@ -367,10 +365,11 @@ class MainWindow(QMainWindow):
 
             tests_list = \
                 [
-                  [CSystemInfo, TEST_TYPE.TEST_SYSTEM_INFO, SYS_INFO_PARAMS.SYS_INFO_TEST_USED, None],
-                  [CExternalDisplay, TEST_TYPE.TEST_EXTERNAL_DISPLAY, EXTERNAL_DISPLAY_PARAMS.EXTD_TEST_USED, None],
-                  [CSpeakerTest, TEST_TYPE.TEST_SPEAKER_MIC, SPEAKER_PARAMS.SPEAKER_TEST_USED, None],
-                  [CSpeakerTest, TEST_TYPE.TEST_HEADSET_MIC, SPEAKER_PARAMS.HEADSET_TEST_USED, None]
+                    [CSystemInfo, TEST_TYPE.TEST_SYSTEM_INFO, SYS_INFO_PARAMS.TEST_USED, None],
+                    [CExternalDisplay, TEST_TYPE.TEST_EXTERNAL_DISPLAY, EXTERNAL_DISPLAY_PARAMS.TEST_USED, None],
+                    [CVideoCam, TEST_TYPE.TEST_FRONT_CAMERA, VIDEO_CAM_PARAMS.TEST_USED, None],
+                    [CSpeakerTest, TEST_TYPE.TEST_SPEAKER_MIC, SPEAKER_PARAMS.SPEAKER_TEST_USED, None],
+                    [CSpeakerTest, TEST_TYPE.TEST_HEADSET_MIC, SPEAKER_PARAMS.HEADSET_TEST_USED, None]
                 ]
 
             # name insert
@@ -445,12 +444,10 @@ class MainWindow(QMainWindow):
                             btn_unit.set_btn_color_red()
                             self.set_next_test(current_test)
 
-            case TEST_TYPE.TEST_EXTERNAL_DISPLAY:
-                self.show_test_window_with_window(test_type)
-            case TEST_TYPE.TEST_SPEAKER_MIC:
-                self.show_test_window_with_window(test_type)
-            case TEST_TYPE.TEST_HEADSET_MIC:
-                self.show_test_window_with_window(test_type)
+            case _:
+                test_list = CTests.get_avalible_test_list()
+                if test_type in test_list:
+                    self.show_test_window_with_window(test_type)
 
     def show_test_window_with_window(self, test_type: TEST_TYPE):
         """
@@ -487,6 +484,18 @@ class MainWindow(QMainWindow):
                                      variant_yes="Закрыть", variant_no="", callback=None)
                 else:
                     self.ctest_window_external_display.setFocus()
+
+            case TEST_TYPE.TEST_FRONT_CAMERA:
+                result = self.ctest_window_video_cam.window_show()
+                if not result:
+                    send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
+                                     text="Ошибка в файле конфигурации для видео!\n"
+                                          "Один или несколько параметров ошибочны!\n\n"
+                                     ,
+                                     title="Внимание!",
+                                     variant_yes="Закрыть", variant_no="", callback=None)
+                else:
+                    self.ctest_window_video_cam.setFocus()
 
             case TEST_TYPE.TEST_SPEAKER_MIC:
                 result = self.ctest_window_speaker_window.window_show(test_type)
@@ -560,6 +569,8 @@ class MainWindow(QMainWindow):
             self.ctest_window_sys_info.close()
         elif current_test == TEST_TYPE.TEST_EXTERNAL_DISPLAY:
             self.ctest_window_external_display.close()
+        elif current_test == TEST_TYPE.TEST_FRONT_CAMERA:
+            self.ctest_window_video_cam.close()
         elif current_test == TEST_TYPE.TEST_SPEAKER_MIC:
             self.ctest_window_speaker_window.close()
         elif current_test == TEST_TYPE.TEST_HEADSET_MIC:
@@ -575,6 +586,7 @@ class MainWindow(QMainWindow):
 
 class CStringWindow(QMainWindow):
     """Показ строк для проверки систем инфо"""
+
     def __init__(self, main_window: MainWindow, parent=None):
         super().__init__(parent)
         self.__main_window = main_window
