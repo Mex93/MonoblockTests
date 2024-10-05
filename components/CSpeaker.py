@@ -1,3 +1,4 @@
+import threading
 
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtMultimedia import QAudioOutput
@@ -41,6 +42,10 @@ class CSpeakerTestWindow(QMainWindow):
         self.__main_window = main_window
         self.ui = Ui_TestAudioWindow()
         self.ui.setupUi(self)
+
+        self.thread_id = None
+        self.thread_start = False
+
         self.path_to_record_audio = "content/output_sound.wav"
         self.precord = PyAudio()
         self.record_state: AUDIO_TEST_RECORD_STATE = AUDIO_TEST_RECORD_STATE.STATE_NONE
@@ -77,18 +82,15 @@ class CSpeakerTestWindow(QMainWindow):
     def on_user_pressed_micro_record(self):
         print("micro record")
         if self.record_state == AUDIO_TEST_RECORD_STATE.STATE_NONE:
-
             self.record_state = AUDIO_TEST_RECORD_STATE.STATE_RECORD
             self.set_record_btn_current_status()
             self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_RIGHT, AUDIO_STATUS.STATUS_STOP)
             self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_LEFT, AUDIO_STATUS.STATUS_STOP)
             MediaPlayer.stop_any_play()
-
-            thread = threading_Thread(target=self.start_record_script)
-            thread.start()
-        else:
-            self.stop_record_stream()
-            self.set_default_record_play()
+            if not self.thread_start:
+                self.thread_id = threading_Thread(target=self.start_record_script)
+                self.thread_id.start()
+                self.thread_start = True
 
     def start_record_script(self):
         try:
@@ -98,7 +100,6 @@ class CSpeakerTestWindow(QMainWindow):
                                             )
 
             self.stream.start_stream()
-
             for i in range(0, int(self.RATE / self.CHUNK * 3)):
                 data = self.stream.read(self.CHUNK)
                 frames.append(data)
@@ -113,27 +114,32 @@ class CSpeakerTestWindow(QMainWindow):
                 wf.setframerate(self.sample_rate)
                 wf.writeframes(b''.join(frames))
                 wf.close()
-
                 self.record_state = AUDIO_TEST_RECORD_STATE.STATE_PLAY
                 self.set_record_btn_current_status()
+
                 self.play_record_timer = threading_Timer(2.5, self.on_stop_record_play_time)
                 self.play_record_timer.start()
-                self.all_channel_player.start_play()
 
-            return
+                self.all_channel_player.start_play()
+                print("я отработал (поток в рекорде)")
 
         except OSError:
             send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
                              text="Нет источника записи звука!\n",
                              title="Внимание!",
                              variant_yes="Закрыть", variant_no="", callback=None)
-            return
+
+        return
 
     def stop_record_stream(self):
-        """Если запущен поток"""
-        if self.stream is not None:
-            self.stream.stop_stream()
-            self.stream.close()
+        """Если запущен поток аудиозаписи
+            Отключен потому что вызывает конфиликт в отдельном потоке.
+        """
+        pass
+        # if self.stream is not None:
+        #     self.stream.stop_stream()
+        #     self.stream.close()
+        #     self.stream = None
 
     def on_stop_record_play_time(self):
         """Вызов после колнца таймера"""
@@ -227,6 +233,8 @@ class CSpeakerTestWindow(QMainWindow):
                 if patch_left.find("content") != -1 and patch_right.find("content") != -1:
                     if patch_left.find(".mp3") != -1 and patch_right.find(".mp3") != -1:
                         if file_isfile(patch_left) and file_isfile(patch_right):
+                            self.thread_start = False
+                            self.thread_id = None
                             self.left_channel_player.load_file(patch_left)
                             self.right_channel_player.load_file(patch_right)
                             self.all_channel_player.load_file(self.path_to_record_audio)
@@ -245,10 +253,15 @@ class CSpeakerTestWindow(QMainWindow):
                             return True
 
     def closeEvent(self, e):
+        if self.thread_start:
+            # self.thread_id.join()
+            self.thread_start = False
+            self.thread_id = None
         MediaPlayer.stop_any_play()
 
         self.stop_record_stream()
         self.set_default_record_play()
+
         e.accept()
 
 

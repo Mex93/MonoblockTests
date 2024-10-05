@@ -574,6 +574,7 @@ class MainWindow(QMainWindow):
 
 
 class CStringWindow(QMainWindow):
+    """Показ строк для проверки систем инфо"""
     def __init__(self, main_window: MainWindow, parent=None):
         super().__init__(parent)
         self.__main_window = main_window
