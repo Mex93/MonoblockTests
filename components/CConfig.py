@@ -2,7 +2,8 @@ import configparser
 from os import path, listdir
 from components.CExternalDisplay import CExternalDisplay
 from enuuuums import (CONFIG_PARAMS, SYS_INFO_PARAMS, BLOCKS_DATA,
-                      EXTERNAL_DISPLAY_PARAMS, SPEAKER_PARAMS, VIDEO_CAM_PARAMS)
+                      EXTERNAL_DISPLAY_PARAMS, SPEAKER_PARAMS, VIDEO_CAM_PARAMS, KEYSBUTTOMS_PARAMS
+                      )
 
 
 class ConfigError(Exception):
@@ -192,6 +193,9 @@ class CNewConfig:
 
         # VideoCam test
         self.add_params(BLOCKS_DATA.VIDEO_CAM_TEST, VIDEO_CAM_PARAMS.TEST_USED, bool, "true")
+
+        # HardwareTest test
+        self.add_params(BLOCKS_DATA.HARDWARE_BTN_TEST, KEYSBUTTOMS_PARAMS.TEST_USED, bool, "true")
 
         # Speaker test
         self.add_params(BLOCKS_DATA.SPEAKER_TEST, SPEAKER_PARAMS.SPEAKER_TEST_USED, bool, "true")

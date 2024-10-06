@@ -16,6 +16,7 @@ from components.CSystemInfo import CSystemInfo, CSystemInfoWindow
 from components.CExternalDisplay import CExternalDisplayWindow, CExternalDisplay, EXTERNAL_DISPLAY_PARAMS
 from components.CSpeaker import CSpeakerTestWindow, CSpeakerTest, SPEAKER_PARAMS
 from components.CVideoCam import CVideoCam, CVideoCamWindow, VIDEO_CAM_PARAMS
+from components.CKeysBTN import CKeyTest, CKeyTestWindow, KEYSBUTTOMS_PARAMS
 from components.CButtons import CButtoms
 
 
@@ -24,6 +25,7 @@ from components.CButtons import CButtoms
 # pyside6-uic .\ui\test_sys_info.ui -o .\ui\test_sys_info.py
 # pyside6-uic .\ui\test_external_display.ui -o .\ui\test_external_display.py
 # pyside6-uic .\ui\test_videocam.ui -o .\ui\test_videocam.py
+# pyside6-uic .\ui\test_keys.ui -o .\ui\test_keys.py
 # pyside6-uic .\ui\test_speaker_audio.ui -o .\ui\test_speaker_audio.py
 # pyside6-rcc .\ui\res.qrc -o .\ui\res_rc.py
 # Press the green button in the gutter to run the script.
@@ -76,6 +78,7 @@ class MainWindow(QMainWindow):
         self.ctest_window_sys_info = CSystemInfoWindow(self)
         self.ctest_window_external_display = CExternalDisplayWindow(self)
         self.ctest_window_video_cam = CVideoCamWindow(self)
+        self.ctest_window_hardwarekeys = CKeyTestWindow(self)
         self.ctest_window_speaker_window = CSpeakerTestWindow(self, TEST_TYPE.TEST_SPEAKER_MIC)
         self.ctest_window_headset_window = CSpeakerTestWindow(self, TEST_TYPE.TEST_HEADSET_MIC)
 
@@ -357,18 +360,23 @@ class MainWindow(QMainWindow):
                                      self.cconfig_unit.get_config_value(BLOCKS_DATA.VIDEO_CAM_TEST,
                                                                         VIDEO_CAM_PARAMS.TEST_USED))
 
+            # HardwareKeys test
+            # check
+            CKeyTest.set_test_stats(KEYSBUTTOMS_PARAMS.TEST_USED,
+                                    self.cconfig_unit.get_config_value(BLOCKS_DATA.HARDWARE_BTN_TEST,
+                                                                       KEYSBUTTOMS_PARAMS.TEST_USED))
+
             CButtoms.set_clear_callbacks_for_all()
 
-            block_datas = CTests.get_config_block_data()
             btn_index = 0
-
             tests_list = \
                 [
                     [CSystemInfo, TEST_TYPE.TEST_SYSTEM_INFO, SYS_INFO_PARAMS.TEST_USED, None],
                     [CExternalDisplay, TEST_TYPE.TEST_EXTERNAL_DISPLAY, EXTERNAL_DISPLAY_PARAMS.TEST_USED, None],
                     [CVideoCam, TEST_TYPE.TEST_FRONT_CAMERA, VIDEO_CAM_PARAMS.TEST_USED, None],
                     [CSpeakerTest, TEST_TYPE.TEST_SPEAKER_MIC, SPEAKER_PARAMS.SPEAKER_TEST_USED, None],
-                    [CSpeakerTest, TEST_TYPE.TEST_HEADSET_MIC, SPEAKER_PARAMS.HEADSET_TEST_USED, None]
+                    [CSpeakerTest, TEST_TYPE.TEST_HEADSET_MIC, SPEAKER_PARAMS.HEADSET_TEST_USED, None],
+                    [CKeyTest, TEST_TYPE.TEST_HARDWARE_BTN, KEYSBUTTOMS_PARAMS.TEST_USED, None],
                 ]
 
             # name insert
@@ -394,8 +402,6 @@ class MainWindow(QMainWindow):
                     btn_unit = CButtoms.get_unit_from_index(index)
                     btn_unit.set_enabled(False)
                     btn_unit.set_hidden(True)
-
-            print(config_human_name)
 
     def send_error_message(self, text: str):
         send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
@@ -518,6 +524,17 @@ class MainWindow(QMainWindow):
                 else:
                     self.ctest_window_headset_window.setFocus()
 
+            case TEST_TYPE.TEST_HARDWARE_BTN:
+                result = self.ctest_window_hardwarekeys.window_show()
+                if not result:
+                    send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
+                                     text="Ошибка в файле конфигурации для проверки клавиш!\n"
+                                          "Один или несколько параметров ошибочны!\n\n",
+                                     title="Внимание!",
+                                     variant_yes="Закрыть", variant_no="", callback=None)
+                else:
+                    self.ctest_window_hardwarekeys.setFocus()
+
     def on_test_phb_break_all_test(self, test_type: TEST_TYPE):
         current_test = self.ctest_process.is_test_launch()
         if current_test != TEST_TYPE.TEST_NONE:
@@ -574,6 +591,8 @@ class MainWindow(QMainWindow):
             self.ctest_window_speaker_window.close()
         elif current_test == TEST_TYPE.TEST_HEADSET_MIC:
             self.ctest_window_headset_window.close()
+        elif current_test == TEST_TYPE.TEST_HARDWARE_BTN:
+            self.ctest_window_hardwarekeys.close()
 
     def closeEvent(self, e):
         e.accept()

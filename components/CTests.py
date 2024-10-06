@@ -21,6 +21,8 @@ class CTests:
                 TEST_TYPE.TEST_SPEAKER_MIC,
                 TEST_TYPE.TEST_FRONT_CAMERA,
                 TEST_TYPE.TEST_HEADSET_MIC,
+                TEST_TYPE.TEST_HARDWARE_BTN,
+
                ]
 
     @classmethod

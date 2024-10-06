@@ -66,6 +66,7 @@ class BLOCKS_DATA:
     EXTERNAL_DISPLAY_TEST = "external_display_test"
     SPEAKER_TEST = "speaker_test"
     VIDEO_CAM_TEST = "videocam_test"
+    HARDWARE_BTN_TEST = "hardw_keys_test"
 
 
 class CONFIG_PARAMS:
@@ -104,6 +105,10 @@ class EXTERNAL_DISPLAY_PARAMS:
 
 
 class VIDEO_CAM_PARAMS:
+    TEST_USED = "test_used"
+
+
+class KEYSBUTTOMS_PARAMS:
     TEST_USED = "test_used"
 
 
