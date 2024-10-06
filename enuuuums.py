@@ -38,10 +38,10 @@ class TEST_TYPE(IntEnum):
     TEST_SYSTEM_INFO = auto(),
     TEST_HARDWARE_BTN = auto(),
     TEST_SPEAKER_MIC = auto(),
-    TEST_DISPLAY = auto(),
+    TEST_PATTERNS = auto(),
     TEST_EXTERNAL_DISPLAY = auto(),
     TEST_HEADSET_MIC = auto(),
-    TEST_REMOVABLE_DEVICE = auto(),
+    TEST_USB_DEVICES = auto(),
     TEST_BRIGHTNESS = auto(),
     TEST_FRONT_CAMERA = auto(),
     TEST_BLUETOOTH = auto(),
@@ -68,6 +68,8 @@ class BLOCKS_DATA:
     VIDEO_CAM_TEST = "videocam_test"
     HARDWARE_BTN_TEST = "hardw_keys_test"
     BRIGHTNESS_TEST = "brightness_test"
+    USB_DEVICE_TEST = "usb_devices_test"
+    PATTERNS_TEST = "patterns_test"
 
 
 class CONFIG_PARAMS:
@@ -114,6 +116,14 @@ class KEYSBUTTOMS_PARAMS:
 
 
 class BRIGHTNESS_PARAMS:
+    TEST_USED = "test_used"
+
+
+class USB_TEST_PARAMS:
+    TEST_USED = "test_used"
+
+
+class PATTERNS_TEST_PARAMS:
     TEST_USED = "test_used"
 
 

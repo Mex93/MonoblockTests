@@ -5,13 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="hardkeys">
-      <change afterPath="$PROJECT_DIR$/components/CBrightness.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/test_brightness.ui" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/CPatternsTest.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/CUSBTest.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ui/test_patterns.ui" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ui/test_usb_devices.ui" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CBrightness.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CBrightnessTest.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/CConfig.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CConfig.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CExternalDisplay.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CExternalDisplayTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CKeysBTN.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CKeysBTNTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CSpeaker.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSpeakerTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CSystemInfo.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSystemInfoTest.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/CTests.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CTests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diskpart_output.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/diskpart_script.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CVideoCam.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CVideoCamTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configs/test.ini" beforeDir="false" afterPath="$PROJECT_DIR$/configs/test.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/enuuuums.py" beforeDir="false" afterPath="$PROJECT_DIR$/enuuuums.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -283,7 +290,15 @@
       <option name="project" value="LOCAL" />
       <updated>1728235273806</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="hardkeys">
+      <option name="closed" value="true" />
+      <created>1728237253724</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1728237253724</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -314,12 +329,12 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/components/CSystemInfo.py</url>
+          <url>file://$PROJECT_DIR$/components/CSystemInfoTest.py</url>
           <line>514</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/components/CSpeaker.py</url>
+          <url>file://$PROJECT_DIR$/components/CSpeakerTest.py</url>
           <line>93</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>

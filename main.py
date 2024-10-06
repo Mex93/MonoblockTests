@@ -12,12 +12,14 @@ from common import send_message_box, SMBOX_ICON_TYPE, get_about_text, get_rules_
 from components.CConfig import CNewConfig, CParameters, BLOCKS_DATA, SYS_INFO_PARAMS, CONFIG_PARAMS
 from components.CTests import CTests, TEST_TYPE, CTestProcess, TEST_RESULT
 from components.CConfig_Main import CMainConfig
-from components.CSystemInfo import CSystemInfo, CSystemInfoWindow
-from components.CExternalDisplay import CExternalDisplayWindow, CExternalDisplay, EXTERNAL_DISPLAY_PARAMS
-from components.CSpeaker import CSpeakerTestWindow, CSpeakerTest, SPEAKER_PARAMS
-from components.CVideoCam import CVideoCam, CVideoCamWindow, VIDEO_CAM_PARAMS
-from components.CKeysBTN import CKeyTest, CKeyTestWindow, KEYSBUTTOMS_PARAMS
-from components.CBrightness import CBrightnessTest, CBrightnessTestWindow, BRIGHTNESS_PARAMS
+from components.CSystemInfoTest import CSystemInfo, CSystemInfoWindow
+from components.CExternalDisplayTest import CExternalDisplayWindow, CExternalDisplay, EXTERNAL_DISPLAY_PARAMS
+from components.CSpeakerTest import CSpeakerTestWindow, CSpeakerTest, SPEAKER_PARAMS
+from components.CVideoCamTest import CVideoCam, CVideoCamWindow, VIDEO_CAM_PARAMS
+from components.CKeysBTNTest import CKeyTest, CKeyTestWindow, KEYSBUTTOMS_PARAMS
+from components.CBrightnessTest import CBrightnessTest, CBrightnessTestWindow, BRIGHTNESS_PARAMS
+from components.CPatternsTest import CPatternsTest, CPatternsTestWindow, PATTERNS_TEST_PARAMS
+from components.CUSBTest import CUSBDevicesTest, CUSBDevicesTestWindow, USB_TEST_PARAMS
 from components.CButtons import CButtoms
 
 
@@ -28,6 +30,8 @@ from components.CButtons import CButtoms
 # pyside6-uic .\ui\test_videocam.ui -o .\ui\test_videocam.py
 # pyside6-uic .\ui\test_keys.ui -o .\ui\test_keys.py
 # pyside6-uic .\ui\test_brightness.ui -o .\ui\test_brightness.py
+# pyside6-uic .\ui\test_patterns.ui -o .\ui\test_patterns.py
+# pyside6-uic .\ui\test_usb_devices.ui -o .\ui\test_usb_devices.py
 # pyside6-uic .\ui\test_speaker_audio.ui -o .\ui\test_speaker_audio.py
 # pyside6-rcc .\ui\res.qrc -o .\ui\res_rc.py
 # Press the green button in the gutter to run the script.
@@ -81,7 +85,9 @@ class MainWindow(QMainWindow):
         self.ctest_window_external_display = CExternalDisplayWindow(self)
         self.ctest_window_video_cam = CVideoCamWindow(self)
         self.ctest_window_hardwarekeys = CKeyTestWindow(self)
+        self.ctest_window_usb_devices = CUSBDevicesTestWindow(self)
         self.ctest_window_brightness = CBrightnessTestWindow(self)
+        self.ctest_window_patterns = CPatternsTestWindow(self)
         self.ctest_window_speaker_window = CSpeakerTestWindow(self, TEST_TYPE.TEST_SPEAKER_MIC)
         self.ctest_window_headset_window = CSpeakerTestWindow(self, TEST_TYPE.TEST_HEADSET_MIC)
 
@@ -374,6 +380,19 @@ class MainWindow(QMainWindow):
             CBrightnessTest.set_test_stats(BRIGHTNESS_PARAMS.TEST_USED,
                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.BRIGHTNESS_TEST,
                                                                               BRIGHTNESS_PARAMS.TEST_USED))
+
+            # USB Devices test
+            # check
+            CUSBDevicesTest.set_test_stats(USB_TEST_PARAMS.TEST_USED,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.USB_DEVICE_TEST,
+                                                                              USB_TEST_PARAMS.TEST_USED))
+
+            # Patterns test
+            # check
+            CPatternsTest.set_test_stats(PATTERNS_TEST_PARAMS.TEST_USED,
+                                         self.cconfig_unit.get_config_value(BLOCKS_DATA.PATTERNS_TEST,
+                                                                            PATTERNS_TEST_PARAMS.TEST_USED))
+
             CButtoms.set_clear_callbacks_for_all()
 
             btn_index = 0
@@ -386,6 +405,8 @@ class MainWindow(QMainWindow):
                     [CSpeakerTest, TEST_TYPE.TEST_HEADSET_MIC, SPEAKER_PARAMS.HEADSET_TEST_USED, None],
                     [CKeyTest, TEST_TYPE.TEST_HARDWARE_BTN, KEYSBUTTOMS_PARAMS.TEST_USED, None],
                     [CBrightnessTest, TEST_TYPE.TEST_BRIGHTNESS, BRIGHTNESS_PARAMS.TEST_USED, None],
+                    [CUSBDevicesTest, TEST_TYPE.TEST_USB_DEVICES, USB_TEST_PARAMS.TEST_USED, None],
+                    [CPatternsTest, TEST_TYPE.TEST_PATTERNS, PATTERNS_TEST_PARAMS.TEST_USED, None],
                 ]
 
             # name insert
@@ -555,6 +576,28 @@ class MainWindow(QMainWindow):
                 else:
                     self.ctest_window_brightness.setFocus()
 
+            case TEST_TYPE.TEST_USB_DEVICES:
+                result = self.ctest_window_usb_devices.window_show()
+                if not result:
+                    send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
+                                     text="Ошибка в файле конфигурации для проверки USB разъёмов!\n"
+                                          "Один или несколько параметров ошибочны!\n\n",
+                                     title="Внимание!",
+                                     variant_yes="Закрыть", variant_no="", callback=None)
+                else:
+                    self.ctest_window_usb_devices.setFocus()
+
+            case TEST_TYPE.TEST_PATTERNS:
+                result = self.ctest_window_patterns.window_show()
+                if not result:
+                    send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
+                                     text="Ошибка в файле конфигурации для проверки Дисплея!\n"
+                                          "Один или несколько параметров ошибочны!\n\n",
+                                     title="Внимание!",
+                                     variant_yes="Закрыть", variant_no="", callback=None)
+                else:
+                    self.ctest_window_patterns.setFocus()
+
     def on_test_phb_break_all_test(self, test_type: TEST_TYPE):
         current_test = self.ctest_process.is_test_launch()
         if current_test != TEST_TYPE.TEST_NONE:
@@ -615,6 +658,10 @@ class MainWindow(QMainWindow):
             self.ctest_window_hardwarekeys.close()
         elif current_test == TEST_TYPE.TEST_BRIGHTNESS:
             self.ctest_window_brightness.close()
+        elif current_test == TEST_TYPE.TEST_USB_DEVICES:
+            self.ctest_window_usb_devices.close()
+        elif current_test == TEST_TYPE.TEST_PATTERNS:
+            self.ctest_window_patterns.close()
 
     def closeEvent(self, e):
         e.accept()

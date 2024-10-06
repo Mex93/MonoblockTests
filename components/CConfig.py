@@ -1,9 +1,10 @@
 import configparser
 from os import path, listdir
-from components.CExternalDisplay import CExternalDisplay
+from components.CExternalDisplayTest import CExternalDisplay
 from enuuuums import (CONFIG_PARAMS, SYS_INFO_PARAMS, BLOCKS_DATA,
                       EXTERNAL_DISPLAY_PARAMS, SPEAKER_PARAMS, VIDEO_CAM_PARAMS,
-                      KEYSBUTTOMS_PARAMS, BRIGHTNESS_PARAMS
+                      KEYSBUTTOMS_PARAMS, BRIGHTNESS_PARAMS, USB_TEST_PARAMS,
+                      PATTERNS_TEST_PARAMS,
 
                       )
 
@@ -201,6 +202,12 @@ class CNewConfig:
 
         # Brightness test
         self.add_params(BLOCKS_DATA.BRIGHTNESS_TEST, BRIGHTNESS_PARAMS.TEST_USED, bool, "true")
+
+        # USB Devices test
+        self.add_params(BLOCKS_DATA.USB_DEVICE_TEST, USB_TEST_PARAMS.TEST_USED, bool, "true")
+
+        # Patterns test
+        self.add_params(BLOCKS_DATA.PATTERNS_TEST, PATTERNS_TEST_PARAMS.TEST_USED, bool, "true")
 
         # Speaker test
         self.add_params(BLOCKS_DATA.SPEAKER_TEST, SPEAKER_PARAMS.SPEAKER_TEST_USED, bool, "true")
