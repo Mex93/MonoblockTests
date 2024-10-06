@@ -67,6 +67,7 @@ class BLOCKS_DATA:
     SPEAKER_TEST = "speaker_test"
     VIDEO_CAM_TEST = "videocam_test"
     HARDWARE_BTN_TEST = "hardw_keys_test"
+    BRIGHTNESS_TEST = "brightness_test"
 
 
 class CONFIG_PARAMS:
@@ -109,6 +110,10 @@ class VIDEO_CAM_PARAMS:
 
 
 class KEYSBUTTOMS_PARAMS:
+    TEST_USED = "test_used"
+
+
+class BRIGHTNESS_PARAMS:
     TEST_USED = "test_used"
 
 

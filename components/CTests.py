@@ -10,7 +10,7 @@ class CTests:
         ["Второй дисплей", TEST_TYPE.TEST_EXTERNAL_DISPLAY, "test_external_display"],
         ["Наушники и микрофон", TEST_TYPE.TEST_HEADSET_MIC, "test_headset_and_micro"],
         ["Флешки", TEST_TYPE.TEST_REMOVABLE_DEVICE, "test_removable_device"],
-        ["Цвета", TEST_TYPE.TEST_BRIGHTNESS, "test_brightness"],
+        ["Яркость", TEST_TYPE.TEST_BRIGHTNESS, "test_brightness"],
         ["Передняя камера", TEST_TYPE.TEST_FRONT_CAMERA, "test_front_camera"],
     )
 
@@ -22,7 +22,7 @@ class CTests:
                 TEST_TYPE.TEST_FRONT_CAMERA,
                 TEST_TYPE.TEST_HEADSET_MIC,
                 TEST_TYPE.TEST_HARDWARE_BTN,
-
+                TEST_TYPE.TEST_BRIGHTNESS,
                ]
 
     @classmethod
