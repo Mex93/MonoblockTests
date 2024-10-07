@@ -15,38 +15,56 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QGroupBox, QHBoxLayout, QMainWindow,
-    QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout,
-    QWidget)
+from PySide6.QtWidgets import (QApplication, QGridLayout, QGroupBox, QHBoxLayout,
+    QLayout, QMainWindow, QPushButton, QSizePolicy,
+    QSpacerItem, QVBoxLayout, QWidget)
 import ui.res_rc
 
 class Ui_TestUSBDevicesWindow(object):
     def setupUi(self, TestUSBDevicesWindow):
         if not TestUSBDevicesWindow.objectName():
             TestUSBDevicesWindow.setObjectName(u"TestUSBDevicesWindow")
-        TestUSBDevicesWindow.resize(891, 583)
+        TestUSBDevicesWindow.resize(984, 488)
         icon = QIcon()
         icon.addFile(u":/res/images/logo.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         TestUSBDevicesWindow.setWindowIcon(icon)
         self.centralwidget = QWidget(TestUSBDevicesWindow)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.verticalLayout_3 = QVBoxLayout(self.centralwidget)
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.verticalLayout_4 = QVBoxLayout(self.centralwidget)
+        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.groupBox = QGroupBox(self.centralwidget)
         self.groupBox.setObjectName(u"groupBox")
         font = QFont()
         font.setPointSize(15)
         self.groupBox.setFont(font)
-        self.horizontalLayout_3 = QHBoxLayout(self.groupBox)
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.verticalLayout_3 = QVBoxLayout(self.groupBox)
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.verticalLayout_2 = QVBoxLayout()
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.horizontalLayout_2 = QHBoxLayout()
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalLayout_5 = QHBoxLayout()
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.horizontalSpacer_6 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.verticalLayout.addLayout(self.horizontalLayout_2)
+        self.horizontalLayout_5.addItem(self.horizontalSpacer_6)
+
+        self.gridLayout = QGridLayout()
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.gridLayout.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
+
+        self.horizontalLayout_5.addLayout(self.gridLayout)
+
+        self.horizontalSpacer_7 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_5.addItem(self.horizontalSpacer_7)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_5)
+
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout.addItem(self.verticalSpacer)
 
 
         self.verticalLayout_2.addLayout(self.verticalLayout)
@@ -114,10 +132,10 @@ class Ui_TestUSBDevicesWindow(object):
         self.verticalLayout_2.addLayout(self.horizontalLayout)
 
 
-        self.horizontalLayout_3.addLayout(self.verticalLayout_2)
+        self.verticalLayout_3.addLayout(self.verticalLayout_2)
 
 
-        self.verticalLayout_3.addWidget(self.groupBox)
+        self.verticalLayout_4.addWidget(self.groupBox)
 
         TestUSBDevicesWindow.setCentralWidget(self.centralwidget)
 

@@ -22,6 +22,7 @@ from components.CPatternsTest import CPatternsTest, CPatternsTestWindow, PATTERN
 from components.CUSBTest import CUSBDevicesTest, CUSBDevicesTestWindow, USB_TEST_PARAMS
 from components.CButtons import CButtoms
 
+# pyside6-uic .\ui\test.ui -o .\ui\test.py
 
 # pyside6-uic .\ui\untitled.ui -o .\ui\untitled.py
 # pyside6-uic .\ui\get_check_string_window.ui -o .\ui\get_check_string_window.py
@@ -386,6 +387,10 @@ class MainWindow(QMainWindow):
             CUSBDevicesTest.set_test_stats(USB_TEST_PARAMS.TEST_USED,
                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.USB_DEVICE_TEST,
                                                                               USB_TEST_PARAMS.TEST_USED))
+
+            CUSBDevicesTest.set_test_stats(USB_TEST_PARAMS.MAX_SIZE,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.USB_DEVICE_TEST,
+                                                                              USB_TEST_PARAMS.MAX_SIZE))
 
             # Patterns test
             # check

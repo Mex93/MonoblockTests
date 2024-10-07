@@ -4,13 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="hardkeys">
+    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="hardkeys completed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CKeysBTNTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CKeysBTNTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/build_config.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CConfig.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CConfig.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CSystemInfoTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSystemInfoTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CUSBTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CUSBTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configs/test.ini" beforeDir="false" afterPath="$PROJECT_DIR$/configs/test.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/enuuuums.py" beforeDir="false" afterPath="$PROJECT_DIR$/enuuuums.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/test_keys.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_keys.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/test_keys.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_keys.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_usb_devices.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_usb_devices.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_usb_devices.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_usb_devices.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -318,7 +322,15 @@
       <option name="project" value="LOCAL" />
       <updated>1728277336718</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="hardkeys completed">
+      <option name="closed" value="true" />
+      <created>1728280143364</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1728280143364</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -343,14 +355,15 @@
     <MESSAGE value="videocam test" />
     <MESSAGE value="videocam completed" />
     <MESSAGE value="hardkeys" />
-    <option name="LAST_COMMIT_MESSAGE" value="hardkeys" />
+    <MESSAGE value="hardkeys completed" />
+    <option name="LAST_COMMIT_MESSAGE" value="hardkeys completed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/components/CSystemInfoTest.py</url>
-          <line>514</line>
+          <line>531</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">

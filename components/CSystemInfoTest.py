@@ -92,8 +92,26 @@ class CSystemInfo:
             return drives_info
 
     @staticmethod
+    def get_drives_info_usb_test() -> list | None:
+        drives_info = []
+        partitions = disk_partitions()
+        for partition in partitions:
+            try:
+                partition_info = disk_usage(partition.mountpoint)
+                drive_details = {
+                    'device': partition.device,
+                    'total': partition_info.total,
+                    'free': partition_info.free,
+                }
+                drives_info.append(drive_details)
+            except Exception as e:
+                pass
+        if len(drives_info) > 0:
+            return drives_info
+
+    @staticmethod
     def get_uninitialized_disks():
-       return []
+        return []
 
     # Получаем объем оперативной памяти
     @staticmethod
@@ -251,7 +269,6 @@ class CSystemInfoWindow(QMainWindow):
 
             return (f"<span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">Сравнение не пройдено!</span> "
                     f"Check_string: {saved_string}"), False
-
 
         test_name = CSystemInfo.get_sub_test_name_from_type(TEST_SYSTEM_INFO_TYPES.RAM_STATS)
         if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.RAM_CHECK) is True:
@@ -585,7 +602,7 @@ class CSystemInfoWindow(QMainWindow):
             disk_dict.update({"data": f"{test_name}: Проверка отключена",
                               "only_data": "Проверка отключена",
                               "check_string":
-                              f"result_none",
+                                  f"result_none",
 
                               "test_id": TEST_SYSTEM_INFO_TYPES.DISKS_STATS})
 

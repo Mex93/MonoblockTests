@@ -121,6 +121,7 @@ class BRIGHTNESS_PARAMS:
 
 class USB_TEST_PARAMS:
     TEST_USED = "test_used"
+    MAX_SIZE = "max_size_find"
 
 
 class PATTERNS_TEST_PARAMS:
