@@ -68,6 +68,14 @@ class MainWindow(QMainWindow):
                                  variant_yes="Закрыть", variant_no="", callback=lambda: self.set_close())
                 return
 
+            if not file_isdir("content/patterns"):
+                send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
+                                 text="Ошибка проверки компонентов!\n\n"
+                                      "В директории должна быть папка 'content/patterns'. В этой директории лежат паттерны для проверки дисплея!",
+                                 title="Внимание!",
+                                 variant_yes="Закрыть", variant_no="", callback=lambda: self.set_close())
+                return
+
         except Exception as err:
             send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
                              text="Ошибка в файле конфигурации!\n"
