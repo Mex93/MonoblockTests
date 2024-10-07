@@ -92,11 +92,12 @@ class CVideoCamWindow(QMainWindow):
 
         if not self.start_capture:
             # если камера была включена не один раз
-
-            self.start_capture = True
-            self.capture = cv2_VideoCapture(0)  # 0 — это индекс для первой камеры
-            self.timer.start(20)  # Обновляем каждые 20 мс
-
+            try:
+                self.start_capture = True
+                self.capture = cv2_VideoCapture(0)  # 0 — это индекс для первой камеры
+                self.timer.start(20)  # Обновляем каждые 20 мс
+            except:
+                return False
         return True
 
     def closeEvent(self, e):
