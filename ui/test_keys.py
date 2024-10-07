@@ -49,12 +49,15 @@ class Ui_TestKeysWindow(object):
         self.pushButton_volplus.setObjectName(u"pushButton_volplus")
         icon1 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.AppointmentNew))
         self.pushButton_volplus.setIcon(icon1)
+        self.pushButton_volplus.setIconSize(QSize(40, 40))
 
         self.horizontalLayout_2.addWidget(self.pushButton_volplus)
 
         self.pushButton_volminus = QPushButton(self.groupBox)
         self.pushButton_volminus.setObjectName(u"pushButton_volminus")
-        self.pushButton_volminus.setIcon(icon1)
+        icon2 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.GoHome))
+        self.pushButton_volminus.setIcon(icon2)
+        self.pushButton_volminus.setIconSize(QSize(40, 40))
 
         self.horizontalLayout_2.addWidget(self.pushButton_volminus)
 

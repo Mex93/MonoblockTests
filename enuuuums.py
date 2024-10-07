@@ -138,3 +138,9 @@ class TEST_RESULT(IntEnum):
     NONE = auto(),
     SUCCESS = auto(),
     FAIL = auto(),
+
+
+class KEY_PRESSED_TYPE(IntEnum):
+    NONE = auto(),
+    KEY_VOL_PLUS = auto(),
+    KEY_VOL_MINUS = auto(),

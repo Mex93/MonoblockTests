@@ -6,6 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="hardkeys">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CKeysBTNTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CKeysBTNTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/enuuuums.py" beforeDir="false" afterPath="$PROJECT_DIR$/enuuuums.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_keys.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_keys.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_keys.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_keys.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -305,7 +310,15 @@
       <option name="project" value="LOCAL" />
       <updated>1728239339418</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="hardkeys">
+      <option name="closed" value="true" />
+      <created>1728277336718</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1728277336718</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="UnknownFeatures">
