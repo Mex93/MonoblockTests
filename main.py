@@ -48,7 +48,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         QFontDatabase.addApplicationFont("designs/Iosevka Bold.ttf")
-        self.setWindowTitle(f'Тестирование моноблоков Kvant 2024 v0.1a')
+        self.setWindowTitle(f'Тестирование моноблоков Kvant 2024 v1.0b')
 
         self.main_config = CMainConfig()
         # ---------------------------------------

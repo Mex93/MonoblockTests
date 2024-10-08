@@ -4,19 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="display test completed">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common.py" beforeDir="false" afterPath="$PROJECT_DIR$/common.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CBrightnessTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CBrightnessTest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CConfig.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CConfig.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CTests.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CTests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/configs/test.ini" beforeDir="false" afterPath="$PROJECT_DIR$/configs/test.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/configs/testff" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/enuuuums.py" beforeDir="false" afterPath="$PROJECT_DIR$/enuuuums.py" afterDir="false" />
+    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="brightness test completed">
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/test_brightness.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_brightness.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/test_brightness.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_brightness.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,10 +59,10 @@
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Ryazanov\PycharmProjects\MonoblockTests\content" />
+      <recent name="C:\Users\Ryazanov\PycharmProjects\MonoblockTests\content\patterns" />
+      <recent name="C:\Users\Ryazanov\PycharmProjects\MonoblockTests\configs" />
       <recent name="C:\Users\Nikolay\PycharmProjects\MonoblockTests\components" />
       <recent name="C:\Users\Nikolay\PycharmProjects\MonoblockTests\ui" />
-      <recent name="C:\Users\Ryazanov\PycharmProjects\MonoblockTests\components" />
-      <recent name="C:\Users\Ryazanov\PycharmProjects\MonoblockTests\ui" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\Ryazanov\PycharmProjects\MonoblockTests\content" />
@@ -390,7 +381,31 @@
       <option name="project" value="LOCAL" />
       <updated>1728371325730</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="brightness test">
+      <option name="closed" value="true" />
+      <created>1728373259082</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1728373259082</updated>
+    </task>
+    <task id="LOCAL-00036" summary="brightness test">
+      <option name="closed" value="true" />
+      <created>1728373348531</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1728373348531</updated>
+    </task>
+    <task id="LOCAL-00037" summary="brightness test completed">
+      <option name="closed" value="true" />
+      <created>1728381393849</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1728381393849</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -418,7 +433,9 @@
     <MESSAGE value="hardkeys completed" />
     <MESSAGE value="removabledev completed" />
     <MESSAGE value="display test completed" />
-    <option name="LAST_COMMIT_MESSAGE" value="display test completed" />
+    <MESSAGE value="brightness test" />
+    <MESSAGE value="brightness test completed" />
+    <option name="LAST_COMMIT_MESSAGE" value="brightness test completed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
