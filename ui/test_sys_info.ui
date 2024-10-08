@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Test_SystemInfo</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="res.qrc">
+    <normaloff>:/res/images/logo.ico</normaloff>:/res/images/logo.ico</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_6">
     <item>
@@ -348,6 +352,8 @@ padding: 20%;</string>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="res.qrc"/>
+ </resources>
  <connections/>
 </ui>

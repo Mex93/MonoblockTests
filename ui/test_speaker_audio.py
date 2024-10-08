@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'test_speaker_audio.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.7.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -18,15 +18,19 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QGridLayout, QGroupBox, QHBoxLayout,
     QLabel, QMainWindow, QPushButton, QSizePolicy,
     QSlider, QSpacerItem, QVBoxLayout, QWidget)
+import ui.res_rc
 
 class Ui_TestAudioWindow(object):
     def setupUi(self, TestAudioWindow):
         if not TestAudioWindow.objectName():
             TestAudioWindow.setObjectName(u"TestAudioWindow")
-        TestAudioWindow.resize(1035, 388)
+        TestAudioWindow.resize(1035, 404)
         font = QFont()
         font.setPointSize(15)
         TestAudioWindow.setFont(font)
+        icon = QIcon()
+        icon.addFile(u":/res/images/logo.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        TestAudioWindow.setWindowIcon(icon)
         self.centralwidget = QWidget(TestAudioWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout_3 = QVBoxLayout(self.centralwidget)
@@ -57,8 +61,8 @@ class Ui_TestAudioWindow(object):
         self.pushButton_right = QPushButton(self.groupBox)
         self.pushButton_right.setObjectName(u"pushButton_right")
         self.pushButton_right.setFont(font)
-        icon = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.AudioVolumeHigh))
-        self.pushButton_right.setIcon(icon)
+        icon1 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.AudioVolumeHigh))
+        self.pushButton_right.setIcon(icon1)
         self.pushButton_right.setIconSize(QSize(40, 40))
 
         self.gridLayout.addWidget(self.pushButton_right, 0, 2, 1, 1)
@@ -75,7 +79,7 @@ class Ui_TestAudioWindow(object):
         self.pushButton_left = QPushButton(self.groupBox)
         self.pushButton_left.setObjectName(u"pushButton_left")
         self.pushButton_left.setFont(font)
-        self.pushButton_left.setIcon(icon)
+        self.pushButton_left.setIcon(icon1)
         self.pushButton_left.setIconSize(QSize(40, 40))
 
         self.gridLayout.addWidget(self.pushButton_left, 0, 1, 1, 1)
@@ -83,8 +87,8 @@ class Ui_TestAudioWindow(object):
         self.pushButton_record = QPushButton(self.groupBox)
         self.pushButton_record.setObjectName(u"pushButton_record")
         self.pushButton_record.setFont(font)
-        icon1 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.MediaRecord))
-        self.pushButton_record.setIcon(icon1)
+        icon2 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.AudioInputMicrophone))
+        self.pushButton_record.setIcon(icon2)
         self.pushButton_record.setIconSize(QSize(40, 40))
 
         self.gridLayout.addWidget(self.pushButton_record, 1, 1, 1, 1)
