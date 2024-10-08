@@ -117,6 +117,7 @@ class KEYSBUTTOMS_PARAMS:
 
 class BRIGHTNESS_PARAMS:
     TEST_USED = "test_used"
+    FILE_PATCH = "file_patch"
 
 
 class USB_TEST_PARAMS:

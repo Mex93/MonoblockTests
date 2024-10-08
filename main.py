@@ -1,6 +1,5 @@
 import time
 from sys import argv, exit
-from time import sleep
 from os.path import isdir as file_isdir
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QMainWindow
@@ -135,6 +134,8 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_launchall.clicked.connect(self.on_user_pressed_start_all_test)
         self.ui.pushButton_get_strings.clicked.connect(self.on_user_pressed_check_string)
 
+        self.ui.action_info.triggered.connect(self.rules)
+
         only_config_name = self.main_config.get_only_config_name()
         if len(only_config_name):
             current_index = self.get_item_index_from_text(only_config_name)
@@ -153,6 +154,16 @@ class MainWindow(QMainWindow):
                 return
 
         self.ui.comboBox_config_get.setCurrentIndex(-1)
+
+    @classmethod
+    def rules(cls):
+        send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_INFO,
+                         text=f"{get_about_text()}"
+                              f"\n"
+                              f"\n"
+                              f"{get_rules_text()}",
+                         title="О программе",
+                         variant_yes="Закрыть", variant_no="")
 
     def get_window_title(self) -> str:
         return self.windowTitle()
@@ -396,6 +407,10 @@ class MainWindow(QMainWindow):
             CBrightnessTest.set_test_stats(BRIGHTNESS_PARAMS.TEST_USED,
                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.BRIGHTNESS_TEST,
                                                                               BRIGHTNESS_PARAMS.TEST_USED))
+
+            CBrightnessTest.set_test_stats(BRIGHTNESS_PARAMS.FILE_PATCH,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.BRIGHTNESS_TEST,
+                                                                              BRIGHTNESS_PARAMS.FILE_PATCH))
 
             # USB Devices test
             # check

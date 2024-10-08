@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'test_sys_info.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.7.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -19,12 +19,16 @@ from PySide6.QtWidgets import (QApplication, QGroupBox, QHBoxLayout, QLabel,
     QMainWindow, QMenuBar, QPushButton, QSizePolicy,
     QSpacerItem, QStatusBar, QTextBrowser, QVBoxLayout,
     QWidget)
+import ui.res_rc
 
 class Ui_TestSysInfoWindow(object):
     def setupUi(self, TestSysInfoWindow):
         if not TestSysInfoWindow.objectName():
             TestSysInfoWindow.setObjectName(u"TestSysInfoWindow")
         TestSysInfoWindow.resize(1211, 755)
+        icon = QIcon()
+        icon.addFile(u":/res/images/logo.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        TestSysInfoWindow.setWindowIcon(icon)
         self.centralwidget = QWidget(TestSysInfoWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout_6 = QVBoxLayout(self.centralwidget)

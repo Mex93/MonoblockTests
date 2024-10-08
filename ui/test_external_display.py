@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'test_external_display.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.7.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -19,12 +19,16 @@ from PySide6.QtMultimediaWidgets import QVideoWidget
 from PySide6.QtWidgets import (QApplication, QGroupBox, QHBoxLayout, QMainWindow,
     QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout,
     QWidget)
+import ui.res_rc
 
 class Ui_TestExternalDisplayWindow(object):
     def setupUi(self, TestExternalDisplayWindow):
         if not TestExternalDisplayWindow.objectName():
             TestExternalDisplayWindow.setObjectName(u"TestExternalDisplayWindow")
         TestExternalDisplayWindow.resize(1165, 785)
+        icon = QIcon()
+        icon.addFile(u":/res/images/logo.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        TestExternalDisplayWindow.setWindowIcon(icon)
         self.centralwidget = QWidget(TestExternalDisplayWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout_3 = QVBoxLayout(self.centralwidget)

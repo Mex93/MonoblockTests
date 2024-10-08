@@ -25,7 +25,7 @@ class CTests:
                 TEST_TYPE.TEST_BRIGHTNESS,
                 TEST_TYPE.TEST_USB_DEVICES,
                 TEST_TYPE.TEST_PATTERNS,
-               ]
+                ]
 
     @classmethod
     def get_test_name_from_test_type(cls, test_type: TEST_TYPE) -> str | None:
