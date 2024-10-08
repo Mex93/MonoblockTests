@@ -109,6 +109,7 @@ class EXTERNAL_DISPLAY_PARAMS:
 
 class VIDEO_CAM_PARAMS:
     TEST_USED = "test_used"
+    CAMERA_INDEX = "camera_index"
 
 
 class KEYSBUTTOMS_PARAMS:

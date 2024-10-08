@@ -194,6 +194,7 @@ class CNewConfig:
 
         # VideoCam test
         self.add_params(BLOCKS_DATA.VIDEO_CAM_TEST, VIDEO_CAM_PARAMS.TEST_USED, bool, "true")
+        self.add_params(BLOCKS_DATA.VIDEO_CAM_TEST, VIDEO_CAM_PARAMS.CAMERA_INDEX, int, "0")
 
         # HardwareTest test
         self.add_params(BLOCKS_DATA.HARDWARE_BTN_TEST, KEYSBUTTOMS_PARAMS.TEST_USED, bool, "true")

@@ -279,13 +279,6 @@ class MainWindow(QMainWindow):
                 # на всю длинну если не задано
                 # задаётся и для видео кам теста через конфиг экстерн дисплея
                 CExternalDisplay.set_test_stats(CONFIG_PARAMS.DISPLAY_RESOLUTION, "full-screen")
-                # send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_WARNING,
-                #                  text="Ошибка в обработке размера окна из конфига!\n"
-                #                       f"Ошибка в размере: '{display_resolution}'!\n\n"
-                #                       f"Окна для тестов будут открываться в стандартном разрешении, "
-                #                       f"заданном при проектировании",
-                #                  title="Внимание!",
-                #                  variant_yes="Закрыть", variant_no="", callback=None)
 
             config_human_name = self.cconfig_unit.get_config_value(BLOCKS_DATA.PROGRAM_SETTING,
                                                                    CONFIG_PARAMS.CONFIG_NAME)
@@ -395,6 +388,9 @@ class MainWindow(QMainWindow):
             CVideoCam.set_test_stats(VIDEO_CAM_PARAMS.TEST_USED,
                                      self.cconfig_unit.get_config_value(BLOCKS_DATA.VIDEO_CAM_TEST,
                                                                         VIDEO_CAM_PARAMS.TEST_USED))
+            CVideoCam.set_test_stats(VIDEO_CAM_PARAMS.CAMERA_INDEX,
+                                     self.cconfig_unit.get_config_value(BLOCKS_DATA.VIDEO_CAM_TEST,
+                                                                        VIDEO_CAM_PARAMS.CAMERA_INDEX))
 
             # HardwareKeys test
             # check
@@ -552,6 +548,7 @@ class MainWindow(QMainWindow):
                                      ,
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
+                    self.on_test_phb_fail(test_type)
                 else:
                     self.ctest_window_external_display.setFocus()
 
@@ -564,6 +561,7 @@ class MainWindow(QMainWindow):
                                      ,
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
+                    self.on_test_phb_fail(test_type)
                 else:
                     self.ctest_window_video_cam.setFocus()
 
@@ -575,6 +573,7 @@ class MainWindow(QMainWindow):
                                           "Один или несколько параметров ошибочны!",
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
+                    self.on_test_phb_fail(test_type)
                 else:
                     self.ctest_window_speaker_window.setFocus()
 
@@ -586,6 +585,7 @@ class MainWindow(QMainWindow):
                                           "Один или несколько параметров ошибочны!",
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
+                    self.on_test_phb_fail(test_type)
                 else:
                     self.ctest_window_headset_window.setFocus()
 
@@ -597,6 +597,7 @@ class MainWindow(QMainWindow):
                                           "Один или несколько параметров ошибочны!",
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
+                    self.on_test_phb_fail(test_type)
                 else:
                     self.ctest_window_hardwarekeys.setFocus()
 
@@ -608,6 +609,7 @@ class MainWindow(QMainWindow):
                                           "Один или несколько параметров ошибочны!",
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
+                    self.on_test_phb_fail(test_type)
                 else:
                     self.ctest_window_brightness.setFocus()
 
@@ -619,6 +621,7 @@ class MainWindow(QMainWindow):
                                           "Один или несколько параметров ошибочны!",
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
+                    self.on_test_phb_fail(test_type)
                 else:
                     self.ctest_window_usb_devices.setFocus()
 
@@ -630,6 +633,8 @@ class MainWindow(QMainWindow):
                                           "Один или несколько параметров ошибочны!",
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
+
+                    self.on_test_phb_fail(test_type)
                 else:
                     self.ctest_window_patterns.setFocus()
 

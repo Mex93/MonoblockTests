@@ -87,18 +87,35 @@ class CVideoCamWindow(QMainWindow):
         # если задан список, то значит у нас есть указанные размеры
         # если строка то открываем на полный экран
         # Это не ошибка. В конфиге экстер дисплея сидит конфиг дисплей резолюшн
-        self.ui.label_video.setText("Получение данных...")
-        self.show()
 
         if not self.start_capture:
             # если камера была включена не один раз
             try:
-                self.start_capture = True
-                self.capture = cv2_VideoCapture(0)  # 0 — это индекс для первой камеры
-                self.timer.start(20)  # Обновляем каждые 20 мс
+                camera_index = CVideoCam.get_test_stats(VIDEO_CAM_PARAMS.CAMERA_INDEX)
+                if isinstance(camera_index, int):
+                    if 0 < camera_index < 20:
+                        if self.is_camera_connected(camera_index):
+                            self.start_capture = True
+                            self.capture = cv2_VideoCapture(camera_index)  # 0 — это индекс для первой камеры
+                            self.timer.start(20)  # Обновляем каждые 20 мс
+                            self.ui.label_video.setText("Получение данных...")
+                            self.show()
+                            return True
             except:
-                return False
-        return True
+                pass
+        return False
+
+    @classmethod
+    def is_camera_connected(cls, cam_index=0):
+        # Создаем объект VideoCapture
+        cap = cv2_VideoCapture(cam_index)
+
+        # Проверяем, удалось ли открыть камеру
+        if not cap.isOpened():
+            return False
+        else:
+            cap.release()  # Освобождаем объект VideoCapture
+            return True
 
     def closeEvent(self, e):
         # Освобождаем камеру при закрытии окна

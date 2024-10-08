@@ -6,12 +6,11 @@ from PySide6.QtMultimedia import QMediaPlayer
 from PySide6.QtCore import QUrl, Qt
 from PySide6.QtGui import QIcon
 from os.path import isfile as file_isfile
-
+from common import send_message_box, SMBOX_ICON_TYPE
 from pyaudio import PyAudio, paInt16
 from wave import open as wave_open
 from threading import Timer as threading_Timer
 from threading import Thread as threading_Thread
-from common import send_message_box, SMBOX_ICON_TYPE
 from enuuuums import SPEAKER_PARAMS, TEST_TYPE, AUDIO_CHANNEL, AUDIO_STATUS, AUDIO_TEST_RECORD_STATE
 from ui.test_speaker_audio import Ui_TestAudioWindow
 
@@ -82,16 +81,22 @@ class CSpeakerTestWindow(QMainWindow):
     def on_user_pressed_micro_record(self):
         print("micro record")
         if self.record_state == AUDIO_TEST_RECORD_STATE.STATE_NONE:
-            self.record_state = AUDIO_TEST_RECORD_STATE.STATE_RECORD
-            self.set_record_btn_current_status()
-            self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_RIGHT, AUDIO_STATUS.STATUS_STOP)
-            self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_LEFT, AUDIO_STATUS.STATUS_STOP)
-            MediaPlayer.stop_any_play()
-            if self.is_record_avalible():
+            if self.is_any_record_avalible() and self.is_record_avalible_open():
+                self.record_state = AUDIO_TEST_RECORD_STATE.STATE_RECORD
+                self.set_record_btn_current_status()
+                self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_RIGHT, AUDIO_STATUS.STATUS_STOP)
+                self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_LEFT, AUDIO_STATUS.STATUS_STOP)
+                MediaPlayer.stop_any_play()
+
                 if not self.thread_start:
                     self.thread_id = threading_Thread(target=self.start_record_script)
                     self.thread_id.start()
                     self.thread_start = True
+            else:
+                send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_WARNING,
+                                 text="Не обнаружен источник звука!",
+                                 title="Внимание!",
+                                 variant_yes="Закрыть", variant_no="", callback=None)
 
     def start_record_script(self):
         try:
@@ -233,31 +238,31 @@ class CSpeakerTestWindow(QMainWindow):
                 if patch_left.find("content") != -1 and patch_right.find("content") != -1:
                     if patch_left.find(".mp3") != -1 and patch_right.find(".mp3") != -1:
                         if file_isfile(patch_left) and file_isfile(patch_right):
-                            if self.is_record_avalible():
-                                self.kill_thread_or_set_default()
-                                self.left_channel_player.load_file(patch_left)
-                                self.right_channel_player.load_file(patch_right)
-                                self.all_channel_player.load_file(self.path_to_record_audio)
-                                self.all_channel_player.set_volume(1.0)
-                                self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_RIGHT, AUDIO_STATUS.STATUS_STOP)
-                                self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_LEFT, AUDIO_STATUS.STATUS_STOP)
-                                self.set_record_btn_current_status()
-                                self.left_channel_player.set_volume(1.0)  # * .01
-                                self.right_channel_player.set_volume(1.0)  # * .01
-                                self.ui.horizontalSlider_volume.setValue(100)
-                                if test_type == TEST_TYPE.TEST_SPEAKER_MIC:
-                                    self.ui.groupBox.setTitle("Тест динамиков и микрофона")
-                                elif test_type == TEST_TYPE.TEST_HEADSET_MIC:
-                                    self.ui.groupBox.setTitle("Тест наушников и микрофона(В наушниках)")
-                                self.show()
-                                return True
+                            self.kill_thread_or_set_default()
+                            self.left_channel_player.load_file(patch_left)
+                            self.right_channel_player.load_file(patch_right)
+                            self.all_channel_player.load_file(self.path_to_record_audio)
+                            self.all_channel_player.set_volume(1.0)
+                            self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_RIGHT, AUDIO_STATUS.STATUS_STOP)
+                            self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_LEFT, AUDIO_STATUS.STATUS_STOP)
+                            self.set_record_btn_current_status()
+                            self.left_channel_player.set_volume(1.0)  # * .01
+                            self.right_channel_player.set_volume(1.0)  # * .01
+                            self.ui.horizontalSlider_volume.setValue(100)
+                            if test_type == TEST_TYPE.TEST_SPEAKER_MIC:
+                                self.ui.groupBox.setTitle("Тест динамиков и микрофона")
+                            elif test_type == TEST_TYPE.TEST_HEADSET_MIC:
+                                self.ui.groupBox.setTitle("Тест наушников и микрофона(В наушниках)")
+                            self.show()
+                            return True
 
-    def is_record_avalible(self) -> bool:
+    def is_record_avalible_open(self) -> bool:
         stream = None
         try:
             stream = self.precord.open(format=self.FORMAT, channels=self.CHANNELS,
                                        rate=self.RATE, input=True,
                                        )
+
             stream.start_stream()
             return True
         except:
@@ -267,6 +272,22 @@ class CSpeakerTestWindow(QMainWindow):
                 stream.stop_stream()
                 stream.close()
 
+    @classmethod
+    def is_any_record_avalible(cls) -> bool:
+        try:
+            p = PyAudio()
+
+            # Получение информации о устройствах
+            device_count = p.get_device_count()
+            for i in range(device_count):
+                device_info = p.get_device_info_by_index(i)
+                # Проверяем, является ли устройство микрофоном
+                if device_info['maxInputChannels'] > 0:
+                    return True
+
+            return False
+        except:
+            return False
 
     def kill_thread_or_set_default(self):
         if self.thread_start:
