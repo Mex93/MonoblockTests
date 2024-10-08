@@ -1,15 +1,17 @@
+import time
 from sys import argv, exit
+from time import sleep
 from os.path import isdir as file_isdir
-
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtGui import QFontDatabase
 
 from ui.untitled import Ui_MainWindow
 from ui.get_check_string_window import Ui_MainWindow as Ui_StringWindow
+
 from common import send_message_box, SMBOX_ICON_TYPE, get_about_text, get_rules_text
 
-from components.CConfig import CNewConfig, CParameters, BLOCKS_DATA, SYS_INFO_PARAMS, CONFIG_PARAMS
+from components.CConfig import CNewConfig, BLOCKS_DATA, SYS_INFO_PARAMS, CONFIG_PARAMS
 from components.CTests import CTests, TEST_TYPE, CTestProcess, TEST_RESULT
 from components.CConfig_Main import CMainConfig
 from components.CSystemInfoTest import CSystemInfo, CSystemInfoWindow
@@ -227,6 +229,11 @@ class MainWindow(QMainWindow):
         text = self.ui.comboBox_config_get.currentText()
         print(text)
         if text:
+
+            if self.ctest_process.is_test_launch() != TEST_TYPE.TEST_NONE:
+                self.ctest_process.stop_test()
+
+            CButtoms.set_buttoms_default_color()
 
             if not self.cconfig_unit.set_init_config(text):
                 self.cconfig_unit.create_config_data()
@@ -626,8 +633,8 @@ class MainWindow(QMainWindow):
             print("тест завершён так как дальше нету")
         else:
             print("Я ещё нашёл тесты")
+            time.sleep(0.5)
             self.ctest_process.switch_launch_test(next_test)
-
             self.show_test_window_no_window(next_test)
 
     def on_test_phb_success(self, test_type: TEST_TYPE):
