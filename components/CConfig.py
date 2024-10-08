@@ -4,9 +4,7 @@ from components.CExternalDisplayTest import CExternalDisplay
 from enuuuums import (CONFIG_PARAMS, SYS_INFO_PARAMS, BLOCKS_DATA,
                       EXTERNAL_DISPLAY_PARAMS, SPEAKER_PARAMS, VIDEO_CAM_PARAMS,
                       KEYSBUTTOMS_PARAMS, BRIGHTNESS_PARAMS, USB_TEST_PARAMS,
-                      PATTERNS_TEST_PARAMS,
-
-                      )
+                      PATTERNS_TEST_PARAMS)
 
 
 class ConfigError(Exception):

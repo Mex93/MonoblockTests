@@ -61,7 +61,6 @@ class CUSBDevicesTestWindow(QMainWindow):
                     set_rebuild = True
 
                 max_size = int(CUSBDevicesTest.get_test_stats(USB_TEST_PARAMS.MAX_SIZE))
-                print(max_size)
                 if set_rebuild:
                     for driver in drivers:
                         total = f"{driver['total'] / (1024 ** 3):.2f}"
@@ -98,7 +97,8 @@ class CUSBDevicesTestWindow(QMainWindow):
     def window_show(self) -> bool:
         try:
             drivers = CSystemInfo.get_drives_info_usb_test()
-            if len(drivers):
+            max_size = int(CUSBDevicesTest.get_test_stats(USB_TEST_PARAMS.MAX_SIZE))
+            if len(drivers) and 1 < max_size < 1000:
                 self.first_load = True
                 self.timer.start(1004)
                 self.show()
