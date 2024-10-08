@@ -86,7 +86,7 @@ class CBrightnessTestWindow(QMainWindow):
                         self.ui.verticalLayout_2.insertWidget(0, self.viewer)
                     self.timer_test.start(1004)
                     self.timer_brightness.start(150)
-                    self.old_bright = self.get_brightness()[0]
+                    self.old_bright = self.get_brightness()
                     self.set_brightness(100)
                     self.start_test = True
                     self.secons_for_stop = 5
@@ -117,7 +117,7 @@ class CBrightnessTestWindow(QMainWindow):
         sbc.set_brightness(max(value, 0))  # Не допускаем отрицательных значений
 
     @classmethod
-    def get_brightness(cls): return sbc.get_brightness()
+    def get_brightness(cls) -> int: return sbc.get_brightness()[0]
 
 
 class ImageView(QGraphicsView):
