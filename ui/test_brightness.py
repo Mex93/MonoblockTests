@@ -24,13 +24,15 @@ class Ui_TestBrightnessWindow(object):
     def setupUi(self, TestBrightnessWindow):
         if not TestBrightnessWindow.objectName():
             TestBrightnessWindow.setObjectName(u"TestBrightnessWindow")
-        TestBrightnessWindow.resize(1197, 573)
+        TestBrightnessWindow.resize(1368, 660)
         icon = QIcon()
         icon.addFile(u":/res/images/logo.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         TestBrightnessWindow.setWindowIcon(icon)
         self.centralwidget = QWidget(TestBrightnessWindow)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.verticalLayout_2 = QVBoxLayout(self.centralwidget)
+        self.verticalLayout_3 = QVBoxLayout(self.centralwidget)
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.verticalLayout_2 = QVBoxLayout()
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.frame_btns = QFrame(self.centralwidget)
         self.frame_btns.setObjectName(u"frame_btns")
@@ -38,10 +40,6 @@ class Ui_TestBrightnessWindow(object):
         self.frame_btns.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout = QVBoxLayout(self.frame_btns)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.verticalLayout.addItem(self.verticalSpacer)
-
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setContentsMargins(-1, 20, -1, -1)
@@ -120,6 +118,9 @@ class Ui_TestBrightnessWindow(object):
 
 
         self.verticalLayout_2.addWidget(self.frame_btns)
+
+
+        self.verticalLayout_3.addLayout(self.verticalLayout_2)
 
         TestBrightnessWindow.setCentralWidget(self.centralwidget)
 
