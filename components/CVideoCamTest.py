@@ -93,7 +93,7 @@ class CVideoCamWindow(QMainWindow):
             try:
                 camera_index = CVideoCam.get_test_stats(VIDEO_CAM_PARAMS.CAMERA_INDEX)
                 if isinstance(camera_index, int):
-                    if 0 < camera_index < 20:
+                    if 0 <= camera_index < 20:
                         if self.is_camera_connected(camera_index):
                             self.start_capture = True
                             self.capture = cv2_VideoCapture(camera_index)  # 0 — это индекс для первой камеры
