@@ -87,10 +87,11 @@ class CSpeakerTestWindow(QMainWindow):
             self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_RIGHT, AUDIO_STATUS.STATUS_STOP)
             self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_LEFT, AUDIO_STATUS.STATUS_STOP)
             MediaPlayer.stop_any_play()
-            if not self.thread_start:
-                self.thread_id = threading_Thread(target=self.start_record_script)
-                self.thread_id.start()
-                self.thread_start = True
+            if self.is_record_avalible():
+                if not self.thread_start:
+                    self.thread_id = threading_Thread(target=self.start_record_script)
+                    self.thread_id.start()
+                    self.thread_start = True
 
     def start_record_script(self):
         try:
@@ -123,8 +124,11 @@ class CSpeakerTestWindow(QMainWindow):
                 self.all_channel_player.start_play()
                 print("я отработал (поток в рекорде)")
 
-        except OSError:
-            pass
+        except:
+            self.set_default_record_play()
+            self.stop_record_stream()
+            self.record_state = AUDIO_TEST_RECORD_STATE.STATE_NONE
+            self.set_record_btn_current_status()
 
         return
 
@@ -229,36 +233,40 @@ class CSpeakerTestWindow(QMainWindow):
                 if patch_left.find("content") != -1 and patch_right.find("content") != -1:
                     if patch_left.find(".mp3") != -1 and patch_right.find(".mp3") != -1:
                         if file_isfile(patch_left) and file_isfile(patch_right):
-                            stream = None
-                            try:
-                                stream = self.precord.open(format=self.FORMAT, channels=self.CHANNELS,
-                                                           rate=self.RATE, input=True,
-                                                           )
-                                stream.start_stream()
-                            except:
-                                return False
-                            finally:
-                                if stream is not None:
-                                    stream.stop_stream()
-                                    stream.close()
+                            if self.is_record_avalible():
+                                self.kill_thread_or_set_default()
+                                self.left_channel_player.load_file(patch_left)
+                                self.right_channel_player.load_file(patch_right)
+                                self.all_channel_player.load_file(self.path_to_record_audio)
+                                self.all_channel_player.set_volume(1.0)
+                                self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_RIGHT, AUDIO_STATUS.STATUS_STOP)
+                                self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_LEFT, AUDIO_STATUS.STATUS_STOP)
+                                self.set_record_btn_current_status()
+                                self.left_channel_player.set_volume(1.0)  # * .01
+                                self.right_channel_player.set_volume(1.0)  # * .01
+                                self.ui.horizontalSlider_volume.setValue(100)
+                                if test_type == TEST_TYPE.TEST_SPEAKER_MIC:
+                                    self.ui.groupBox.setTitle("Тест динамиков и микрофона")
+                                elif test_type == TEST_TYPE.TEST_HEADSET_MIC:
+                                    self.ui.groupBox.setTitle("Тест наушников и микрофона(В наушниках)")
+                                self.show()
+                                return True
 
-                            self.kill_thread_or_set_default()
-                            self.left_channel_player.load_file(patch_left)
-                            self.right_channel_player.load_file(patch_right)
-                            self.all_channel_player.load_file(self.path_to_record_audio)
-                            self.all_channel_player.set_volume(1.0)
-                            self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_RIGHT, AUDIO_STATUS.STATUS_STOP)
-                            self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_LEFT, AUDIO_STATUS.STATUS_STOP)
-                            self.set_record_btn_current_status()
-                            self.left_channel_player.set_volume(1.0)  # * .01
-                            self.right_channel_player.set_volume(1.0)  # * .01
-                            self.ui.horizontalSlider_volume.setValue(100)
-                            if test_type == TEST_TYPE.TEST_SPEAKER_MIC:
-                                self.ui.groupBox.setTitle("Тест динамиков и микрофона")
-                            elif test_type == TEST_TYPE.TEST_HEADSET_MIC:
-                                self.ui.groupBox.setTitle("Тест наушников и микрофона(В наушниках)")
-                            self.show()
-                            return True
+    def is_record_avalible(self) -> bool:
+        stream = None
+        try:
+            stream = self.precord.open(format=self.FORMAT, channels=self.CHANNELS,
+                                       rate=self.RATE, input=True,
+                                       )
+            stream.start_stream()
+            return True
+        except:
+            return False
+        finally:
+            if stream is not None:
+                stream.stop_stream()
+                stream.close()
+
 
     def kill_thread_or_set_default(self):
         if self.thread_start:
