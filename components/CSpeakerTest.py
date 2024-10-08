@@ -124,10 +124,7 @@ class CSpeakerTestWindow(QMainWindow):
                 print("я отработал (поток в рекорде)")
 
         except OSError:
-            send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
-                             text="Нет источника записи звука!\n",
-                             title="Внимание!",
-                             variant_yes="Закрыть", variant_no="", callback=None)
+            pass
 
         return
 
