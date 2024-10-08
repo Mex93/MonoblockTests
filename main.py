@@ -548,7 +548,7 @@ class MainWindow(QMainWindow):
                 if not result:
                     send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
                                      text="Ошибка в файле конфигурации для видео!\n"
-                                          "Один или несколько параметров ошибочны!\n\n"
+                                          "Один или несколько параметров ошибочны!"
                                      ,
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
@@ -560,7 +560,7 @@ class MainWindow(QMainWindow):
                 if not result:
                     send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
                                      text="Ошибка видео потока! Возможно камера занята или не найдена.\n"
-                                          "Один или несколько параметров ошибочны!\n\n"
+                                          "Один или несколько параметров ошибочны!"
                                      ,
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
@@ -571,8 +571,8 @@ class MainWindow(QMainWindow):
                 result = self.ctest_window_speaker_window.window_show(test_type)
                 if not result:
                     send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
-                                     text="Ошибка в файле конфигурации для аудио!\n"
-                                          "Один или несколько параметров ошибочны!\n\n",
+                                     text="Ошибка в файле конфигурации для аудио теста или нет источника звука\n"
+                                          "Один или несколько параметров ошибочны!",
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
                 else:
@@ -582,8 +582,8 @@ class MainWindow(QMainWindow):
                 result = self.ctest_window_headset_window.window_show(test_type)
                 if not result:
                     send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
-                                     text="Ошибка в файле конфигурации для аудио в наушниках!\n"
-                                          "Один или несколько параметров ошибочны!\n\n",
+                                     text="Ошибка в файле конфигурации для аудио теста в наушниках или нет источника звука\n"
+                                          "Один или несколько параметров ошибочны!",
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
                 else:
@@ -594,7 +594,7 @@ class MainWindow(QMainWindow):
                 if not result:
                     send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
                                      text="Ошибка в файле конфигурации для проверки клавиш!\n"
-                                          "Один или несколько параметров ошибочны!\n\n",
+                                          "Один или несколько параметров ошибочны!",
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
                 else:
@@ -605,7 +605,7 @@ class MainWindow(QMainWindow):
                 if not result:
                     send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
                                      text="Ошибка в файле конфигурации для проверки яркости!\n"
-                                          "Один или несколько параметров ошибочны!\n\n",
+                                          "Один или несколько параметров ошибочны!",
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
                 else:
@@ -616,7 +616,7 @@ class MainWindow(QMainWindow):
                 if not result:
                     send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
                                      text="Ошибка в файле конфигурации для проверки USB разъёмов!\n"
-                                          "Один или несколько параметров ошибочны!\n\n",
+                                          "Один или несколько параметров ошибочны!",
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
                 else:
@@ -627,7 +627,7 @@ class MainWindow(QMainWindow):
                 if not result:
                     send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
                                      text="Ошибка в файле конфигурации для проверки Дисплея!\n"
-                                          "Один или несколько параметров ошибочны!\n\n",
+                                          "Один или несколько параметров ошибочны!",
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
                 else:

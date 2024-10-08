@@ -1,3 +1,4 @@
+import threading
 
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtMultimedia import QAudioOutput
@@ -231,6 +232,19 @@ class CSpeakerTestWindow(QMainWindow):
                 if patch_left.find("content") != -1 and patch_right.find("content") != -1:
                     if patch_left.find(".mp3") != -1 and patch_right.find(".mp3") != -1:
                         if file_isfile(patch_left) and file_isfile(patch_right):
+                            stream = None
+                            try:
+                                stream = self.precord.open(format=self.FORMAT, channels=self.CHANNELS,
+                                                           rate=self.RATE, input=True,
+                                                           )
+                                stream.start_stream()
+                            except:
+                                return False
+                            finally:
+                                if stream is not None:
+                                    stream.stop_stream()
+                                    stream.close()
+
                             self.kill_thread_or_set_default()
                             self.left_channel_player.load_file(patch_left)
                             self.right_channel_player.load_file(patch_right)
