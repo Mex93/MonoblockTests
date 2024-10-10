@@ -591,6 +591,10 @@ class MainWindow(QMainWindow):
                                      variant_yes="Закрыть", variant_no="", callback=None)
                     self.on_test_phb_fail(test_type)
                 else:
+                    if auto_test_launch:
+                        self.ctest_window_speaker_window.ui.pushButton_all_test_break.setText("Прервать тесты")
+                    else:
+                        self.ctest_window_speaker_window.ui.pushButton_all_test_break.setText("Прервать тест")
                     self.ctest_window_speaker_window.setFocus()
 
             case TEST_TYPE.TEST_HEADSET_MIC:

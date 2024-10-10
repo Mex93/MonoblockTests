@@ -1,16 +1,12 @@
-import threading
-
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtMultimedia import QAudioOutput
 from PySide6.QtMultimedia import QMediaPlayer
-from PySide6.QtCore import QUrl, Qt
+from PySide6.QtCore import QUrl, Qt, QThread, Signal, QTimer
 from PySide6.QtGui import QIcon
 from os.path import isfile as file_isfile
 from common import send_message_box, SMBOX_ICON_TYPE
 from pyaudio import PyAudio, paInt16
 from wave import open as wave_open
-from threading import Timer as threading_Timer
-from threading import Thread as threading_Thread
 from enuuuums import SPEAKER_PARAMS, TEST_TYPE, AUDIO_CHANNEL, AUDIO_STATUS, AUDIO_TEST_RECORD_STATE, AUDIO_TEST_STEP
 from ui.test_speaker_audio import Ui_TestAudioWindow
 
@@ -42,13 +38,9 @@ class CSpeakerTestWindow(QMainWindow):
         self.ui = Ui_TestAudioWindow()
         self.ui.setupUi(self)
 
-        self.thread_id = None
-        self.thread_start = False
-
         self.path_to_record_audio = "content/output_sound.wav"
         self.precord = PyAudio()
         self.record_state: AUDIO_TEST_RECORD_STATE = AUDIO_TEST_RECORD_STATE.STATE_NONE
-        self.play_record_timer: threading_Timer | None = None
         self.stream: PyAudio | None = None
         self.all_channel_player = MediaPlayer(AUDIO_CHANNEL.CHANNEL_ALL)
 
@@ -74,9 +66,71 @@ class CSpeakerTestWindow(QMainWindow):
         self.ui.pushButton_right.clicked.connect(
             self.on_user_pressed_play_right)
 
+        self.ui.pushButton_repeat.clicked.connect(
+            self.on_user_pressed_repeat_test)
+
+        self.ui.pushButton_start_test.clicked.connect(
+            self.on_user_pressed_start_test_loop)
+
         self.ui.horizontalSlider_volume.valueChanged.connect(self.on_user_choise_volume)
 
+        self.RecordAudioWorker = RecordWorker(self)
+        self.RecordAudioWorker.update_label.connect(self.RecordAudioWorker.update_label)
+
+        self.play_record_timer_count = 0
+        self.play_record_timer = QTimer()
+        self.play_record_timer.timeout.connect(self.on_update_record_timer)
+
         self.setWindowTitle(f'Меню теста')
+
+    def on_user_pressed_start_test_loop(self):
+        if not AutoTest.is_auto_test_start():
+            MediaPlayer.stop_any_play()
+
+            self.stop_record_stream()
+            self.set_default_record_play()
+
+            AutoTest.start_test()
+            AutoTest.set_step(4, AUDIO_TEST_STEP.STEP_LEFT_CHANNEL)
+            self.set_auto_test_enabled_ui_event(True)
+            UserFollowTest.set_default_units()
+            self.on_user_pressed_play_left()
+
+    def on_update_record_timer(self):
+        if self.record_state == AUDIO_TEST_RECORD_STATE.STATE_PLAY:
+            if self.play_record_timer_count > 0:
+                self.play_record_timer_count -= 1
+            if self.play_record_timer_count == 0:
+                self.on_stop_record_play_time()
+
+        current_test = AutoTest.get_current_auto_test()
+        if current_test == AUDIO_TEST_STEP.STEP_LEFT_CHANNEL:
+            result = AutoTest.set_update_time_count()
+            if result:  # выполнился
+                AutoTest.set_step(4, AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL)
+                self.on_user_pressed_play_right()
+        elif current_test == AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL:
+            result = AutoTest.set_update_time_count()
+            if result:  # выполнился
+                AutoTest.set_step(7, AUDIO_TEST_STEP.STEP_RECORD)
+                self.on_user_pressed_micro_record()
+        elif current_test == AUDIO_TEST_STEP.STEP_RECORD:
+            result = AutoTest.set_update_time_count()
+            if result:  # выполнился
+                AutoTest.stop()
+                self.set_auto_test_enabled_ui_event(False)
+
+    def set_auto_test_enabled_ui_event(self, status: bool):
+        if status:  # запустить
+            self.ui.pushButton_start_test.setText("Запущен тест...")
+            self.ui.pushButton_record.setDisabled(True)
+            self.ui.pushButton_right.setDisabled(True)
+            self.ui.pushButton_left.setDisabled(True)
+        else:
+            self.ui.pushButton_start_test.setText("Запустить")
+            self.ui.pushButton_record.setDisabled(False)
+            self.ui.pushButton_right.setDisabled(False)
+            self.ui.pushButton_left.setDisabled(False)
 
     def on_user_pressed_micro_record(self):
         print("micro record")
@@ -88,59 +142,12 @@ class CSpeakerTestWindow(QMainWindow):
                 self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_LEFT, AUDIO_STATUS.STATUS_STOP)
                 MediaPlayer.stop_any_play()
 
-                if not self.thread_start:
-                    print("Запуск потока")
-                    self.thread_id = threading_Thread(target=self.start_record_script)
-                    self.thread_id.start()
-                    self.thread_start = True
+                self.RecordAudioWorker.start()
             else:
                 send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_WARNING,
                                  text="Не обнаружен источник звука!",
                                  title="Внимание!",
                                  variant_yes="Закрыть", variant_no="", callback=None)
-
-    def start_record_script(self):
-        try:
-            print("Вход в поток")
-            frames = list()
-            self.stream = self.precord.open(format=self.FORMAT, channels=self.CHANNELS,
-                                            rate=self.RATE, input=True,
-                                            )
-
-            self.stream.start_stream()
-            for i in range(0, int(self.RATE / self.CHUNK * 3)):
-                data = self.stream.read(self.CHUNK)
-                frames.append(data)
-
-            self.stream.stop_stream()
-            self.stream.close()
-
-            if self.record_state == AUDIO_TEST_RECORD_STATE.STATE_RECORD:
-                wf = wave_open(self.path_to_record_audio, 'wb')
-                wf.setnchannels(self.CHANNELS)
-                wf.setsampwidth(self.precord.get_sample_size(self.FORMAT))
-                wf.setframerate(self.sample_rate)
-                wf.writeframes(b''.join(frames))
-                wf.close()
-                self.record_state = AUDIO_TEST_RECORD_STATE.STATE_PLAY
-                self.set_record_btn_current_status()
-
-                self.play_record_timer = threading_Timer(2.5, self.on_stop_record_play_time)
-                self.play_record_timer.start()
-
-                self.all_channel_player.start_play()
-                self.is_all_sub_test_used(AUDIO_TEST_STEP.STEP_RECORD)
-                print("я отработал (поток в рекорде)")
-
-        except Exception as err:
-            print(f"Ошибка в start_record_script -> '{err}'")
-            self.set_default_record_play()
-            self.stop_record_stream()
-            self.record_state = AUDIO_TEST_RECORD_STATE.STATE_NONE
-            self.set_record_btn_current_status()
-        self.thread_start = False
-
-        return
 
     def stop_record_stream(self):
         """Если запущен поток аудиозаписи
@@ -152,21 +159,46 @@ class CSpeakerTestWindow(QMainWindow):
         #     self.stream.close()
         #     self.stream = None
 
+    def on_user_pressed_repeat_test(self):
+        self.set_test_default_params()
+        MediaPlayer.stop_any_play()
+
+        self.stop_record_stream()
+        self.set_default_record_play()
+
+    def set_test_default_params(self):
+        self.show_result_btns(False)
+        UserFollowTest.set_clear_class()
+        UserFollowTest(AUDIO_TEST_STEP.STEP_RECORD)
+        UserFollowTest(AUDIO_TEST_STEP.STEP_LEFT_CHANNEL)
+        UserFollowTest(AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL)
+
+        self.all_channel_player.load_file(self.path_to_record_audio)
+        self.all_channel_player.set_volume(1.0)
+        self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_RIGHT, AUDIO_STATUS.STATUS_STOP)
+        self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_LEFT, AUDIO_STATUS.STATUS_STOP)
+        self.set_record_btn_current_status()
+        self.left_channel_player.set_volume(1.0)  # * .01
+        self.right_channel_player.set_volume(1.0)  # * .01
+        self.ui.horizontalSlider_volume.setValue(100)
+
     def on_stop_record_play_time(self):
         """Вызов после колнца таймера"""
         self.set_default_record_play()
         self.stop_record_stream()
         self.set_record_btn_current_status()
         self.all_channel_player.stop_play()
+        if AutoTest.is_auto_test_start():
+            AutoTest.stop()
+            self.set_auto_test_enabled_ui_event(False)
+        self.is_all_sub_test_used(AUDIO_TEST_STEP.STEP_RECORD)
         print("Вызов on_stop_record_play_time")
 
     def set_default_record_play(self):
         """Сброс записи и таймера"""
         self.record_state = AUDIO_TEST_RECORD_STATE.STATE_NONE
-        if self.play_record_timer is not None:
-            if self.play_record_timer.is_alive():
-                self.play_record_timer.cancel()
-            self.play_record_timer = None
+        self.set_record_btn_current_status()
+        self.play_record_timer_count = 0
 
     def set_record_btn_current_status(self):
         icon = None
@@ -247,27 +279,15 @@ class CSpeakerTestWindow(QMainWindow):
                 if patch_left.find("content") != -1 and patch_right.find("content") != -1:
                     if patch_left.find(".mp3") != -1 and patch_right.find(".mp3") != -1:
                         if file_isfile(patch_left) and file_isfile(patch_right):
-                            self.show_result_btns(False)
-                            UserFollowTest.set_default()
-                            UserFollowTest(AUDIO_TEST_STEP.STEP_RECORD)
-                            UserFollowTest(AUDIO_TEST_STEP.STEP_LEFT_CHANNEL)
-                            UserFollowTest(AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL)
-
-                            self.kill_thread_or_set_default()
                             self.left_channel_player.load_file(patch_left)
                             self.right_channel_player.load_file(patch_right)
-                            self.all_channel_player.load_file(self.path_to_record_audio)
-                            self.all_channel_player.set_volume(1.0)
-                            self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_RIGHT, AUDIO_STATUS.STATUS_STOP)
-                            self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_LEFT, AUDIO_STATUS.STATUS_STOP)
-                            self.set_record_btn_current_status()
-                            self.left_channel_player.set_volume(1.0)  # * .01
-                            self.right_channel_player.set_volume(1.0)  # * .01
-                            self.ui.horizontalSlider_volume.setValue(100)
+                            self.set_test_default_params()
                             if test_type == TEST_TYPE.TEST_SPEAKER_MIC:
                                 self.ui.groupBox.setTitle("Тест динамиков и микрофона")
                             elif test_type == TEST_TYPE.TEST_HEADSET_MIC:
                                 self.ui.groupBox.setTitle("Тест наушников и микрофона(В наушниках)")
+
+                            self.play_record_timer.start(1007)
                             self.show()
                             return True
 
@@ -310,18 +330,15 @@ class CSpeakerTestWindow(QMainWindow):
         except:
             return False
 
-    def kill_thread_or_set_default(self):
-        if self.thread_start:
-            self.thread_id.join()
-            self.thread_start = False
-            self.thread_id = None
-
     def closeEvent(self, e):
-        self.kill_thread_or_set_default()
         MediaPlayer.stop_any_play()
 
         self.stop_record_stream()
         self.set_default_record_play()
+        self.play_record_timer.stop()
+        if AutoTest.is_auto_test_start():
+            AutoTest.stop()
+            self.set_auto_test_enabled_ui_event(False)
 
         e.accept()
 
@@ -331,6 +348,53 @@ class CSpeakerTestWindow(QMainWindow):
             UserFollowTest.set_user_test_result(incomming_sub_step, True)
             if UserFollowTest.is_all_test_is_true():
                 self.show_result_btns(True)
+
+
+class RecordWorker(QThread):
+    update_label = Signal(str)
+
+    def __init__(self, main_class: CSpeakerTestWindow):
+        super().__init__()
+        self._main_window = main_class
+
+    def run(self):
+        mw: CSpeakerTestWindow = self._main_window
+        try:
+            print("Вход в поток")
+
+            frames = list()
+            mw.stream = mw.precord.open(format=mw.FORMAT, channels=mw.CHANNELS,
+                                        rate=mw.RATE, input=True,
+                                        )
+
+            mw.stream.start_stream()
+            for i in range(0, int(mw.RATE / mw.CHUNK * 3)):
+                data = mw.stream.read(mw.CHUNK)
+                frames.append(data)
+
+            mw.stream.stop_stream()
+            mw.stream.close()
+
+            if mw.record_state == AUDIO_TEST_RECORD_STATE.STATE_RECORD:
+                wf = wave_open(mw.path_to_record_audio, 'wb')
+                wf.setnchannels(mw.CHANNELS)
+                wf.setsampwidth(mw.precord.get_sample_size(mw.FORMAT))
+                wf.setframerate(mw.sample_rate)
+                wf.writeframes(b''.join(frames))
+                wf.close()
+                mw.record_state = AUDIO_TEST_RECORD_STATE.STATE_PLAY
+                mw.set_record_btn_current_status()
+
+                mw.play_record_timer_count = 3
+                mw.all_channel_player.start_play()
+
+        except Exception as err:
+            print(f"Ошибка в start_record_script -> '{err}'")
+            mw.set_default_record_play()
+            mw.stop_record_stream()
+            mw.record_state = AUDIO_TEST_RECORD_STATE.STATE_NONE
+            mw.set_record_btn_current_status()
+        return
 
 
 class UserFollowTest:
@@ -370,12 +434,18 @@ class UserFollowTest:
                 return unit
 
     @classmethod
-    def set_default(cls):
+    def set_clear_class(cls):
         for unit in cls.__test_list:
             if unit:
                 del unit
         cls.__test_list.clear()
         cls.__show_buttons = False
+
+    @classmethod
+    def set_default_units(cls):
+        for unit in cls.__test_list:
+            if unit:
+                unit.result = False
 
     @classmethod
     def is_buttons_already_show(cls) -> bool:
@@ -432,3 +502,42 @@ class MediaPlayer:
             if player.isPlaying():
                 player.stop()
                 return channel
+
+
+class AutoTest:
+    __start_test = False
+    __current_test = AUDIO_TEST_STEP.STEP_NONE
+    __test_timer = 0
+
+    @classmethod
+    def is_auto_test_start(cls) -> bool:
+        return cls.__start_test
+
+    @classmethod
+    def get_current_auto_test(cls) -> AUDIO_TEST_STEP:
+        return cls.__current_test
+
+    @classmethod
+    def start_test(cls):
+        cls.__start_test = True
+        cls.__current_test = AUDIO_TEST_STEP.STEP_NONE
+        cls.__test_timer = 0
+
+    @classmethod
+    def set_step(cls, timer_count: int, test_step: AUDIO_TEST_STEP):
+        cls.__current_test = test_step
+        cls.__test_timer = timer_count
+
+    @classmethod
+    def set_update_time_count(cls) -> bool:
+        cls.__test_timer -= 1
+        if cls.__test_timer == 0:
+            return True
+
+        return False
+
+    @classmethod
+    def stop(cls):
+        cls.__current_test = AUDIO_TEST_STEP.STEP_NONE
+        cls.__start_test = False
+        cls.__test_timer = 0

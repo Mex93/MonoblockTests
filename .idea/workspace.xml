@@ -4,11 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="fix bugs, added checked web cam and microphone">
+    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="audio test rebuild">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/CSpeakerTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSpeakerTest.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/content/output_sound.wav" beforeDir="false" afterPath="$PROJECT_DIR$/content/output_sound.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/enuuuums.py" beforeDir="false" afterPath="$PROJECT_DIR$/enuuuums.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_speaker_audio.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_speaker_audio.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_speaker_audio.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_speaker_audio.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -477,7 +479,15 @@
       <option name="project" value="LOCAL" />
       <updated>1728414619602</updated>
     </task>
-    <option name="localTasksCounter" value="47" />
+    <task id="LOCAL-00047" summary="audio test rebuild">
+      <option name="closed" value="true" />
+      <created>1728584787276</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1728584787276</updated>
+    </task>
+    <option name="localTasksCounter" value="48" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -509,7 +519,8 @@
     <MESSAGE value="brightness test completed" />
     <MESSAGE value="added old brightness return for pc after end test" />
     <MESSAGE value="fix bugs, added checked web cam and microphone" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix bugs, added checked web cam and microphone" />
+    <MESSAGE value="audio test rebuild" />
+    <option name="LAST_COMMIT_MESSAGE" value="audio test rebuild" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

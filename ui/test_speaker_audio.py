@@ -100,6 +100,15 @@ class Ui_TestAudioWindow(object):
 
         self.gridLayout.addWidget(self.label_2, 1, 0, 1, 1)
 
+        self.pushButton_start_test = QPushButton(self.groupBox)
+        self.pushButton_start_test.setObjectName(u"pushButton_start_test")
+        self.pushButton_start_test.setFont(font)
+        icon3 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.MediaPlaybackStart))
+        self.pushButton_start_test.setIcon(icon3)
+        self.pushButton_start_test.setIconSize(QSize(40, 40))
+
+        self.gridLayout.addWidget(self.pushButton_start_test, 1, 2, 1, 1)
+
 
         self.horizontalLayout_3.addLayout(self.gridLayout)
 
@@ -226,6 +235,7 @@ class Ui_TestAudioWindow(object):
         self.pushButton_left.setText(QCoreApplication.translate("TestAudioWindow", u"\u041b\u0435\u0432\u044b\u0439 \u043a\u0430\u043d\u0430\u043b", None))
         self.pushButton_record.setText(QCoreApplication.translate("TestAudioWindow", u"\u0417\u0430\u043f\u0438\u0441\u0430\u0442\u044c", None))
         self.label_2.setText(QCoreApplication.translate("TestAudioWindow", u"\u0417\u0430\u043f\u0438\u0441\u044c:", None))
+        self.pushButton_start_test.setText(QCoreApplication.translate("TestAudioWindow", u"\u0417\u0430\u043f\u0443\u0441\u0442\u0438\u0442\u044c", None))
         self.label_3.setText(QCoreApplication.translate("TestAudioWindow", u"-", None))
         self.label_4.setText(QCoreApplication.translate("TestAudioWindow", u"+", None))
         self.pushButton_success.setText(QCoreApplication.translate("TestAudioWindow", u"\u0423\u0441\u043f\u0435\u0445", None))
