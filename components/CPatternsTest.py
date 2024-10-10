@@ -84,9 +84,12 @@ class CPatternsTestWindow(QMainWindow):
     def set_image(self):
         self.patterns_index += 1
         if self.patterns_index == self.MAX_PATTERNS_INDEX:
-            self.patterns_index = 0
-            self.buttons_show = True
-            self.ui.frame_btns.setHidden(False)
+            self.__main_window.on_test_phb_success(TEST_TYPE.TEST_PATTERNS)
+            # Данил велел сделать так, просто при полном пролистывании выкидывает теперь в главное
+            return
+            # self.patterns_index = 0
+            # self.buttons_show = True
+            # self.ui.frame_btns.setHidden(False)
         else:
             if self.buttons_show:
                 self.buttons_show = False

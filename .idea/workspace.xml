@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="fix bugs, added checked web cam and microphone" />
+    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="added old brightness return for pc after end test">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CPatternsTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CPatternsTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CSpeakerTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSpeakerTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/content/external_display_vid.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/content/external_display_vid.mp4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/content/output_sound.wav" beforeDir="false" afterPath="$PROJECT_DIR$/content/output_sound.wav" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_speaker_audio.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_speaker_audio.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_speaker_audio.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_speaker_audio.ui" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -68,6 +77,7 @@
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="MonoblockTests" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -448,15 +458,7 @@
       <option name="project" value="LOCAL" />
       <updated>1728410473024</updated>
     </task>
-    <task id="LOCAL-00044" summary="fix bugs, added checked web cam and microphone">
-      <option name="closed" value="true" />
-      <created>1728413894998</created>
-      <option name="number" value="00044" />
-      <option name="presentableId" value="LOCAL-00044" />
-      <option name="project" value="LOCAL" />
-      <updated>1728413894998</updated>
-    </task>
-    <option name="localTasksCounter" value="45" />
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -487,8 +489,7 @@
     <MESSAGE value="brightness test" />
     <MESSAGE value="brightness test completed" />
     <MESSAGE value="added old brightness return for pc after end test" />
-    <MESSAGE value="fix bugs, added checked web cam and microphone" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix bugs, added checked web cam and microphone" />
+    <option name="LAST_COMMIT_MESSAGE" value="added old brightness return for pc after end test" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

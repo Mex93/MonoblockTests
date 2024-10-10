@@ -44,6 +44,9 @@ class CSpeakerTestWindow(QMainWindow):
 
         self.thread_id = None
         self.thread_start = False
+        self.left_channel_used = False
+        self.right_channel_used = False
+        self.record_used = False
 
         self.path_to_record_audio = "content/output_sound.wav"
         self.precord = PyAudio()
@@ -127,6 +130,7 @@ class CSpeakerTestWindow(QMainWindow):
                 self.play_record_timer.start()
 
                 self.all_channel_player.start_play()
+                self.show_result_btns(True)
                 print("я отработал (поток в рекорде)")
 
         except:
@@ -238,6 +242,7 @@ class CSpeakerTestWindow(QMainWindow):
                 if patch_left.find("content") != -1 and patch_right.find("content") != -1:
                     if patch_left.find(".mp3") != -1 and patch_right.find(".mp3") != -1:
                         if file_isfile(patch_left) and file_isfile(patch_right):
+                            self.show_result_btns(False)
                             self.kill_thread_or_set_default()
                             self.left_channel_player.load_file(patch_left)
                             self.right_channel_player.load_file(patch_right)
@@ -272,6 +277,12 @@ class CSpeakerTestWindow(QMainWindow):
                 stream.stop_stream()
                 stream.close()
 
+    def show_result_btns(self, status: bool):
+        status = not status
+        # self.ui.pushButton_fail.setHidden(status)
+        self.ui.pushButton_success.setHidden(status)
+        self.ui.pushButton_repeat.setHidden(status)
+
     @classmethod
     def is_any_record_avalible(cls) -> bool:
         try:
@@ -303,6 +314,33 @@ class CSpeakerTestWindow(QMainWindow):
         self.set_default_record_play()
 
         e.accept()
+
+
+class UserFollowTest:
+    """Класс для проверки чекал ли юзер тест"""
+    __test_list = list()
+
+    class TestTypes:
+        TEST_TYPE_LEFT_CHANNEL = 1
+        TEST_TYPE_RIGHT_CHANNEL = 1
+        TEST_TYPE_RECORD = 1
+
+    def __init__(self, test_type: TestTypes):
+        self.result = False
+        self.test_type = test_type
+        UserFollowTest.__test_list.append(self)
+
+    @classmethod
+    def set_user_test_result(cls, test_type: TestTypes):
+        unit = cls.get_test_unit_from_test_type(test_type)
+        if unit:
+            pass
+
+    @classmethod
+    def get_test_unit_from_test_type(cls, test_type: TestTypes) -> any:
+        for unit in cls.__test_list:
+            if unit.self.test_type == test_type:
+                return unit
 
 
 class MediaPlayer:

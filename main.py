@@ -220,7 +220,7 @@ class MainWindow(QMainWindow):
         first_test = test_list[0]
         self.ctest_process.start_test(first_test)
         CButtoms.set_buttoms_default_color()
-        self.show_test_window_no_window(first_test)
+        self.show_test_window_no_window(first_test, True)
 
     def on_user_pressed_clear_all_test(self):
         current_test = self.ctest_process.is_test_launch()
@@ -234,7 +234,7 @@ class MainWindow(QMainWindow):
         test_list = CTests.get_avalible_test_list()
         if len(test_list):
             if test_type in test_list:
-                self.show_test_window_with_window(test_type)
+                self.show_test_window_with_window(test_type, False)
 
     def on_changed_config(self):
         text = self.ui.comboBox_config_get.currentText()
@@ -477,7 +477,7 @@ class MainWindow(QMainWindow):
                 return index
         return None
 
-    def show_test_window_no_window(self, test_type: TEST_TYPE):
+    def show_test_window_no_window(self, test_type: TEST_TYPE, auto_test_launch: bool):
         """
             Разница с без окна и с окном в показе окна. Без показа тест автоматом проходит без открытия, но не для всех тестов.
             Для других тестов вызывается только окно, там где это нужно
@@ -485,6 +485,7 @@ class MainWindow(QMainWindow):
             В тестах без открытия окна, а именно в автоматических, после авто завершения теста идёт вызов следующего,
             пока не закончится
 
+        :param auto_test_launch:
         :param test_type:
         :return:
         """
@@ -513,9 +514,9 @@ class MainWindow(QMainWindow):
             case _:
                 test_list = CTests.get_avalible_test_list()
                 if test_type in test_list:
-                    self.show_test_window_with_window(test_type)
+                    self.show_test_window_with_window(test_type, auto_test_launch)
 
-    def show_test_window_with_window(self, test_type: TEST_TYPE):
+    def show_test_window_with_window(self, test_type: TEST_TYPE, auto_test_launch: bool):
         """
                    Разница с без окна и с окном в показе окна. Без показа тест автоматом проходит без открытия, но не для всех тестов.
                    Для других тестов вызывается только окно, там где это нужно
@@ -523,6 +524,7 @@ class MainWindow(QMainWindow):
                    В тестах без открытия окна, а именно в автоматических, после авто завершения теста идёт вызов следующего,
                    пока не закончится
 
+               :param auto_test_launch:
                :param test_type:
                :return:
                """
@@ -531,6 +533,10 @@ class MainWindow(QMainWindow):
                 self.ctest_window_sys_info.set_default_string()
 
                 self.ctest_window_sys_info.show()
+                if auto_test_launch:
+                    self.ctest_window_sys_info.ui.pushButton_all_test_break.setText("Прервать тесты")
+                else:
+                    self.ctest_window_sys_info.ui.pushButton_all_test_break.setText("Прервать тест")
                 self.ctest_window_sys_info.setFocus()
                 result = self.ctest_window_sys_info.get_data()
                 if result:
@@ -541,6 +547,7 @@ class MainWindow(QMainWindow):
 
             case TEST_TYPE.TEST_EXTERNAL_DISPLAY:
                 result = self.ctest_window_external_display.window_show()
+
                 if not result:
                     send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
                                      text="Ошибка в файле конфигурации для видео!\n"
@@ -550,10 +557,15 @@ class MainWindow(QMainWindow):
                                      variant_yes="Закрыть", variant_no="", callback=None)
                     self.on_test_phb_fail(test_type)
                 else:
+                    if auto_test_launch:
+                        self.ctest_window_external_display.ui.pushButton_all_test_break.setText("Прервать тесты")
+                    else:
+                        self.ctest_window_external_display.ui.pushButton_all_test_break.setText("Прервать тест")
                     self.ctest_window_external_display.setFocus()
 
             case TEST_TYPE.TEST_FRONT_CAMERA:
                 result = self.ctest_window_video_cam.window_show()
+
                 if not result:
                     send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
                                      text="Ошибка видео потока! Возможно камера занята или не найдена.\n"
@@ -563,6 +575,10 @@ class MainWindow(QMainWindow):
                                      variant_yes="Закрыть", variant_no="", callback=None)
                     self.on_test_phb_fail(test_type)
                 else:
+                    if auto_test_launch:
+                        self.ctest_window_video_cam.ui.pushButton_all_test_break.setText("Прервать тесты")
+                    else:
+                        self.ctest_window_video_cam.ui.pushButton_all_test_break.setText("Прервать тест")
                     self.ctest_window_video_cam.setFocus()
 
             case TEST_TYPE.TEST_SPEAKER_MIC:
@@ -587,6 +603,10 @@ class MainWindow(QMainWindow):
                                      variant_yes="Закрыть", variant_no="", callback=None)
                     self.on_test_phb_fail(test_type)
                 else:
+                    if auto_test_launch:
+                        self.ctest_window_headset_window.ui.pushButton_all_test_break.setText("Прервать тесты")
+                    else:
+                        self.ctest_window_headset_window.ui.pushButton_all_test_break.setText("Прервать тест")
                     self.ctest_window_headset_window.setFocus()
 
             case TEST_TYPE.TEST_HARDWARE_BTN:
@@ -599,6 +619,10 @@ class MainWindow(QMainWindow):
                                      variant_yes="Закрыть", variant_no="", callback=None)
                     self.on_test_phb_fail(test_type)
                 else:
+                    if auto_test_launch:
+                        self.ctest_window_hardwarekeys.ui.pushButton_all_test_break.setText("Прервать тесты")
+                    else:
+                        self.ctest_window_hardwarekeys.ui.pushButton_all_test_break.setText("Прервать тест")
                     self.ctest_window_hardwarekeys.setFocus()
 
             case TEST_TYPE.TEST_BRIGHTNESS:
@@ -611,6 +635,10 @@ class MainWindow(QMainWindow):
                                      variant_yes="Закрыть", variant_no="", callback=None)
                     self.on_test_phb_fail(test_type)
                 else:
+                    if auto_test_launch:
+                        self.ctest_window_brightness.ui.pushButton_all_test_break.setText("Прервать тесты")
+                    else:
+                        self.ctest_window_brightness.ui.pushButton_all_test_break.setText("Прервать тест")
                     self.ctest_window_brightness.setFocus()
 
             case TEST_TYPE.TEST_USB_DEVICES:
@@ -623,6 +651,10 @@ class MainWindow(QMainWindow):
                                      variant_yes="Закрыть", variant_no="", callback=None)
                     self.on_test_phb_fail(test_type)
                 else:
+                    if auto_test_launch:
+                        self.ctest_window_usb_devices.ui.pushButton_all_test_break.setText("Прервать тесты")
+                    else:
+                        self.ctest_window_usb_devices.ui.pushButton_all_test_break.setText("Прервать тест")
                     self.ctest_window_usb_devices.setFocus()
 
             case TEST_TYPE.TEST_PATTERNS:
@@ -636,6 +668,10 @@ class MainWindow(QMainWindow):
 
                     self.on_test_phb_fail(test_type)
                 else:
+                    if auto_test_launch:
+                        self.ctest_window_patterns.ui.pushButton_all_test_break.setText("Прервать тесты")
+                    else:
+                        self.ctest_window_patterns.ui.pushButton_all_test_break.setText("Прервать тест")
                     self.ctest_window_patterns.setFocus()
 
     def on_test_phb_break_all_test(self, test_type: TEST_TYPE):
@@ -655,7 +691,7 @@ class MainWindow(QMainWindow):
             print("Я ещё нашёл тесты")
             time.sleep(0.5)
             self.ctest_process.switch_launch_test(next_test)
-            self.show_test_window_no_window(next_test)
+            self.show_test_window_no_window(next_test, True)
 
     def on_test_phb_success(self, test_type: TEST_TYPE):
 

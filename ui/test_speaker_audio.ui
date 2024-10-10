@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1035</width>
+    <width>1291</width>
     <height>404</height>
    </rect>
   </property>
@@ -297,6 +297,22 @@ padding: 20%;</string>
              </property>
              <property name="text">
               <string>Ошибка</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_repeat">
+             <property name="font">
+              <font>
+               <pointsize>50</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: BLACK;
+padding: 20%;</string>
+             </property>
+             <property name="text">
+              <string>Повтор</string>
              </property>
             </widget>
            </item>

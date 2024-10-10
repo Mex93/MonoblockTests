@@ -24,7 +24,7 @@ class Ui_TestAudioWindow(object):
     def setupUi(self, TestAudioWindow):
         if not TestAudioWindow.objectName():
             TestAudioWindow.setObjectName(u"TestAudioWindow")
-        TestAudioWindow.resize(1035, 404)
+        TestAudioWindow.resize(1291, 404)
         font = QFont()
         font.setPointSize(15)
         TestAudioWindow.setFont(font)
@@ -170,6 +170,14 @@ class Ui_TestAudioWindow(object):
 
         self.horizontalLayout.addWidget(self.pushButton_fail)
 
+        self.pushButton_repeat = QPushButton(self.groupBox)
+        self.pushButton_repeat.setObjectName(u"pushButton_repeat")
+        self.pushButton_repeat.setFont(font2)
+        self.pushButton_repeat.setStyleSheet(u"color: BLACK;\n"
+"padding: 20%;")
+
+        self.horizontalLayout.addWidget(self.pushButton_repeat)
+
         self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer_4)
@@ -222,6 +230,7 @@ class Ui_TestAudioWindow(object):
         self.label_4.setText(QCoreApplication.translate("TestAudioWindow", u"+", None))
         self.pushButton_success.setText(QCoreApplication.translate("TestAudioWindow", u"\u0423\u0441\u043f\u0435\u0445", None))
         self.pushButton_fail.setText(QCoreApplication.translate("TestAudioWindow", u"\u041e\u0448\u0438\u0431\u043a\u0430", None))
+        self.pushButton_repeat.setText(QCoreApplication.translate("TestAudioWindow", u"\u041f\u043e\u0432\u0442\u043e\u0440", None))
         self.pushButton_all_test_break.setText(QCoreApplication.translate("TestAudioWindow", u"\u041f\u0440\u0435\u0440\u0432\u0430\u0442\u044c \u0442\u0435\u0441\u0442\u044b", None))
     # retranslateUi
 
