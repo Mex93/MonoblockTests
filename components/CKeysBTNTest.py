@@ -57,10 +57,10 @@ class CKeyTestWindow(QMainWindow):
                 if KeyPressed.is_key_successful_pressed():
                     self.__main_window.on_test_phb_success(TEST_TYPE.TEST_HARDWARE_BTN)
 
-    def window_show(self) -> bool:
+    def window_show(self) -> str:
         KeyPressed.set_keys_start()
         self.show()
-        return True
+        return "True"
 
     def closeEvent(self, e):
         # Освобождаем камеру при закрытии окна

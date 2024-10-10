@@ -80,7 +80,7 @@ class CVideoCamWindow(QMainWindow):
                 # Устанавливаем изображение в QLabel
                 self.ui.label_video.setPixmap(QPixmap.fromImage(qImg))
 
-    def window_show(self) -> bool:
+    def window_show(self) -> str:
         # self.player.setSource(QUrl.fromLocalFile(patch))
 
         # потому что в общей куче конфигов
@@ -88,22 +88,25 @@ class CVideoCamWindow(QMainWindow):
         # если строка то открываем на полный экран
         # Это не ошибка. В конфиге экстер дисплея сидит конфиг дисплей резолюшн
 
-        if not self.start_capture:
-            # если камера была включена не один раз
-            try:
-                camera_index = CVideoCam.get_test_stats(VIDEO_CAM_PARAMS.CAMERA_INDEX)
-                if isinstance(camera_index, int):
-                    if 0 <= camera_index < 20:
-                        if self.is_camera_connected(camera_index):
-                            self.start_capture = True
-                            self.capture = cv2_VideoCapture(camera_index)  # 0 — это индекс для первой камеры
-                            self.timer.start(20)  # Обновляем каждые 20 мс
-                            self.ui.label_video.setText("Получение данных...")
-                            self.show()
-                            return True
-            except:
-                pass
-        return False
+        if self.start_capture:
+            return "Камера занята"
+
+        try:
+            camera_index = CVideoCam.get_test_stats(VIDEO_CAM_PARAMS.CAMERA_INDEX)
+            if not isinstance(camera_index, int) or (camera_index < 0 or camera_index > 20):
+                return "Индекс камеры в файле конфигурации должен быть целым числом от 0 до 20"
+
+            if not self.is_camera_connected(camera_index):
+                return "Камера не обнаружена"
+            self.start_capture = True
+            self.capture = cv2_VideoCapture(camera_index)  # 0 — это индекс для первой камеры
+            self.timer.start(20)  # Обновляем каждые 20 мс
+            self.ui.label_video.setText("Получение данных...")
+            self.show()
+            return "True"
+        except Exception as err:
+            return f"Во время выполнения проверки старта теста возникла ошибка '{err}'"
+
 
     @classmethod
     def is_camera_connected(cls, cam_index=0):

@@ -4,13 +4,36 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="audio test rebuild">
+    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="audio test rebuild completed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CBrightnessTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CBrightnessTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CExternalDisplayTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CExternalDisplayTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CKeysBTNTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CKeysBTNTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CPatternsTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CPatternsTest.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/CSpeakerTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSpeakerTest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/content/output_sound.wav" beforeDir="false" afterPath="$PROJECT_DIR$/content/output_sound.wav" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CSystemInfoTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSystemInfoTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CTests.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CTests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CUSBTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CUSBTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CVideoCamTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CVideoCamTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configs/test.ini" beforeDir="false" afterPath="$PROJECT_DIR$/configs/test.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_brightness.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_brightness.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_brightness.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_brightness.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_external_display.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_external_display.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_external_display.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_external_display.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_keys.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_keys.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_keys.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_keys.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_patterns.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_patterns.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_patterns.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_patterns.ui" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ui/test_speaker_audio.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_speaker_audio.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ui/test_speaker_audio.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_speaker_audio.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_sys_info.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_sys_info.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_sys_info.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_sys_info.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_usb_devices.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_usb_devices.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_usb_devices.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_usb_devices.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_videocam.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_videocam.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/test_videocam.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_videocam.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -487,7 +510,15 @@
       <option name="project" value="LOCAL" />
       <updated>1728584787276</updated>
     </task>
-    <option name="localTasksCounter" value="48" />
+    <task id="LOCAL-00048" summary="audio test rebuild completed">
+      <option name="closed" value="true" />
+      <created>1728592736892</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1728592736892</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -520,14 +551,15 @@
     <MESSAGE value="added old brightness return for pc after end test" />
     <MESSAGE value="fix bugs, added checked web cam and microphone" />
     <MESSAGE value="audio test rebuild" />
-    <option name="LAST_COMMIT_MESSAGE" value="audio test rebuild" />
+    <MESSAGE value="audio test rebuild completed" />
+    <option name="LAST_COMMIT_MESSAGE" value="audio test rebuild completed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/components/CSystemInfoTest.py</url>
-          <line>531</line>
+          <line>537</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>

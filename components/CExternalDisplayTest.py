@@ -5,6 +5,7 @@ from PySide6.QtCore import QUrl, Qt
 
 from os.path import isfile as file_isfile
 import subprocess
+from screeninfo import get_monitors
 
 from enuuuums import EXTERNAL_DISPLAY_PARAMS, TEST_TYPE, CONFIG_PARAMS
 from ui.test_external_display import Ui_TestExternalDisplayWindow
@@ -87,27 +88,46 @@ class CExternalDisplayWindow(QMainWindow):
         window_rect.moveCenter(screen_center)
         # self.move(window_rect.topLeft())
 
-    def window_show(self) -> bool:
+    @classmethod
+    def check_second_monitor(cls) -> bool:
+        monitors = get_monitors()
+        if len(monitors) > 1:
+            return True
+        return False
+
+    def window_show(self) -> str:
         patch = CExternalDisplay.get_test_stats(EXTERNAL_DISPLAY_PARAMS.VIDEO_PATCH)
-        if patch is not None:
-            if isinstance(patch, str):
-                if patch.find("content") != -1:
-                    if patch.find(".mp4") != -1 or patch.find(".avi") != -1:
-                        if file_isfile(patch):
-                            CExternalDisplay.setup_window_for_dual_monitor()
-                            self.player.setSource(QUrl.fromLocalFile(patch))
+        if patch is None:
+            return "Путь до файла с видео пустой"
 
-                            # потому что в общей куче конфигов
-                            # если задан список, то значит у нас есть указанные размеры
-                            # если строка то открываем на полный экран
-                            display_resolution_list = CExternalDisplay.get_test_stats(CONFIG_PARAMS.DISPLAY_RESOLUTION)
-                            self.player.play()
-                            if isinstance(display_resolution_list, str):
-                                self.showMaximized()
-                            else:
-                                self.show()
+        if not isinstance(patch, str):
+            return "Путь до файла с видео должен быть строкой"
+        if patch.find("content") == -1:
+            return "В строке пути до файла с видео не найдено название папки 'content'"
 
-                            return True
+        if patch.find(".mp4") == -1 and patch.find(".avi") == -1:
+            return "Указан неверный формат видео файла. Доступно .avi, .mp4"
+
+        if not file_isfile(patch):
+            return "Указанный видео-файл не найден в папке 'content'"
+
+        if not self.check_second_monitor():
+            return "Не найден второй монитор"
+
+        CExternalDisplay.setup_window_for_dual_monitor()
+        self.player.setSource(QUrl.fromLocalFile(patch))
+
+        # потому что в общей куче конфигов
+        # если задан список, то значит у нас есть указанные размеры
+        # если строка то открываем на полный экран
+        display_resolution_list = CExternalDisplay.get_test_stats(CONFIG_PARAMS.DISPLAY_RESOLUTION)
+        self.player.play()
+        if isinstance(display_resolution_list, str):
+            self.showMaximized()
+        else:
+            self.show()
+
+        return "True"
 
     def closeEvent(self, e):
         self.player.stop()

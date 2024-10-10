@@ -64,10 +64,6 @@ class Ui_TestPatternsWindow(object):
 
         self.horizontalLayout.addWidget(self.pushButton_success)
 
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer_2)
-
         self.pushButton_fail = QPushButton(self.frame_btns)
         self.pushButton_fail.setObjectName(u"pushButton_fail")
         self.pushButton_fail.setFont(font)
@@ -76,10 +72,6 @@ class Ui_TestPatternsWindow(object):
 "background: white;")
 
         self.horizontalLayout.addWidget(self.pushButton_fail)
-
-        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer_4)
 
         self.pushButton_relaunch = QPushButton(self.frame_btns)
         self.pushButton_relaunch.setObjectName(u"pushButton_relaunch")

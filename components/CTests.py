@@ -7,11 +7,11 @@ class CTests:
         ["Кнопки", TEST_TYPE.TEST_HARDWARE_BTN, "test_buttons"],
         ["Динамики и микрофон", TEST_TYPE.TEST_SPEAKER_MIC, "test_speaker_and_micro"],
         ["Паттерны", TEST_TYPE.TEST_PATTERNS, "test_patterns"],
-        ["Второй дисплей", TEST_TYPE.TEST_EXTERNAL_DISPLAY, "test_external_display"],
+        ["Внешний монитор", TEST_TYPE.TEST_EXTERNAL_DISPLAY, "test_external_display"],
         ["Наушники и микрофон", TEST_TYPE.TEST_HEADSET_MIC, "test_headset_and_micro"],
-        ["Тест USB разъёмов", TEST_TYPE.TEST_USB_DEVICES, "test_usb_device"],
+        ["USB разъёмы", TEST_TYPE.TEST_USB_DEVICES, "test_usb_device"],
         ["Яркость", TEST_TYPE.TEST_BRIGHTNESS, "test_brightness"],
-        ["Front камера", TEST_TYPE.TEST_FRONT_CAMERA, "test_front_camera"],
+        ["Камера", TEST_TYPE.TEST_FRONT_CAMERA, "test_front_camera"],
     )
 
     @classmethod

@@ -36,8 +36,9 @@ class CSpeakerTestWindow(QMainWindow):
         super().__init__(parent)
         self.__main_window = main_window
         self.ui = Ui_TestAudioWindow()
-        self.ui.setupUi(self)
 
+        self.ui.setupUi(self)
+        self.test_type = test_type
         self.path_to_record_audio = "content/output_sound.wav"
         self.precord = PyAudio()
         self.record_state: AUDIO_TEST_RECORD_STATE = AUDIO_TEST_RECORD_STATE.STATE_NONE
@@ -144,10 +145,12 @@ class CSpeakerTestWindow(QMainWindow):
 
                 self.RecordAudioWorker.start()
             else:
+                MediaPlayer.stop_any_play()
                 send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_WARNING,
-                                 text="Не обнаружен источник звука!",
+                                 text="Не обнаружен источник звукозаписи!",
                                  title="Внимание!",
                                  variant_yes="Закрыть", variant_no="", callback=None)
+                self.__main_window.on_test_phb_fail(self.test_type)
 
     def stop_record_stream(self):
         """Если запущен поток аудиозаписи
@@ -271,25 +274,37 @@ class CSpeakerTestWindow(QMainWindow):
             self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_RIGHT, AUDIO_STATUS.STATUS_PLAY)
             self.is_all_sub_test_used(AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL)
 
-    def window_show(self, test_type: TEST_TYPE) -> bool:
+    def window_show(self, test_type: TEST_TYPE) -> str:
+        """
+        Напоминалочка: Отключенный к херам аудио драйвер не даёт ошибку при воспроизведение треков
+        :param test_type:
+        :return:
+        """
         patch_left = CSpeakerTest.get_test_stats(SPEAKER_PARAMS.AUDIO_PATCH_LEFT)
         patch_right = CSpeakerTest.get_test_stats(SPEAKER_PARAMS.AUDIO_PATCH_RIGHT)
-        if None not in (patch_left, patch_right):
-            if isinstance(patch_left, str) and isinstance(patch_right, str):
-                if patch_left.find("content") != -1 and patch_right.find("content") != -1:
-                    if patch_left.find(".mp3") != -1 and patch_right.find(".mp3") != -1:
-                        if file_isfile(patch_left) and file_isfile(patch_right):
-                            self.left_channel_player.load_file(patch_left)
-                            self.right_channel_player.load_file(patch_right)
-                            self.set_test_default_params()
-                            if test_type == TEST_TYPE.TEST_SPEAKER_MIC:
-                                self.ui.groupBox.setTitle("Тест динамиков и микрофона")
-                            elif test_type == TEST_TYPE.TEST_HEADSET_MIC:
-                                self.ui.groupBox.setTitle("Тест наушников и микрофона(В наушниках)")
+        if None in (patch_left, patch_right) or not isinstance(patch_left, str) or not isinstance(patch_right, str):
+            return "Один из путей до файла с музыкой в файле конфигурации ошибочно задан"
 
-                            self.play_record_timer.start(1007)
-                            self.show()
-                            return True
+        if patch_left.find("content") == -1 or patch_right.find("content") == -1:
+            return "Файл с песней должен лежать в папке 'content'"
+
+        if patch_left.find(".mp3") == -1 or patch_right.find(".mp3") == -1:
+            return "Поддерживаемые форматы песен: .mp3"
+
+        if not file_isfile(patch_left) or not file_isfile(patch_right):
+            return "Указанный в конфигурации файл с песней не обнаружен"
+
+        self.left_channel_player.load_file(patch_left)
+        self.right_channel_player.load_file(patch_right)
+        self.set_test_default_params()
+        if test_type == TEST_TYPE.TEST_SPEAKER_MIC:
+            self.ui.groupBox.setTitle("Тест динамиков и микрофона")
+        elif test_type == TEST_TYPE.TEST_HEADSET_MIC:
+            self.ui.groupBox.setTitle("Тест наушников и микрофона(В наушниках)")
+
+        self.play_record_timer.start(1007)
+        self.show()
+        return "True"
 
     def is_record_avalible_open(self) -> bool:
         stream = None

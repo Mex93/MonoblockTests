@@ -59,8 +59,11 @@ class CSystemInfo:
     def get_drives_only_disk_char():
         drives = []
         partitions = disk_partitions()
+
         for partition in partitions:
-            drives.append([partition.device, partition.maxfile])
+            print(partition)
+        # for partition in partitions:
+        #     drives.append([partition.device, partition.maxfile])
 
         return drives
 
@@ -96,6 +99,10 @@ class CSystemInfo:
         drives_info = []
         partitions = disk_partitions()
         for partition in partitions:
+            if isinstance(partition.opts, str):
+                if partition.opts.find('removable') == -1:
+                    continue
+
             try:
                 partition_info = disk_usage(partition.mountpoint)
                 drive_details = {
@@ -106,8 +113,7 @@ class CSystemInfo:
                 drives_info.append(drive_details)
             except Exception as e:
                 pass
-        if len(drives_info) > 0:
-            return drives_info
+        return drives_info
 
     @staticmethod
     def get_uninitialized_disks():

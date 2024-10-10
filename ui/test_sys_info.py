@@ -133,10 +133,6 @@ class Ui_TestSysInfoWindow(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer_3)
 
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer)
-
         self.pushButton_success = QPushButton(self.groupBox_2)
         self.pushButton_success.setObjectName(u"pushButton_success")
         font2 = QFont()
@@ -147,10 +143,6 @@ class Ui_TestSysInfoWindow(object):
 
         self.horizontalLayout.addWidget(self.pushButton_success)
 
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer_2)
-
         self.pushButton_fail = QPushButton(self.groupBox_2)
         self.pushButton_fail.setObjectName(u"pushButton_fail")
         self.pushButton_fail.setFont(font2)
@@ -158,10 +150,6 @@ class Ui_TestSysInfoWindow(object):
 "padding: 20%;")
 
         self.horizontalLayout.addWidget(self.pushButton_fail)
-
-        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer_4)
 
         self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 

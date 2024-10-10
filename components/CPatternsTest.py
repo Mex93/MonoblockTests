@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QMainWindow
 from PySide6.QtCore import Qt
 import os
 from PySide6.QtGui import QPixmap
+from os.path import isdir as file_isdir
 
 from enuuuums import PATTERNS_TEST_PARAMS, TEST_TYPE
 from ui.test_patterns import Ui_TestPatternsWindow
@@ -51,9 +52,11 @@ class CPatternsTestWindow(QMainWindow):
         self.patterns_list = list()
         self.patterns_index = 0
 
-    def window_show(self) -> bool:
+    def window_show(self) -> str:
         self.patterns_list.clear()
         path = "content/patterns"
+        if not file_isdir(path):
+            return f"В директории программы не найден путь '{path}'"
 
         # чтение записей
         with os.scandir(path) as listOfEntries:
@@ -72,9 +75,9 @@ class CPatternsTestWindow(QMainWindow):
             self.buttons_show = False
             self.set_image()
             self.showFullScreen()
-            return True
-
-        return False
+            return "True"
+        else:
+            return f"В папке '{path}' не обнаружен ни один файл с паттерном в формате .jpg"
 
     def set_background_color_from_image(self, image_path):
         pixmap = QPixmap(image_path)

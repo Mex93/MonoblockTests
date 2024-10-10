@@ -36,7 +36,7 @@ from components.CButtons import CButtoms
 # pyside6-uic .\ui\test_usb_devices.ui -o .\ui\test_usb_devices.py
 # pyside6-uic .\ui\test_speaker_audio.ui -o .\ui\test_speaker_audio.py
 # pyside6-rcc .\ui\res.qrc -o .\ui\res_rc.py
-# Press the green button in the gutter to run the script.
+
 
 
 class MainWindow(QMainWindow):
@@ -548,14 +548,13 @@ class MainWindow(QMainWindow):
             case TEST_TYPE.TEST_EXTERNAL_DISPLAY:
                 result = self.ctest_window_external_display.window_show()
 
-                if not result:
+                if result != "True":
                     send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
-                                     text="Ошибка в файле конфигурации для видео!\n"
-                                          "Один или несколько параметров ошибочны!"
-                                     ,
+                                     text=f"Ошибка запуска теста '{CTests.get_test_name_from_test_type(test_type)}'!\n"
+                                          f"Тест сообщил описание ошибки: '{result}'.",
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
-                    self.on_test_phb_fail(test_type)
+                    self.on_test_phb_fail(test_type, False)
                 else:
                     if auto_test_launch:
                         self.ctest_window_external_display.ui.pushButton_all_test_break.setText("Прервать тесты")
@@ -566,14 +565,13 @@ class MainWindow(QMainWindow):
             case TEST_TYPE.TEST_FRONT_CAMERA:
                 result = self.ctest_window_video_cam.window_show()
 
-                if not result:
+                if result != "True":
                     send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
-                                     text="Ошибка видео потока! Возможно камера занята или не найдена.\n"
-                                          "Один или несколько параметров ошибочны!"
-                                     ,
+                                     text=f"Ошибка запуска теста '{CTests.get_test_name_from_test_type(test_type)}'!\n"
+                                          f"Тест сообщил описание ошибки: '{result}'.",
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
-                    self.on_test_phb_fail(test_type)
+                    self.on_test_phb_fail(test_type, False)
                 else:
                     if auto_test_launch:
                         self.ctest_window_video_cam.ui.pushButton_all_test_break.setText("Прервать тесты")
@@ -583,13 +581,13 @@ class MainWindow(QMainWindow):
 
             case TEST_TYPE.TEST_SPEAKER_MIC:
                 result = self.ctest_window_speaker_window.window_show(test_type)
-                if not result:
+                if result != "True":
                     send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
-                                     text="Ошибка в файле конфигурации для аудио теста или нет источника звука\n"
-                                          "Один или несколько параметров ошибочны!",
+                                     text=f"Ошибка запуска теста '{CTests.get_test_name_from_test_type(test_type)}'!\n"
+                                          f"Тест сообщил описание ошибки: '{result}'.",
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
-                    self.on_test_phb_fail(test_type)
+                    self.on_test_phb_fail(test_type, False)
                 else:
                     if auto_test_launch:
                         self.ctest_window_speaker_window.ui.pushButton_all_test_break.setText("Прервать тесты")
@@ -599,13 +597,13 @@ class MainWindow(QMainWindow):
 
             case TEST_TYPE.TEST_HEADSET_MIC:
                 result = self.ctest_window_headset_window.window_show(test_type)
-                if not result:
+                if result != "True":
                     send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
-                                     text="Ошибка в файле конфигурации для аудио теста в наушниках или нет источника звука\n"
-                                          "Один или несколько параметров ошибочны!",
+                                     text=f"Ошибка запуска теста '{CTests.get_test_name_from_test_type(test_type)}'!\n"
+                                          f"Тест сообщил описание ошибки: '{result}'.",
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
-                    self.on_test_phb_fail(test_type)
+                    self.on_test_phb_fail(test_type, False)
                 else:
                     if auto_test_launch:
                         self.ctest_window_headset_window.ui.pushButton_all_test_break.setText("Прервать тесты")
@@ -615,13 +613,13 @@ class MainWindow(QMainWindow):
 
             case TEST_TYPE.TEST_HARDWARE_BTN:
                 result = self.ctest_window_hardwarekeys.window_show()
-                if not result:
+                if result != "True":
                     send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
-                                     text="Ошибка в файле конфигурации для проверки клавиш!\n"
-                                          "Один или несколько параметров ошибочны!",
+                                     text=f"Ошибка запуска теста '{CTests.get_test_name_from_test_type(test_type)}'!\n"
+                                          f"Тест сообщил описание ошибки: '{result}'.",
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
-                    self.on_test_phb_fail(test_type)
+                    self.on_test_phb_fail(test_type, False)
                 else:
                     if auto_test_launch:
                         self.ctest_window_hardwarekeys.ui.pushButton_all_test_break.setText("Прервать тесты")
@@ -631,13 +629,13 @@ class MainWindow(QMainWindow):
 
             case TEST_TYPE.TEST_BRIGHTNESS:
                 result = self.ctest_window_brightness.window_show()
-                if not result:
+                if result != "True":
                     send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
-                                     text="Ошибка в файле конфигурации для проверки яркости!\n"
-                                          "Один или несколько параметров ошибочны!",
+                                     text=f"Ошибка запуска теста '{CTests.get_test_name_from_test_type(test_type)}'!\n"
+                                          f"Тест сообщил описание ошибки: '{result}'.",
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
-                    self.on_test_phb_fail(test_type)
+                    self.on_test_phb_fail(test_type, False)
                 else:
                     if auto_test_launch:
                         self.ctest_window_brightness.ui.pushButton_all_test_break.setText("Прервать тесты")
@@ -647,13 +645,13 @@ class MainWindow(QMainWindow):
 
             case TEST_TYPE.TEST_USB_DEVICES:
                 result = self.ctest_window_usb_devices.window_show()
-                if not result:
+                if result != "True":
                     send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
-                                     text="Ошибка в файле конфигурации для проверки USB разъёмов!\n"
-                                          "Один или несколько параметров ошибочны!",
+                                     text=f"Ошибка запуска теста '{CTests.get_test_name_from_test_type(test_type)}'!\n"
+                                          f"Тест сообщил описание ошибки: '{result}'.",
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
-                    self.on_test_phb_fail(test_type)
+                    self.on_test_phb_fail(test_type, False)
                 else:
                     if auto_test_launch:
                         self.ctest_window_usb_devices.ui.pushButton_all_test_break.setText("Прервать тесты")
@@ -663,14 +661,14 @@ class MainWindow(QMainWindow):
 
             case TEST_TYPE.TEST_PATTERNS:
                 result = self.ctest_window_patterns.window_show()
-                if not result:
+                if result != "True":
                     send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
-                                     text="Ошибка в файле конфигурации для проверки Дисплея!\n"
-                                          "Один или несколько параметров ошибочны!",
+                                     text=f"Ошибка запуска теста '{CTests.get_test_name_from_test_type(test_type)}'!\n"
+                                          f"Тест сообщил описание ошибки: '{result}'.",
                                      title="Внимание!",
                                      variant_yes="Закрыть", variant_no="", callback=None)
 
-                    self.on_test_phb_fail(test_type)
+                    self.on_test_phb_fail(test_type, False)
                 else:
                     if auto_test_launch:
                         self.ctest_window_patterns.ui.pushButton_all_test_break.setText("Прервать тесты")
@@ -710,7 +708,7 @@ class MainWindow(QMainWindow):
 
         self.close_current_test_window(test_type)
 
-    def on_test_phb_fail(self, test_type: TEST_TYPE):
+    def on_test_phb_fail(self, test_type: TEST_TYPE, is_window_open: bool = True):
 
         current_test = self.ctest_process.is_test_launch()
         if current_test != TEST_TYPE.TEST_NONE:
@@ -720,8 +718,8 @@ class MainWindow(QMainWindow):
         btn_unit: CButtoms = CButtoms.get_unit_from_test_type(test_type)
         if btn_unit is not None:
             btn_unit.set_btn_color_red()
-
-        self.close_current_test_window(test_type)
+        if is_window_open:
+            self.close_current_test_window(test_type)
 
     def close_current_test_window(self, current_test: TEST_TYPE):
         if current_test == TEST_TYPE.TEST_SYSTEM_INFO:

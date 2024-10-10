@@ -1,6 +1,4 @@
-
 from PySide6.QtCore import Qt, QTimer
-
 
 from PySide6.QtWidgets import (QGroupBox, QHBoxLayout,
                                QLabel, QMainWindow,
@@ -50,63 +48,61 @@ class CUSBDevicesTestWindow(QMainWindow):
     def update_devices(self):
         try:
             drivers = CSystemInfo.get_drives_info_usb_test()
-            if len(drivers) > 0:
-                set_rebuild = False
+            set_rebuild = False
 
-                if self.first_load:
-                    self.control_str = ""
-                    Table.clear()
-                    Table.set_init()
-                    self.first_load = False
-                    set_rebuild = True
+            if self.first_load:
+                self.control_str = ""
+                Table.clear()
+                Table.set_init()
+                self.first_load = False
+                set_rebuild = True
 
-                max_size = int(CUSBDevicesTest.get_test_stats(USB_TEST_PARAMS.MAX_SIZE))
-                if set_rebuild:
-                    for driver in drivers:
-                        total = f"{driver['total'] / (1024 ** 3):.2f}"
-                        if driver['total'] / (1024 ** 3) > max_size:
-                            continue
+            max_size = int(CUSBDevicesTest.get_test_stats(USB_TEST_PARAMS.MAX_SIZE))
+            if set_rebuild:
+                for driver in drivers:
+                    total = f"{driver['total'] / (1024 ** 3):.2f}"
+                    if driver['total'] / (1024 ** 3) > max_size:
+                        continue
 
-                        device = driver['device']
-                        free = f"{driver['free'] / (1024 ** 3):.2f}"
-                        check_string = f"{device}_{total}"
+                    device = driver['device']
+                    free = f"{driver['free'] / (1024 ** 3):.2f}"
+                    check_string = f"{device}_{total}"
 
-                        self.cdevices.create_element(f"Накопитель '{device}'", f"Объём: {total} ГБ",
-                                                     f"Свободно: {free} ГБ")
-                        self.control_str += check_string
+                    self.cdevices.create_element(f"Накопитель '{device}'", f"Объём: {total} ГБ",
+                                                 f"Свободно: {free} ГБ", "Removable")
+                    self.control_str += check_string
 
+            else:
+                devices_str = str()
+                for driver in drivers:
+                    total = f"{driver['total'] / (1024 ** 3):.2f}"
+                    if driver['total'] / (1024 ** 3) > max_size:
+                        continue
+
+                    device = driver['device']
+                    check_string = f"{device}_{total}"
+                    devices_str += check_string
+
+                if devices_str != self.control_str:
+                    self.cdevices.destroy_elements()
+                    self.first_load = True
                 else:
-                    devices_str = str()
-                    for driver in drivers:
-                        total = f"{driver['total'] / (1024 ** 3):.2f}"
-                        if driver['total'] / (1024 ** 3) > max_size:
-                            continue
-
-                        device = driver['device']
-                        check_string = f"{device}_{total}"
-                        devices_str += check_string
-
-                    if devices_str != self.control_str:
-                        self.cdevices.destroy_elements()
-                        self.first_load = True
-                    else:
-                        pass
+                    pass
         except:
             self.__main_window.on_test_phb_fail(TEST_TYPE.TEST_USB_DEVICES)
 
-    def window_show(self) -> bool:
+    def window_show(self) -> str:
         try:
-            drivers = CSystemInfo.get_drives_info_usb_test()
             max_size = int(CUSBDevicesTest.get_test_stats(USB_TEST_PARAMS.MAX_SIZE))
-            if len(drivers) and 1 < max_size < 1000:
+            if 1 < max_size < 1000:
                 self.first_load = True
                 self.timer.start(1004)
                 self.show()
-                return True
-        except:
-            pass
-
-        return False
+                return "True"
+            else:
+                return f"Максимальный размер параметра проверки размерности в файле конфигурации от 1 до 1000 ГБ"
+        except Exception as err:
+            return f"Во время выполнения проверки старта теста возникла ошибка '{err}'"
 
     def closeEvent(self, e):
         self.timer.stop()
@@ -119,7 +115,7 @@ class DeviceUnit:
     """
 
     def __init__(self, element_index: int, main_window: CUSBDevicesTestWindow, char_disk: str, max_space: str,
-                 current_space: str):
+                 current_space: str, storage_type: str):
         self.__char_disk = char_disk
         self.__max_space = max_space
         self.__current_space = current_space
@@ -153,7 +149,7 @@ class DeviceUnit:
         self.groupBox_2_disk_1.setTitle(char_disk)
         self.label_max_space_disk_1.setText(max_space)
         self.label_current_space_disk_1.setText(current_space)
-        self.label_drive_type_disk_1.setText("LOCAL STORAGE")
+        self.label_drive_type_disk_1.setText(storage_type)
 
     def delete_item(self):
         self.groupBox_2_disk_1.deleteLater()
@@ -170,8 +166,8 @@ class DeviceWindow:
         self.__count_devices = 0
         self.__main = main_window
 
-    def create_element(self, char_disk: str, max_space: str, current_space: str) -> DeviceUnit:
-        unit = DeviceUnit(self.__uniq_index, self.__main, char_disk, max_space, current_space)
+    def create_element(self, char_disk: str, max_space: str, current_space: str, storage_type: str) -> DeviceUnit:
+        unit = DeviceUnit(self.__uniq_index, self.__main, char_disk, max_space, current_space, storage_type)
         self.__uniq_index += 1
         self.__devices_units.append(unit)
 

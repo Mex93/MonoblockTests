@@ -76,26 +76,27 @@ class CBrightnessTestWindow(QMainWindow):
                 self.clear_test()
                 self.ui.frame_btns.setHidden(False)
 
-    def window_show(self) -> bool:
+    def window_show(self) -> str:
         image_path = CBrightnessTest.get_test_stats(BRIGHTNESS_PARAMS.FILE_PATCH)
-        if image_path and isinstance(image_path, str):
-            if image_path.find("content/") != -1:
-                if file_isfile(image_path):
-                    if self.viewer is None:
-                        self.viewer = ImageView(image_path)  # Замените на путь к вашему изображению
-                        self.ui.verticalLayout_2.insertWidget(0, self.viewer)
-                    self.timer_test.start(1004)
-                    self.timer_brightness.start(150)
-                    self.old_bright = self.get_brightness()
-                    self.set_brightness(100)
-                    self.start_test = True
-                    self.secons_for_stop = 5
-                    self.to_up = False
+        if not image_path or not isinstance(image_path, str) or image_path.find("content/") == -1:
+            return "Путь до файла с паттерном проверки задан не верно"
+        if not file_isfile(image_path):
+            return "Файл, который указан в пути, не найден"
 
-                    self.ui.frame_btns.setHidden(True)
-                    self.showFullScreen()
-                    return True
-        return False
+        if self.viewer is None:
+            self.viewer = ImageView(image_path)  # Замените на путь к вашему изображению
+            self.ui.verticalLayout_2.insertWidget(0, self.viewer)
+        self.timer_test.start(1004)
+        self.timer_brightness.start(150)
+        self.old_bright = self.get_brightness()
+        self.set_brightness(100)
+        self.start_test = True
+        self.secons_for_stop = 5
+        self.to_up = False
+
+        self.ui.frame_btns.setHidden(True)
+        self.showFullScreen()
+        return "True"
 
     def clear_test(self):
         self.start_test = False
