@@ -205,7 +205,7 @@ class CNewConfig:
 
         # USB Devices test
         self.add_params(BLOCKS_DATA.USB_DEVICE_TEST, USB_TEST_PARAMS.TEST_USED, bool, "true")
-        self.add_params(BLOCKS_DATA.USB_DEVICE_TEST, USB_TEST_PARAMS.MAX_SIZE, int, "15\n"
+        self.add_params(BLOCKS_DATA.USB_DEVICE_TEST, USB_TEST_PARAMS.MAX_SIZE, int, "99\n"
                                                                                      "; Размер, до которого идёт сканирование в ГБ.\n"
                                                                                      "; Всё, что выше - откидывается")
 

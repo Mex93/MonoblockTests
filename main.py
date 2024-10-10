@@ -1,14 +1,14 @@
 import time
 from sys import argv, exit
 from os.path import isdir as file_isdir
-from PySide6.QtWidgets import QApplication
-from PySide6.QtWidgets import QMainWindow
+from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6 import QtWidgets
 from PySide6.QtGui import QFontDatabase
 
 from ui.untitled import Ui_MainWindow
 from ui.get_check_string_window import Ui_MainWindow as Ui_StringWindow
 
-from common import send_message_box, SMBOX_ICON_TYPE, get_about_text, get_rules_text
+from common import send_message_box, SMBOX_ICON_TYPE, get_about_text, get_rules_text, send_message_box_triple_variant
 
 from components.CConfig import CNewConfig, BLOCKS_DATA, SYS_INFO_PARAMS, CONFIG_PARAMS
 from components.CTests import CTests, TEST_TYPE, CTestProcess, TEST_RESULT
@@ -22,6 +22,7 @@ from components.CBrightnessTest import CBrightnessTest, CBrightnessTestWindow, B
 from components.CPatternsTest import CPatternsTest, CPatternsTestWindow, PATTERNS_TEST_PARAMS
 from components.CUSBTest import CUSBDevicesTest, CUSBDevicesTestWindow, USB_TEST_PARAMS
 from components.CButtons import CButtoms
+
 
 # pyside6-uic .\ui\test.ui -o .\ui\test.py
 
@@ -38,7 +39,6 @@ from components.CButtons import CButtoms
 # pyside6-rcc .\ui\res.qrc -o .\ui\res_rc.py
 
 
-
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -49,6 +49,8 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         QFontDatabase.addApplicationFont("designs/Iosevka Bold.ttf")
         self.setWindowTitle(f'Тестирование моноблоков Kvant 2024 v1.0b')
+
+        self.load_with_error = False
 
         self.main_config = CMainConfig()
         # ---------------------------------------
@@ -253,14 +255,28 @@ class MainWindow(QMainWindow):
 
             try:
                 self.cconfig_unit.load_config()
-            except:
-                self.cconfig_unit.create_config_data()
-                self.send_error_message(
-                    "Во время выполнения программы произошла ошибка считывания конфигурации.\n"
-                    "Весь конфиг файл был сброшен по умолчанию!\n\n"
-                    f"Код ошибки: 'on_changed_config -> [Error Read Data]'")
-                self.close()
-                return
+            except Exception as err:
+                # self.cconfig_unit.create_config_data()
+
+                send_message_box_triple_variant(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
+                                                text="Во время выполнения программы произошла ошибка считывания конфигурации.\n\n"
+                                                     f"Конфигуратор сообщил детальный код ошибки: '{err}'!\n\n"
+                                                     f"Код ошибки блока RunTime: 'on_changed_config -> [Error Read Config Data]'",
+                                                title="Фатальная ошибка",
+                                                variant_yes="Закрыть программу",
+                                                variant_no="Сбросить конфиг по умолчанию",
+                                                variant_apply="Продолжить выполнение",
+                                                callback=self.on_config_is_broken, exit_callback=
+                                                lambda: self.on_config_is_broken(None))
+                if not self.load_with_error:
+                    return
+
+                # self.send_error_message(
+                #     "Во время выполнения программы произошла ошибка считывания конфигурации.\n"
+                #     "Весь конфиг файл был сброшен по умолчанию!\n\n"
+                #     f"Код ошибки: 'on_changed_config -> [Error Read Data]'")
+                # self.close()
+                # return
             display_resolution = self.cconfig_unit.get_config_value(BLOCKS_DATA.PROGRAM_SETTING,
                                                                     CONFIG_PARAMS.DISPLAY_RESOLUTION)
             if len(display_resolution):
@@ -463,6 +479,34 @@ class MainWindow(QMainWindow):
                     btn_unit = CButtoms.get_unit_from_index(index)
                     btn_unit.set_enabled(False)
                     btn_unit.set_hidden(True)
+
+    def on_config_is_broken(self, variants: QtWidgets.QPushButton | None):
+        """
+        Напоминаение: on_config_is_broken вызовется быстрее, чем выполнится msg бокс
+        :param variants:
+        :return:
+        """
+        if variants is None:
+            self.set_close()
+            return
+
+        text = variants.text()
+        if text.find("Продолжить выполнение") != -1:
+            self.load_with_error = True
+
+        elif text.find("Закрыть программу") != -1:
+            self.set_close()
+        elif text.find("Сбросить конфиг по умолчанию") != -1:
+            self.cconfig_unit.create_config_data()
+
+            send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
+                             text="Файл конфигурации успешно сброшен.\n"
+                                  "Программа должна быть перезагружена для удачной загрузки нового файла конфигурации.",
+                             title="Сброс конфигурации",
+                             variant_yes="Закрыть программу", variant_no="", callback=lambda: self.set_close())
+            self.set_close()
+        else:
+            self.set_close()
 
     def send_error_message(self, text: str):
         send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
