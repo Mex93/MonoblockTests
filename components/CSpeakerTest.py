@@ -322,8 +322,8 @@ class UserFollowTest:
 
     class TestTypes:
         TEST_TYPE_LEFT_CHANNEL = 1
-        TEST_TYPE_RIGHT_CHANNEL = 1
-        TEST_TYPE_RECORD = 1
+        TEST_TYPE_RIGHT_CHANNEL = 2
+        TEST_TYPE_RECORD = 3
 
     def __init__(self, test_type: TestTypes):
         self.result = False
