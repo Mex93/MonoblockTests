@@ -11,7 +11,7 @@ from pyaudio import PyAudio, paInt16
 from wave import open as wave_open
 from threading import Timer as threading_Timer
 from threading import Thread as threading_Thread
-from enuuuums import SPEAKER_PARAMS, TEST_TYPE, AUDIO_CHANNEL, AUDIO_STATUS, AUDIO_TEST_RECORD_STATE
+from enuuuums import SPEAKER_PARAMS, TEST_TYPE, AUDIO_CHANNEL, AUDIO_STATUS, AUDIO_TEST_RECORD_STATE, AUDIO_TEST_STEP
 from ui.test_speaker_audio import Ui_TestAudioWindow
 
 
@@ -44,9 +44,6 @@ class CSpeakerTestWindow(QMainWindow):
 
         self.thread_id = None
         self.thread_start = False
-        self.left_channel_used = False
-        self.right_channel_used = False
-        self.record_used = False
 
         self.path_to_record_audio = "content/output_sound.wav"
         self.precord = PyAudio()
@@ -92,6 +89,7 @@ class CSpeakerTestWindow(QMainWindow):
                 MediaPlayer.stop_any_play()
 
                 if not self.thread_start:
+                    print("Запуск потока")
                     self.thread_id = threading_Thread(target=self.start_record_script)
                     self.thread_id.start()
                     self.thread_start = True
@@ -103,6 +101,7 @@ class CSpeakerTestWindow(QMainWindow):
 
     def start_record_script(self):
         try:
+            print("Вход в поток")
             frames = list()
             self.stream = self.precord.open(format=self.FORMAT, channels=self.CHANNELS,
                                             rate=self.RATE, input=True,
@@ -130,14 +129,16 @@ class CSpeakerTestWindow(QMainWindow):
                 self.play_record_timer.start()
 
                 self.all_channel_player.start_play()
-                self.show_result_btns(True)
+                self.is_all_sub_test_used(AUDIO_TEST_STEP.STEP_RECORD)
                 print("я отработал (поток в рекорде)")
 
-        except:
+        except Exception as err:
+            print(f"Ошибка в start_record_script -> '{err}'")
             self.set_default_record_play()
             self.stop_record_stream()
             self.record_state = AUDIO_TEST_RECORD_STATE.STATE_NONE
             self.set_record_btn_current_status()
+        self.thread_start = False
 
         return
 
@@ -157,6 +158,7 @@ class CSpeakerTestWindow(QMainWindow):
         self.stop_record_stream()
         self.set_record_btn_current_status()
         self.all_channel_player.stop_play()
+        print("Вызов on_stop_record_play_time")
 
     def set_default_record_play(self):
         """Сброс записи и таймера"""
@@ -207,32 +209,35 @@ class CSpeakerTestWindow(QMainWindow):
 
     def on_user_pressed_play_left(self):
         print("play left")
-        current_channel = MediaPlayer.is_any_play()
-        if current_channel is not None:
-            if current_channel == AUDIO_CHANNEL.CHANNEL_LEFT:
-                self.left_channel_player.stop_play()
-                self.set_audio_test_icon(current_channel, AUDIO_STATUS.STATUS_STOP)
-                return
-            else:
-                self.set_audio_test_icon(current_channel, AUDIO_STATUS.STATUS_STOP)
+        if self.record_state == AUDIO_TEST_RECORD_STATE.STATE_NONE:
+            current_channel = MediaPlayer.is_any_play()
+            if current_channel is not None:
+                if current_channel == AUDIO_CHANNEL.CHANNEL_LEFT:
+                    self.left_channel_player.stop_play()
+                    self.set_audio_test_icon(current_channel, AUDIO_STATUS.STATUS_STOP)
+                    return
+                else:
+                    self.set_audio_test_icon(current_channel, AUDIO_STATUS.STATUS_STOP)
 
-        self.left_channel_player.start_play()
-        self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_LEFT, AUDIO_STATUS.STATUS_PLAY)
+            self.left_channel_player.start_play()
+            self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_LEFT, AUDIO_STATUS.STATUS_PLAY)
+            self.is_all_sub_test_used(AUDIO_TEST_STEP.STEP_LEFT_CHANNEL)
 
     def on_user_pressed_play_right(self):
         print("play right")
+        if self.record_state == AUDIO_TEST_RECORD_STATE.STATE_NONE:
+            current_channel = MediaPlayer.is_any_play()
+            if current_channel is not None:
+                if current_channel == AUDIO_CHANNEL.CHANNEL_RIGHT:
+                    self.right_channel_player.stop_play()
+                    self.set_audio_test_icon(current_channel, AUDIO_STATUS.STATUS_STOP)
+                    return
+                else:
+                    self.set_audio_test_icon(current_channel, AUDIO_STATUS.STATUS_STOP)
 
-        current_channel = MediaPlayer.is_any_play()
-        if current_channel is not None:
-            if current_channel == AUDIO_CHANNEL.CHANNEL_RIGHT:
-                self.right_channel_player.stop_play()
-                self.set_audio_test_icon(current_channel, AUDIO_STATUS.STATUS_STOP)
-                return
-            else:
-                self.set_audio_test_icon(current_channel, AUDIO_STATUS.STATUS_STOP)
-
-        self.right_channel_player.start_play()
-        self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_RIGHT, AUDIO_STATUS.STATUS_PLAY)
+            self.right_channel_player.start_play()
+            self.set_audio_test_icon(AUDIO_CHANNEL.CHANNEL_RIGHT, AUDIO_STATUS.STATUS_PLAY)
+            self.is_all_sub_test_used(AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL)
 
     def window_show(self, test_type: TEST_TYPE) -> bool:
         patch_left = CSpeakerTest.get_test_stats(SPEAKER_PARAMS.AUDIO_PATCH_LEFT)
@@ -243,6 +248,11 @@ class CSpeakerTestWindow(QMainWindow):
                     if patch_left.find(".mp3") != -1 and patch_right.find(".mp3") != -1:
                         if file_isfile(patch_left) and file_isfile(patch_right):
                             self.show_result_btns(False)
+                            UserFollowTest.set_default()
+                            UserFollowTest(AUDIO_TEST_STEP.STEP_RECORD)
+                            UserFollowTest(AUDIO_TEST_STEP.STEP_LEFT_CHANNEL)
+                            UserFollowTest(AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL)
+
                             self.kill_thread_or_set_default()
                             self.left_channel_player.load_file(patch_left)
                             self.right_channel_player.load_file(patch_right)
@@ -315,32 +325,61 @@ class CSpeakerTestWindow(QMainWindow):
 
         e.accept()
 
+    def is_all_sub_test_used(self, incomming_sub_step: AUDIO_TEST_STEP):
+        if not UserFollowTest.is_buttons_already_show():
+
+            UserFollowTest.set_user_test_result(incomming_sub_step, True)
+            if UserFollowTest.is_all_test_is_true():
+                self.show_result_btns(True)
+
 
 class UserFollowTest:
     """Класс для проверки чекал ли юзер тест"""
     __test_list = list()
+    __show_buttons = False
 
-    class TestTypes:
-        TEST_TYPE_LEFT_CHANNEL = 1
-        TEST_TYPE_RIGHT_CHANNEL = 2
-        TEST_TYPE_RECORD = 3
-
-    def __init__(self, test_type: TestTypes):
+    def __init__(self, test_step: AUDIO_TEST_STEP):
         self.result = False
-        self.test_type = test_type
+        self.test_step = test_step
         UserFollowTest.__test_list.append(self)
 
     @classmethod
-    def set_user_test_result(cls, test_type: TestTypes):
-        unit = cls.get_test_unit_from_test_type(test_type)
+    def set_user_test_result(cls, test_step: AUDIO_TEST_STEP, result: bool):
+        unit = cls.get_test_unit_from_test_type(test_step)
         if unit:
-            pass
+            unit.result = result
 
     @classmethod
-    def get_test_unit_from_test_type(cls, test_type: TestTypes) -> any:
+    def is_all_test_is_true(cls) -> bool:
+        all_len = len(cls.__test_list)
+        count_of_true = 0
         for unit in cls.__test_list:
-            if unit.self.test_type == test_type:
+            if unit:
+                if unit.result is True:
+                    count_of_true += 1
+        if all_len == count_of_true:
+            cls.__show_buttons = True
+            return True
+
+        return False
+
+    @classmethod
+    def get_test_unit_from_test_type(cls, test_step: AUDIO_TEST_STEP) -> any:
+        for unit in cls.__test_list:
+            if unit.test_step == test_step:
                 return unit
+
+    @classmethod
+    def set_default(cls):
+        for unit in cls.__test_list:
+            if unit:
+                del unit
+        cls.__test_list.clear()
+        cls.__show_buttons = False
+
+    @classmethod
+    def is_buttons_already_show(cls) -> bool:
+        return cls.__show_buttons
 
 
 class MediaPlayer:

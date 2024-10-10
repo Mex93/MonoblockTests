@@ -32,6 +32,11 @@ class AUDIO_STATUS(IntEnum):
     STATUS_PLAY = auto(),
     STATUS_STOP = auto(),
 
+class AUDIO_TEST_STEP(IntEnum):
+    STEP_NONE = auto(),
+    STEP_RECORD = auto(),
+    STEP_LEFT_CHANNEL = auto(),
+    STEP_RIGHT_CHANNEL = auto(),
 
 class TEST_TYPE(IntEnum):
     TEST_NONE = auto(),
