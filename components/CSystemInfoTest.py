@@ -1,17 +1,18 @@
+# import ipaddress
 import platform
-from psutil import disk_partitions, virtual_memory, disk_usage, net_if_addrs
-from wmi import WMI
+import subprocess
 from os import system
-import subprocess, ipaddress
-
 from socket import AF_INET
-from win32com.client import GetObject
-from bluetooth import discover_devices
-from enuuuums import TEST_TYPE, TEST_SYSTEM_INFO_TYPES, SYS_INFO_PARAMS
-from PySide6.QtWidgets import QMainWindow
-from PySide6.QtGui import QFontDatabase, QTextCursor
-from PySide6.QtCore import Qt
 
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QFontDatabase, QTextCursor
+from PySide6.QtWidgets import QMainWindow
+from bluetooth import discover_devices
+from psutil import disk_partitions, virtual_memory, disk_usage, net_if_addrs
+from win32com.client import GetObject
+from wmi import WMI
+
+from enuuuums import TEST_TYPE, TEST_SYSTEM_INFO_TYPES, SYS_INFO_PARAMS
 from ui.test_sys_info import Ui_TestSysInfoWindow
 
 
@@ -104,7 +105,7 @@ class CSystemInfo:
                     'free': partition_info.free,
                 }
                 drives_info.append(drive_details)
-            except Exception as e:
+            except:
                 pass
         if len(drives_info) > 0:
             return drives_info
@@ -165,7 +166,7 @@ class CSystemInfo:
     @staticmethod
     def check_lan_connectivity(ip: str) -> bool | None:
         try:
-            ip_object = ipaddress.ip_address(ip)
+            # ip_object = ipaddress.ip_address(ip)
             # Пинговать известный адрес (например, 8.8.8.8 - Google DNS)
             response = system("ping -n 1 " + ip)
             if response == 0:
@@ -196,6 +197,24 @@ class CSystemInfo:
                         networks.append(network_name)
                 if len(networks) > 0:
                     return networks
+        return False
+
+    @classmethod
+    def compare_two_list(cls, list_in_find: list, list_find: list) -> bool:
+        # в списке list_in_find найден элеименты из list_find
+        if all(isinstance(lst, list) for lst in (list_in_find, list_find)):
+            count_find = 0
+            count_of_list_find = len(list_find)
+            if count_of_list_find:
+                for item_in_find in list_in_find:
+                    for item_find in list_find:
+                        if item_in_find == item_find:
+                            count_find += 1
+                            break
+                    if count_find == count_of_list_find:
+                        break
+                if count_find == count_of_list_find:
+                    return True
         return False
 
     @staticmethod
@@ -503,32 +522,50 @@ class CSystemInfoWindow(QMainWindow):
         wifi_dict = dict()
         test_name = CSystemInfo.get_sub_test_name_from_type(TEST_SYSTEM_INFO_TYPES.WIFI_STATS)
         if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.WLAN_CHECK) is True:
-
+            is_any_avalable_networks = False
             available_networks = None
             try:
                 available_networks = CSystemInfo.scan_wifi()
                 if isinstance(available_networks, list):
                     string = f"{test_name}: <span style=\" font-size:14pt; font-weight:700; color:#0000ff;\">пройден успешно</span>! Сети видны: [{", ".join(available_networks)}]"
                     string_not_span = f"{test_name}: пройден успешно! Сети видны: [{", ".join(available_networks)}]"
+                    check_string = f"wlans_{",".join(available_networks)}"
                     is_test_passed_count += 1
+                    is_any_avalable_networks = True
                 else:
                     string = f"{test_name}: <span style=\" font-size:14pt; font-weight:700; color:#FF0000;\">не пройден</span>! Нет доступных сетей."
                     string_not_span = f"{test_name}: не пройден! Нет доступных сетей."
+                    check_string = "wlans_none"
             except:
                 string = f"{test_name}: WIFI модуль <span style=\" font-size:14pt; font-weight:700; color:#FF0000;\">не обнаружен</span>!"
                 string_not_span = f"{test_name}: WIFI модуль не обнаружен!"
+                check_string = "wlans_error_none"
 
-            if not available_networks:
-                available_networks = list()
-
-            check_string = f"result_{"success" if len(available_networks) > 0 else "fail"}"
-
-            test_result_string, result_test = get_checked_string(check_string, SYS_INFO_PARAMS.WLAN_STRING)
-
-            if result_test is False:  # не пройдено сравнение
-                is_test_fail_string_check_count += 1
-            elif result_test is None:  # сравнение не надо
+            test_result_string = ""
+            saved_string = CSystemInfo.get_test_stats(SYS_INFO_PARAMS.WLAN_STRING)
+            if isinstance(saved_string, str) and (saved_string == "-" or not len(saved_string)):
                 pass
+            else:
+                compare_check_result = False
+                if is_any_avalable_networks:
+                    if isinstance(saved_string, str):
+                        if len(saved_string) > 0:
+                            if saved_string.find("wlans_") != -1:
+                                if available_networks is not None:
+                                    try:
+                                        find_string = saved_string.replace("wlans_", "").split(",")
+                                        if CSystemInfo.compare_two_list(available_networks, find_string):
+                                            compare_check_result = True
+                                    except:
+                                        pass
+                if compare_check_result:
+                    test_result_string = ("<span style=\" font-size:14pt; font-weight:700; color:#8fdd60;\">Сравнение "
+                                          "успешно!</span>")
+                else:
+                    test_result_string = (
+                        f"<span style=\"font-size:14pt;font-weight:700;color:#ff5733;\">Сравнение не пройдено!</span> "
+                        f"Check_string: {saved_string}")
+                    is_test_fail_string_check_count += 1
 
             wifi_dict.update({"data": string + " " + test_result_string,
                               "only_data": string_not_span,
@@ -690,7 +727,8 @@ class CSystemInfoWindow(QMainWindow):
 
         return None
 
-    def load_data(self, data_list: list | None, on_test_count: int, is_test_passed_count: int, is_test_fail_string_check_count: int):
+    def load_data(self, data_list: list | None, on_test_count: int, is_test_passed_count: int,
+                  is_test_fail_string_check_count: int):
 
         unit = self.ui.textBrowser_lan_port
         unit.clear()
@@ -766,11 +804,11 @@ class CSystemInfoWindow(QMainWindow):
             else:
                 unit.append("<span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">Тест не выполнен!</span>")
         unit.append(f"Всего тестов активировано: {on_test_count}\n"
-                    f"Тестов провалено: {on_test_count-is_test_passed_count}\n"
+                    f"Тестов провалено: {on_test_count - is_test_passed_count}\n"
                     f"Тестов сравнений строк провалено: {is_test_fail_string_check_count}\n"
                     f"Тестов успешно: {is_test_passed_count}\n")
 
-        unit.moveCursor(QTextCursor.Start)
+        unit.moveCursor(QTextCursor.MoveOperation.Start)
 
         # # disks
         # drivers = CSystemInfo.get_drives_info()
