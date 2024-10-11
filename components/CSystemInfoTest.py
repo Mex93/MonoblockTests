@@ -589,33 +589,55 @@ class CSystemInfoWindow(QMainWindow):
         bt_dict = dict()
         test_name = CSystemInfo.get_sub_test_name_from_type(TEST_SYSTEM_INFO_TYPES.BT_STATS)
         if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.BT_CHECK) is True:
-            bt_result = None
+            available_networks = None
             string = ""
             string_not_span = ""
+            is_any_avalable_networks = False
+            check_string = ""
+
             try:
-                bt_result = CSystemInfo.scan_bluetooth_devices()
-                if isinstance(bt_result, list):
-                    string = f"{test_name}: <span style=\" font-size:14pt; font-weight:700; color:#0000ff;\">пройден успешно</span>! Сети видны: [{", ".join(bt_result)}]."
-                    string_not_span = f"{test_name}: пройден успешно! Сети видны: [{", ".join(bt_result)}]."
+                available_networks = CSystemInfo.scan_bluetooth_devices()
+                if isinstance(available_networks, list):
+                    string = f"{test_name}: <span style=\" font-size:14pt; font-weight:700; color:#0000ff;\">пройден успешно</span>! Сети видны: [{", ".join(available_networks)}]."
+                    string_not_span = f"{test_name}: пройден успешно! Сети видны: [{", ".join(available_networks)}]."
+                    check_string = f"bts_{",".join(available_networks)}"
                     is_test_passed_count += 1
-                elif isinstance(bt_result, bool):
-                    if bt_result is False:
+                    is_any_avalable_networks = True
+                elif isinstance(available_networks, bool):
+                    if available_networks is False:
                         string = f"{test_name}: <span style=\" font-size:14pt; font-weight:700; color:#FF0000;\">не пройден</span>! Сети не видны или модуль не подключен!"
                         string_not_span = f"{test_name}: не пройден! Сети не видны или модуль не подключен!"
+                        check_string = "bts_none"
             except:
                 string = f"{test_name}: BT модуль <span style=\" font-size:14pt; font-weight:700; color:#FF0000;\">не обнаружен</span>!"
                 string_not_span = f"{test_name}: BT модуль не обнаружен!"
+                check_string = "bts_error_none"
 
-            if not bt_result:
-                bt_result = list()
-
-            check_string = f"result_{"success" if len(bt_result) > 0 else "fail"}"
-            test_result_string, result_test = get_checked_string(check_string, SYS_INFO_PARAMS.BT_STRING)
-
-            if result_test is False:  # не пройдено сравнение
-                is_test_fail_string_check_count += 1
-            elif result_test is None:  # сравнение не надо
+            test_result_string = ""
+            saved_string = CSystemInfo.get_test_stats(SYS_INFO_PARAMS.BT_STRING)
+            if isinstance(saved_string, str) and (saved_string == "-" or not len(saved_string)):
                 pass
+            else:
+                compare_check_result = False
+                if is_any_avalable_networks:
+                    if isinstance(saved_string, str):
+                        if len(saved_string) > 0:
+                            if saved_string.find("bts_") != -1:
+                                if available_networks is not None:
+                                    try:
+                                        find_string = saved_string.replace("bts_", "").split(",")
+                                        if CSystemInfo.compare_two_list(available_networks, find_string):
+                                            compare_check_result = True
+                                    except:
+                                        pass
+                if compare_check_result:
+                    test_result_string = ("<span style=\" font-size:14pt; font-weight:700; color:#8fdd60;\">Сравнение "
+                                          "успешно!</span>")
+                else:
+                    test_result_string = (
+                        f"<span style=\"font-size:14pt;font-weight:700;color:#ff5733;\">Сравнение не пройдено!</span> "
+                        f"Check_string: {saved_string}")
+                    is_test_fail_string_check_count += 1
 
             bt_dict.update({"data": string + " " + test_result_string,
                             "only_data": string_not_span,
@@ -634,6 +656,8 @@ class CSystemInfoWindow(QMainWindow):
 
         result_list.append(bt_dict)
 
+
+        #  DISK test____________________________
         disk_dict = dict()
 
         test_name = CSystemInfo.get_sub_test_name_from_type(TEST_SYSTEM_INFO_TYPES.DISKS_STATS)
