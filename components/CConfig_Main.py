@@ -14,6 +14,7 @@ class CMainConfig:
 
     def __init__(self):
         self.__LAST_CONFIG = ""
+        self.__FURMARK_PATCH = ""
         self.__ONLY_CONFIG = ""
 
         self.__config = configparser.ConfigParser()
@@ -23,11 +24,13 @@ class CMainConfig:
 
     def set_default_for_values(self):
         self.__LAST_CONFIG = ''
+        self.__FURMARK_PATCH = ''
         self.__ONLY_CONFIG = ''
 
     def get_config(self):
         self.__config.read(self.__patch, encoding="utf-8")
 
+        self.__FURMARK_PATCH = self.__config.get('program', 'FURMARK_PATCH')
         self.__LAST_CONFIG = self.__config.get('program', 'LAST_CONFIG_NAME')
         self.__ONLY_CONFIG = self.__config.get('program', 'ONLY_CONFIG_NAME')
 
@@ -45,10 +48,13 @@ class CMainConfig:
         with open(self.__patch, 'w') as config_file:
             self.__config.set('program', 'LAST_CONFIG_NAME', "-")
             self.__config.set('program', 'ONLY_CONFIG_NAME', "-")
+            self.__config.set("program", "FURMARK_PATCH", "furmark/furmark.exe")
 
             self.set_default_for_values()
             self.__config.write(config_file)
 
+    def get_furmark_patch(self):
+        return self.__FURMARK_PATCH
 
     def get_only_config_name(self) -> str:
         if self.__ONLY_CONFIG.find("-") != -1:

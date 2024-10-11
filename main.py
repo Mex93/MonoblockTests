@@ -2,7 +2,10 @@ import time
 from sys import argv, exit
 from os.path import isdir as file_isdir
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton
+# from PySide6.QtCore import QTimer
 from PySide6.QtGui import QFontDatabase
+# from wmi import WMI
+import subprocess
 
 from ui.untitled import Ui_MainWindow
 from ui.get_check_string_window import Ui_MainWindow as Ui_StringWindow
@@ -136,8 +139,15 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_clear.clicked.connect(self.on_user_pressed_clear_all_test)
         self.ui.pushButton_launchall.clicked.connect(self.on_user_pressed_start_all_test)
         self.ui.pushButton_get_strings.clicked.connect(self.on_user_pressed_check_string)
+        self.ui.pushButton_furmark.clicked.connect(self.on_user_clicked_on_run_furmark)
 
         self.ui.action_info.triggered.connect(self.rules)
+
+        self.ui.pushButton_cpu_temp.setHidden(True)
+        self.ui.pushButton_alter_prog.setHidden(True)
+        # timer_update_cpu_temp = QTimer()
+        # timer_update_cpu_temp.timeout.connect(self.on_timer_cpu_temp_update)
+        # timer_update_cpu_temp.start(2000)
 
         only_config_name = self.main_config.get_only_config_name()
         if len(only_config_name):
@@ -157,6 +167,45 @@ class MainWindow(QMainWindow):
                 return
 
         self.ui.comboBox_config_get.setCurrentIndex(-1)
+
+    def on_user_clicked_on_run_furmark(self):
+        patch = self.main_config.get_furmark_patch()
+        if isinstance(patch, str) and len(patch):
+            print(patch)
+            result = self.run_external_program(patch)
+            if result:
+                return
+
+        send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
+                         text="Не удалось запустить программу!\n"
+                              f"Путь: {patch}!",
+                         title="Внимание!",
+                         variant_yes="Закрыть", variant_no="", callback=None)
+
+
+    @staticmethod
+    def run_external_program(program_path) -> bool:
+        try:
+            subprocess.Popen(program_path)
+            return True
+
+        except:
+           return False
+
+    def on_timer_cpu_temp_update(self):
+        print(self.cpu_temperature())
+        print("ejghwuegeegw")
+
+    @classmethod
+    def cpu_temperature(cls):
+        pass
+        # sensor = WMI(namespace="root\\\\wmi")
+        #
+        # temperature = sensor.MSAcpi_ThermalZone()
+        #
+        # for temp in temperature:
+        #     print(
+        #         f"Температура процессора: {temp.CurrentTemperature / 10 - 273.15:.2f}°C")  # Преобразуем из Кельвинов в Цельсии
 
     @classmethod
     def rules(cls):
