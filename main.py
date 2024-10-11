@@ -173,6 +173,10 @@ class MainWindow(QMainWindow):
     def on_user_pressed_check_string(self):
         result = self.ctest_window_sys_info.get_data()
         string_window = self.cmain_window_get_string
+        string_window.ui.textBrowser_set_string.clear()
+        string_window.ui.textBrowser_set_string.setStyleSheet("font-size:14pt;"
+                                                              ""
+                                                              "")
         if result:
             data, fail_tests_count, all_used_test_count = self.ctest_window_sys_info.get_data()
             string_window.ui.textBrowser_set_string.append("Получение информации...\n")
