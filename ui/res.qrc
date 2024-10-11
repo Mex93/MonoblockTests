@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="res">
+    <file>fur_mark_icon.bmp</file>
     <file>images/cancel.png</file>
     <file>images/print.png</file>
     <file>images/qr1.png</file>

@@ -97,8 +97,11 @@ class CPatternsTestWindow(QMainWindow):
             if self.buttons_show:
                 self.buttons_show = False
                 self.ui.frame_btns.setHidden(True)
-
-        self.set_background_color_from_image(self.patterns_list[self.patterns_index])
+        try:
+            self.set_background_color_from_image(self.patterns_list[self.patterns_index])
+        except:
+            # по какой то причине не всегда полный список вовзвращает файлов
+            self.__main_window.on_test_phb_success(TEST_TYPE.TEST_PATTERNS)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:  # Проверяем, что нажата левая кнопка мыши

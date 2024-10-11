@@ -2,7 +2,6 @@ import time
 from sys import argv, exit
 from os.path import isdir as file_isdir
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton
-from PySide6 import QtWidgets
 from PySide6.QtGui import QFontDatabase
 
 from ui.untitled import Ui_MainWindow
@@ -91,6 +90,8 @@ class MainWindow(QMainWindow):
         self.cconfig_unit = CNewConfig()
         self.cconfig_unit.init_params()
         self.ctest_process = CTestProcess()
+        TestResultLabel.set_main_window(self)
+        TestResultLabel.set_show_status(False)
 
         self.cmain_window_get_string = CStringWindow(self)
         self.ctest_window_sys_info = CSystemInfoWindow(self)
@@ -197,7 +198,7 @@ class MainWindow(QMainWindow):
                                                                        f"Строка проверки: {item_check_string}\n")
 
                 string_window.ui.textBrowser_set_string.append(f"Всего тестов активировано: {on_test_count}\n"
-                                                               f"Тестов провалено: {on_test_count-is_test_passed_count}\n"
+                                                               f"Тестов провалено: {on_test_count - is_test_passed_count}\n"
                                                                f"Тестов сравнений строк провалено: {is_test_fail_string_check_count}\n"
                                                                f"Тестов успешно: {is_test_passed_count}\n")
 
@@ -211,6 +212,9 @@ class MainWindow(QMainWindow):
         current_test = self.ctest_process.is_test_launch()
         if current_test != TEST_TYPE.TEST_NONE:
             self.ctest_process.stop_test()
+
+        TestResultLabel.clear_text()
+        TestResultLabel.set_show_status(False)
 
         test_list = CButtoms.get_all_tests()
         if test_list is None:
@@ -233,6 +237,8 @@ class MainWindow(QMainWindow):
         current_test = self.ctest_process.is_test_launch()
         if current_test != TEST_TYPE.TEST_NONE:
             self.ctest_process.stop_test()
+        TestResultLabel.clear_text()
+        TestResultLabel.set_show_status(False)
 
         CButtoms.set_buttoms_default_color()
 
@@ -576,7 +582,6 @@ class MainWindow(QMainWindow):
                 btn_id.setHidden(True)
                 btn_id.setText("Прервать тест")
 
-
     def show_test_window_with_window(self, test_type: TEST_TYPE, auto_test_launch: bool):
         """
                    Разница с без окна и с окном в показе окна. Без показа тест автоматом проходит без открытия, но не для всех тестов.
@@ -594,13 +599,15 @@ class MainWindow(QMainWindow):
                 self.ctest_window_sys_info.set_default_string()
 
                 self.ctest_window_sys_info.show()
-                self.set_hidden_break_test_btn(auto_test_launch, self.ctest_window_sys_info.ui.pushButton_all_test_break)
+                self.set_hidden_break_test_btn(auto_test_launch,
+                                               self.ctest_window_sys_info.ui.pushButton_all_test_break)
 
                 self.ctest_window_sys_info.setFocus()
                 result = self.ctest_window_sys_info.get_data()
                 if result:
                     data, on_test_count, is_test_passed_count, is_test_fail_string_check_count = result
-                    self.ctest_window_sys_info.load_data(data, on_test_count, is_test_passed_count, is_test_fail_string_check_count)
+                    self.ctest_window_sys_info.load_data(data, on_test_count, is_test_passed_count,
+                                                         is_test_fail_string_check_count)
                     return
                 self.ctest_window_sys_info.load_data(None, 0, 0, 0)
 
@@ -753,6 +760,10 @@ class MainWindow(QMainWindow):
             self.ctest_process.set_result_test(current_test, TEST_RESULT.SUCCESS)
             self.set_next_test(current_test)
 
+        if TestResultLabel.is_label_show():
+            test_name = CTests.get_test_name_from_test_type(test_type)
+            TestResultLabel.delete_test(test_name)
+
         btn_unit: CButtoms = CButtoms.get_unit_from_test_type(test_type)
         if btn_unit is not None:
             btn_unit.set_btn_color_green()
@@ -765,6 +776,11 @@ class MainWindow(QMainWindow):
         if current_test != TEST_TYPE.TEST_NONE:
             self.ctest_process.set_result_test(current_test, TEST_RESULT.FAIL)
             self.set_next_test(current_test)
+
+        if not TestResultLabel.is_label_show():
+            TestResultLabel.set_show_status(True)
+        test_name = CTests.get_test_name_from_test_type(test_type)
+        TestResultLabel.add_text(test_name)
 
         btn_unit: CButtoms = CButtoms.get_unit_from_test_type(test_type)
         if btn_unit is not None:
@@ -812,6 +828,52 @@ class CStringWindow(QMainWindow):
         # self.setWindowModality(Qt.WindowModality.ApplicationModal)
 
         self.setWindowTitle(main_window.get_window_title())
+
+
+class TestResultLabel:
+    __list_of_tests = list()
+    __main_window: MainWindow
+    __text_of_tests = set()
+
+    @classmethod
+    def set_main_window(cls,  main_window: MainWindow):
+        TestResultLabel.__main_window = main_window
+
+    @classmethod
+    def is_label_show(cls) -> bool:
+        return not cls.__main_window.ui.label_tests_failed.isHidden()
+
+    @classmethod
+    def set_show_status(cls, result: bool):
+        result = not result
+        cls.__main_window.ui.label_tests_failed.setHidden(result)
+
+    @classmethod
+    def clear_text(cls):
+        cls.__text_of_tests.clear()
+        cls.__update_text()
+
+    @classmethod
+    def delete_test(cls, text: str):
+        try:
+            cls.__text_of_tests.remove(text)
+            cls.__update_text()
+        except KeyError:
+
+            if not len(cls.__text_of_tests):
+                cls.set_show_status(False)
+
+    @classmethod
+    def __update_text(cls):
+        if not len(cls.__text_of_tests):
+            cls.__main_window.ui.label_tests_failed.setText("Тесты провалены: -")
+        else:
+            cls.__main_window.ui.label_tests_failed.setText(f"Тесты провалены: {', '.join(cls.__text_of_tests)}")
+
+    @classmethod
+    def add_text(cls, text: str):
+        cls.__text_of_tests.add(text)
+        cls.__update_text()
 
 
 if __name__ == '__main__':
