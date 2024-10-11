@@ -253,7 +253,7 @@ class CSystemInfoWindow(QMainWindow):
         self.ui.label_os_info.setText("-")
 
     @staticmethod
-    def get_data() -> tuple[list, int, int] | None:
+    def get_data() -> tuple[list, int, int, int] | None:
         # ram
         result_list = list()
         on_test_count = 0
@@ -686,11 +686,11 @@ class CSystemInfoWindow(QMainWindow):
         result_list.append(disk_dict)
 
         if on_test_count > 0:
-            return result_list, is_test_fail_string_check_count, on_test_count
+            return result_list, on_test_count, is_test_passed_count, is_test_fail_string_check_count
 
         return None
 
-    def load_data(self, data_list: list | None, fails_count: int, all_test_count: int):
+    def load_data(self, data_list: list | None, on_test_count: int, is_test_passed_count: int, is_test_fail_string_check_count: int):
 
         unit = self.ui.textBrowser_lan_port
         unit.clear()
@@ -758,16 +758,17 @@ class CSystemInfoWindow(QMainWindow):
                     if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.DISK_CHECK) is True:
                         unit.append(data)
 
-        if all_test_count > 0:
+        if on_test_count > 0:
             unit.append(" ")
-            if fails_count == 0:
+            if is_test_passed_count == on_test_count and is_test_fail_string_check_count == 0:
                 unit.append("<span style=\" font-size:14pt; font-weight:700; color:#8fdd60;\">Тест успешно "
                             "выполнен!</span>")
             else:
                 unit.append("<span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">Тест не выполнен!</span>")
-        unit.append(f"Всего тестов активировано: {all_test_count}\n"
-                    f"Тестов провалено: {fails_count}\n"
-                    f"Тестов успешно: {all_test_count - fails_count}\n")
+        unit.append(f"Всего тестов активировано: {on_test_count}\n"
+                    f"Тестов провалено: {on_test_count-is_test_passed_count}\n"
+                    f"Тестов сравнений строк провалено: {is_test_fail_string_check_count}\n"
+                    f"Тестов успешно: {is_test_passed_count}\n")
 
         unit.moveCursor(QTextCursor.Start)
 

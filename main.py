@@ -178,7 +178,7 @@ class MainWindow(QMainWindow):
                                                               ""
                                                               "")
         if result:
-            data, fail_tests_count, all_used_test_count = self.ctest_window_sys_info.get_data()
+            data, on_test_count, is_test_passed_count, is_test_fail_string_check_count = self.ctest_window_sys_info.get_data()
             string_window.ui.textBrowser_set_string.append("Получение информации...\n")
             if data is None:
                 string_window.ui.textBrowser_set_string.append("Все тесты отключены. "
@@ -196,9 +196,10 @@ class MainWindow(QMainWindow):
                                                                        f"Строка информации: {item_data}\n"
                                                                        f"Строка проверки: {item_check_string}\n")
 
-                string_window.ui.textBrowser_set_string.append(f"Всего тестов активировано: {all_used_test_count}\n"
-                                                               f"Тестов провалено: {fail_tests_count}\n"
-                                                               f"Тестов успешно: {all_used_test_count - fail_tests_count}\n")
+                string_window.ui.textBrowser_set_string.append(f"Всего тестов активировано: {on_test_count}\n"
+                                                               f"Тестов провалено: {on_test_count-is_test_passed_count}\n"
+                                                               f"Тестов сравнений строк провалено: {is_test_fail_string_check_count}\n"
+                                                               f"Тестов успешно: {is_test_passed_count}\n")
 
                 string_window.ui.textBrowser_set_string.append(
                     "Примечание: Строка проверки копируется полностью в конфиг")
@@ -546,9 +547,10 @@ class MainWindow(QMainWindow):
                     if current_test != TEST_TYPE.TEST_NONE:
                         result = self.ctest_window_sys_info.get_data()
                         if result:
-                            data, fail_tests_count, all_used_test_count = self.ctest_window_sys_info.get_data()
-                            if all_used_test_count > 0:
-                                if fail_tests_count == 0:
+                            data, on_test_count, is_test_passed_count, is_test_fail_string_check_count = (
+                                self.ctest_window_sys_info.get_data())
+                            if on_test_count > 0:
+                                if on_test_count - is_test_passed_count == 0 and is_test_fail_string_check_count == 0:
                                     btn_unit.set_btn_color_green()
                                 else:
                                     btn_unit.set_btn_color_red()
@@ -597,10 +599,10 @@ class MainWindow(QMainWindow):
                 self.ctest_window_sys_info.setFocus()
                 result = self.ctest_window_sys_info.get_data()
                 if result:
-                    data, fail_tests_count, all_used_test_count = result
-                    self.ctest_window_sys_info.load_data(data, fail_tests_count, all_used_test_count)
+                    data, on_test_count, is_test_passed_count, is_test_fail_string_check_count = result
+                    self.ctest_window_sys_info.load_data(data, on_test_count, is_test_passed_count, is_test_fail_string_check_count)
                     return
-                self.ctest_window_sys_info.load_data(None, 0, 0)
+                self.ctest_window_sys_info.load_data(None, 0, 0, 0)
 
             case TEST_TYPE.TEST_EXTERNAL_DISPLAY:
                 result = self.ctest_window_external_display.window_show()
