@@ -45,12 +45,12 @@ class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.__base_program_version = "0.1"  # Менять при каждом обновлении любой из подпрограмм
+        self.__base_program_version = "0.2"  # Менять при каждом обновлении любой из подпрограмм
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         QFontDatabase.addApplicationFont("designs/Iosevka Bold.ttf")
-        self.setWindowTitle(f'Тестирование моноблоков Kvant 2024 v1.0b')
+        self.setWindowTitle(f'Тестирование моноблоков Kvant 2024 v1.0')
 
         self.load_with_error = False
 
