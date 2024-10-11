@@ -95,8 +95,20 @@ class CSpeakerTestWindow(QMainWindow):
             AutoTest.start_test()
             AutoTest.set_step(4, AUDIO_TEST_STEP.STEP_LEFT_CHANNEL)
             self.set_auto_test_enabled_ui_event(True)
-            UserFollowTest.set_default_units()
+
             self.on_user_pressed_play_left()
+        else:
+            current_test = AutoTest.get_current_auto_test()
+            if current_test == AUDIO_TEST_STEP.STEP_LEFT_CHANNEL:
+                AutoTest.set_step(4, AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL)
+                self.on_user_pressed_play_right()
+            elif current_test == AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL:
+                AutoTest.set_step(4, AUDIO_TEST_STEP.STEP_RECORD)
+                self.on_user_pressed_micro_record()
+            elif current_test == AUDIO_TEST_STEP.STEP_RECORD:
+                AutoTest.stop()
+                self.set_auto_test_enabled_ui_event(False)
+                self.show_result_btns(True)
 
     def on_update_record_timer(self):
         if self.record_state == AUDIO_TEST_RECORD_STATE.STATE_PLAY:
@@ -121,10 +133,11 @@ class CSpeakerTestWindow(QMainWindow):
             if result:  # выполнился
                 AutoTest.stop()
                 self.set_auto_test_enabled_ui_event(False)
+                self.show_result_btns(True)
 
     def set_auto_test_enabled_ui_event(self, status: bool):
         if status:  # запустить
-            self.ui.pushButton_start_test.setText("Запущен тест...")
+            self.ui.pushButton_start_test.setText("Запущен тест. Далее ->")
             self.ui.pushButton_record.setDisabled(True)
             self.ui.pushButton_right.setDisabled(True)
             self.ui.pushButton_left.setDisabled(True)

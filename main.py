@@ -149,6 +149,13 @@ class MainWindow(QMainWindow):
         # timer_update_cpu_temp.timeout.connect(self.on_timer_cpu_temp_update)
         # timer_update_cpu_temp.start(2000)
 
+        bat_file_path = "content/bats/time_sync.bat"
+        try:
+            subprocess.call([bat_file_path], shell=True)
+        except Exception as err:
+            print(err)
+
+
         only_config_name = self.main_config.get_only_config_name()
         if len(only_config_name):
             current_index = self.get_item_index_from_text(only_config_name)
@@ -917,7 +924,7 @@ class TestResultLabel:
         if not len(cls.__text_of_tests):
             cls.__main_window.ui.label_tests_failed.setText("Тесты провалены: -")
         else:
-            cls.__main_window.ui.label_tests_failed.setText(f"Тесты провалены: {', '.join(cls.__text_of_tests)}")
+            cls.__main_window.ui.label_tests_failed.setText(f"<span style=\" font-size:14pt; font-weight:700; color:#FF0000;\">Тесты провалены: </span> <br> {'<br>'.join(cls.__text_of_tests)}")
 
     @classmethod
     def add_text(cls, text: str):
