@@ -1,7 +1,7 @@
 import time
 from sys import argv, exit
 from os.path import isdir as file_isdir
-from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton
 from PySide6 import QtWidgets
 from PySide6.QtGui import QFontDatabase
 
@@ -480,7 +480,7 @@ class MainWindow(QMainWindow):
                     btn_unit.set_enabled(False)
                     btn_unit.set_hidden(True)
 
-    def on_config_is_broken(self, variants: QtWidgets.QPushButton | None):
+    def on_config_is_broken(self, variants: QPushButton | None):
         """
         Напоминаение: on_config_is_broken вызовется быстрее, чем выполнится msg бокс
         :param variants:
@@ -560,6 +560,17 @@ class MainWindow(QMainWindow):
                 if test_type in test_list:
                     self.show_test_window_with_window(test_type, auto_test_launch)
 
+    @classmethod
+    def set_hidden_break_test_btn(cls, auto_test_launch: bool, btn_id: QPushButton):
+        if isinstance(btn_id, QPushButton):
+            if auto_test_launch:
+                btn_id.setHidden(False)
+                btn_id.setText("Прервать тесты")
+            else:
+                btn_id.setHidden(True)
+                btn_id.setText("Прервать тест")
+
+
     def show_test_window_with_window(self, test_type: TEST_TYPE, auto_test_launch: bool):
         """
                    Разница с без окна и с окном в показе окна. Без показа тест автоматом проходит без открытия, но не для всех тестов.
@@ -577,10 +588,8 @@ class MainWindow(QMainWindow):
                 self.ctest_window_sys_info.set_default_string()
 
                 self.ctest_window_sys_info.show()
-                if auto_test_launch:
-                    self.ctest_window_sys_info.ui.pushButton_all_test_break.setText("Прервать тесты")
-                else:
-                    self.ctest_window_sys_info.ui.pushButton_all_test_break.setText("Прервать тест")
+                self.set_hidden_break_test_btn(auto_test_launch, self.ctest_window_sys_info.ui.pushButton_all_test_break)
+
                 self.ctest_window_sys_info.setFocus()
                 result = self.ctest_window_sys_info.get_data()
                 if result:
@@ -600,10 +609,9 @@ class MainWindow(QMainWindow):
                                      variant_yes="Закрыть", variant_no="", callback=None)
                     self.on_test_phb_fail(test_type, False)
                 else:
-                    if auto_test_launch:
-                        self.ctest_window_external_display.ui.pushButton_all_test_break.setText("Прервать тесты")
-                    else:
-                        self.ctest_window_external_display.ui.pushButton_all_test_break.setText("Прервать тест")
+                    self.set_hidden_break_test_btn(auto_test_launch,
+                                                   self.ctest_window_external_display.ui.pushButton_all_test_break)
+
                     self.ctest_window_external_display.setFocus()
 
             case TEST_TYPE.TEST_FRONT_CAMERA:
@@ -617,10 +625,9 @@ class MainWindow(QMainWindow):
                                      variant_yes="Закрыть", variant_no="", callback=None)
                     self.on_test_phb_fail(test_type, False)
                 else:
-                    if auto_test_launch:
-                        self.ctest_window_video_cam.ui.pushButton_all_test_break.setText("Прервать тесты")
-                    else:
-                        self.ctest_window_video_cam.ui.pushButton_all_test_break.setText("Прервать тест")
+                    self.set_hidden_break_test_btn(auto_test_launch,
+                                                   self.ctest_window_video_cam.ui.pushButton_all_test_break)
+
                     self.ctest_window_video_cam.setFocus()
 
             case TEST_TYPE.TEST_SPEAKER_MIC:
@@ -633,10 +640,9 @@ class MainWindow(QMainWindow):
                                      variant_yes="Закрыть", variant_no="", callback=None)
                     self.on_test_phb_fail(test_type, False)
                 else:
-                    if auto_test_launch:
-                        self.ctest_window_speaker_window.ui.pushButton_all_test_break.setText("Прервать тесты")
-                    else:
-                        self.ctest_window_speaker_window.ui.pushButton_all_test_break.setText("Прервать тест")
+                    self.set_hidden_break_test_btn(auto_test_launch,
+                                                   self.ctest_window_speaker_window.ui.pushButton_all_test_break)
+
                     self.ctest_window_speaker_window.setFocus()
 
             case TEST_TYPE.TEST_HEADSET_MIC:
@@ -649,10 +655,9 @@ class MainWindow(QMainWindow):
                                      variant_yes="Закрыть", variant_no="", callback=None)
                     self.on_test_phb_fail(test_type, False)
                 else:
-                    if auto_test_launch:
-                        self.ctest_window_headset_window.ui.pushButton_all_test_break.setText("Прервать тесты")
-                    else:
-                        self.ctest_window_headset_window.ui.pushButton_all_test_break.setText("Прервать тест")
+                    self.set_hidden_break_test_btn(auto_test_launch,
+                                                   self.ctest_window_headset_window.ui.pushButton_all_test_break)
+
                     self.ctest_window_headset_window.setFocus()
 
             case TEST_TYPE.TEST_HARDWARE_BTN:
@@ -665,10 +670,9 @@ class MainWindow(QMainWindow):
                                      variant_yes="Закрыть", variant_no="", callback=None)
                     self.on_test_phb_fail(test_type, False)
                 else:
-                    if auto_test_launch:
-                        self.ctest_window_hardwarekeys.ui.pushButton_all_test_break.setText("Прервать тесты")
-                    else:
-                        self.ctest_window_hardwarekeys.ui.pushButton_all_test_break.setText("Прервать тест")
+                    self.set_hidden_break_test_btn(auto_test_launch,
+                                                   self.ctest_window_hardwarekeys.ui.pushButton_all_test_break)
+
                     self.ctest_window_hardwarekeys.setFocus()
 
             case TEST_TYPE.TEST_BRIGHTNESS:
@@ -681,10 +685,9 @@ class MainWindow(QMainWindow):
                                      variant_yes="Закрыть", variant_no="", callback=None)
                     self.on_test_phb_fail(test_type, False)
                 else:
-                    if auto_test_launch:
-                        self.ctest_window_brightness.ui.pushButton_all_test_break.setText("Прервать тесты")
-                    else:
-                        self.ctest_window_brightness.ui.pushButton_all_test_break.setText("Прервать тест")
+                    self.set_hidden_break_test_btn(auto_test_launch,
+                                                   self.ctest_window_brightness.ui.pushButton_all_test_break)
+
                     self.ctest_window_brightness.setFocus()
 
             case TEST_TYPE.TEST_USB_DEVICES:
@@ -697,10 +700,9 @@ class MainWindow(QMainWindow):
                                      variant_yes="Закрыть", variant_no="", callback=None)
                     self.on_test_phb_fail(test_type, False)
                 else:
-                    if auto_test_launch:
-                        self.ctest_window_usb_devices.ui.pushButton_all_test_break.setText("Прервать тесты")
-                    else:
-                        self.ctest_window_usb_devices.ui.pushButton_all_test_break.setText("Прервать тест")
+                    self.set_hidden_break_test_btn(auto_test_launch,
+                                                   self.ctest_window_usb_devices.ui.pushButton_all_test_break)
+
                     self.ctest_window_usb_devices.setFocus()
 
             case TEST_TYPE.TEST_PATTERNS:
@@ -714,10 +716,9 @@ class MainWindow(QMainWindow):
 
                     self.on_test_phb_fail(test_type, False)
                 else:
-                    if auto_test_launch:
-                        self.ctest_window_patterns.ui.pushButton_all_test_break.setText("Прервать тесты")
-                    else:
-                        self.ctest_window_patterns.ui.pushButton_all_test_break.setText("Прервать тест")
+                    self.set_hidden_break_test_btn(auto_test_launch,
+                                                   self.ctest_window_patterns.ui.pushButton_all_test_break)
+
                     self.ctest_window_patterns.setFocus()
 
     def on_test_phb_break_all_test(self, test_type: TEST_TYPE):

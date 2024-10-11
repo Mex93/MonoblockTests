@@ -86,6 +86,7 @@ class CSpeakerTestWindow(QMainWindow):
 
     def on_user_pressed_start_test_loop(self):
         if not AutoTest.is_auto_test_start():
+            self.show_result_btns(False)
             MediaPlayer.stop_any_play()
 
             self.stop_record_stream()
