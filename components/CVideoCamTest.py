@@ -2,12 +2,11 @@ from PySide6.QtWidgets import QMainWindow
 from PySide6.QtCore import Qt, QTimer
 
 from PySide6.QtGui import QImage, QPixmap
-
 from cv2 import VideoCapture as cv2_VideoCapture
 from cv2 import cvtColor as cv2_cvtColor
 from cv2 import COLOR_BGR2RGB as cv2_COLOR_BGR2RGB
 
-from enuuuums import VIDEO_CAM_PARAMS, TEST_TYPE
+from enuuuums import VIDEO_CAM_PARAMS, TEST_TYPE, PROGRAM_JOB_TYPE
 from ui.test_videocam import Ui_TestVideoCamWindow
 
 
@@ -39,6 +38,12 @@ class CVideoCamWindow(QMainWindow):
         self.timer.timeout.connect(self.update_frame)  # сколько навесиш раз функцию столько и будет вызываться
 
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.set_buttn_connect_event()
+
+        self.timer_launch = False
+        self.setWindowTitle(f'Меню теста')
+
+    def set_buttn_connect_event(self):
         self.ui.pushButton_success.clicked.connect(
             lambda: self.__main_window.on_test_phb_success(TEST_TYPE.TEST_FRONT_CAMERA))
         self.ui.pushButton_fail.clicked.connect(
@@ -46,8 +51,6 @@ class CVideoCamWindow(QMainWindow):
 
         self.ui.pushButton_all_test_break.clicked.connect(
             lambda: self.__main_window.on_test_phb_break_all_test(TEST_TYPE.TEST_FRONT_CAMERA))
-
-        self.setWindowTitle(f'Меню теста')
 
     def center(self):
         """
@@ -103,10 +106,27 @@ class CVideoCamWindow(QMainWindow):
             self.timer.start(20)  # Обновляем каждые 20 мс
             self.ui.label_video.setText("Получение данных...")
             self.show()
+
+            if self.__main_window.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:
+                self.timer_launch = True
+
+                self.ui.pushButton_success.clicked.disconnect()
+                self.ui.pushButton_fail.clicked.disconnect()
+                self.ui.pushButton_all_test_break.clicked.disconnect()
+
+                timer = QTimer(self)
+                timer.timeout.connect(
+                    lambda: self.on_timer_end(timer))  # сколько навесиш раз функцию столько и будет вызываться
+                timer.start(1000)
+
             return "True"
         except Exception as err:
             return f"Во время выполнения проверки старта теста возникла ошибка '{err}'"
 
+    def on_timer_end(self, timer_id: QTimer):
+        timer_id.stop()
+        self.timer_launch = False
+        self.set_buttn_connect_event()
 
     @classmethod
     def is_camera_connected(cls, cam_index=0):
@@ -119,6 +139,19 @@ class CVideoCamWindow(QMainWindow):
         else:
             cap.release()  # Освобождаем объект VideoCapture
             return True
+
+    def mousePressEvent(self, event):
+        if self.timer_launch is True:
+            return
+        if event.button() == Qt.MouseButton.LeftButton:  # Проверяем, что нажата левая кнопка мыши
+            if self.__main_window.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:  # Проверяем, что нажата левая кнопка мыши
+                self.__main_window.on_test_phb_success(TEST_TYPE.TEST_FRONT_CAMERA)
+                if self.__main_window.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:
+                    bat_file_path = "content/bats/power_off.bat"
+                    self.__main_window.run_external_bat(bat_file_path)
+                return
+
+        event.accept()
 
     def closeEvent(self, e):
         # Освобождаем камеру при закрытии окна

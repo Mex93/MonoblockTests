@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="res">
+    <file>brightness_test.jpg</file>
     <file>fur_mark_icon.bmp</file>
     <file>images/cancel.png</file>
     <file>images/print.png</file>

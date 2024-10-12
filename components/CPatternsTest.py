@@ -1,10 +1,12 @@
+
+from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsPixmapItem
 from PySide6.QtWidgets import QMainWindow
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 import os
 from PySide6.QtGui import QPixmap
 from os.path import isdir as file_isdir
 
-from enuuuums import PATTERNS_TEST_PARAMS, TEST_TYPE
+from enuuuums import PATTERNS_TEST_PARAMS, TEST_TYPE, PROGRAM_JOB_TYPE
 from ui.test_patterns import Ui_TestPatternsWindow
 
 
@@ -46,6 +48,7 @@ class CPatternsTestWindow(QMainWindow):
             self.window_show)
 
         self.setWindowTitle(f'Меню теста')
+        self.viewer = None
 
         # получение списка
 
@@ -70,7 +73,7 @@ class CPatternsTestWindow(QMainWindow):
 
         if len(self.patterns_list):
             self.MAX_PATTERNS_INDEX = len(self.patterns_list)
-            self.patterns_index = -1
+            self.patterns_index = 0
             self.ui.frame_btns.setHidden(True)
             self.buttons_show = False
             self.set_image()
@@ -84,10 +87,24 @@ class CPatternsTestWindow(QMainWindow):
         color = pixmap.toImage().pixelColor(pixmap.width() // 2, pixmap.height() // 2)
         self.setStyleSheet(f"background-color: rgb({color.red()}, {color.green()}, {color.blue()});")
 
+    def set_background_image_from_image(self, image_path):
+        # self.ui.centralwidget.setStyleSheet(f"background-image: url({image_path}); background-attachment: fixed")
+        self.ui.centralwidget.setPixmap(QPixmap.fromImage(image_path))
+
     def set_image(self):
-        self.patterns_index += 1
         if self.patterns_index == self.MAX_PATTERNS_INDEX:
-            self.__main_window.on_test_phb_success(TEST_TYPE.TEST_PATTERNS)
+            if self.__main_window.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:
+                if self.viewer is None:
+                    self.viewer = ImageView("content/please_wait_camera.jpg")  # Замените на путь к вашему изображению
+                    self.ui.verticalLayout_2.insertWidget(0, self.viewer)
+                    timer = QTimer(self)
+                    timer.timeout.connect(
+                        lambda: self.start_camera_timer(timer))  # сколько навесиш раз функцию столько и будет вызываться
+                    timer.start(2000)
+
+                    # self.__main_window.on_test_phb_success(TEST_TYPE.TEST_PATTERNS)
+            else:
+                self.__main_window.on_test_phb_success(TEST_TYPE.TEST_PATTERNS)
             # Данил велел сделать так, просто при полном пролистывании выкидывает теперь в главное
             return
             # self.patterns_index = 0
@@ -99,9 +116,15 @@ class CPatternsTestWindow(QMainWindow):
                 self.ui.frame_btns.setHidden(True)
         try:
             self.set_background_color_from_image(self.patterns_list[self.patterns_index])
-        except:
+            self.patterns_index += 1
+        except Exception as err:
             # по какой то причине не всегда полный список вовзвращает файлов
+            print(err)
             self.__main_window.on_test_phb_success(TEST_TYPE.TEST_PATTERNS)
+
+    def start_camera_timer(self, timer_id: QTimer):
+        timer_id.stop()
+        self.__main_window.on_test_phb_success(TEST_TYPE.TEST_PATTERNS)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:  # Проверяем, что нажата левая кнопка мыши
@@ -110,3 +133,33 @@ class CPatternsTestWindow(QMainWindow):
     def closeEvent(self, e):
 
         e.accept()
+
+
+class ImageView(QGraphicsView):
+    def __init__(self, image_path):
+        super().__init__()
+
+        # Создаем сцену и устанавливаем ее на QGraphicsView
+        scene = QGraphicsScene(self)
+
+        self.setScene(scene)
+
+        # Загружаем изображение
+        pixmap = QPixmap(image_path)
+        self.pixmap_item = QGraphicsPixmapItem(pixmap)
+        scene.setSceneRect(self.pixmap_item.boundingRect())
+        scene.addItem(self.pixmap_item)
+
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        # Масштабируем изображение по размеру  QGraphicsView
+
+    def fit_image_to_view(self):
+        # Метод для масштабирования изображения по размеру виджета
+        if self.pixmap_item:
+            self.setSceneRect(self.pixmap_item.boundingRect())
+            self.fitInView(self.pixmap_item)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.fit_image_to_view()  # Обновляем масштаб при изменении размера окна

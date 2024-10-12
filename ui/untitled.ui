@@ -327,7 +327,7 @@
                </font>
               </property>
               <property name="text">
-               <string>Fur Mark</string>
+               <string>Stress Test</string>
               </property>
               <property name="icon">
                <iconset resource="res.qrc">

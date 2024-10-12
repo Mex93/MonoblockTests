@@ -2,17 +2,18 @@ import time
 from sys import argv, exit
 from os.path import isdir as file_isdir
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton
-# from PySide6.QtCore import QTimer
 from PySide6.QtGui import QFontDatabase
+from PySide6.QtCore import QTimer
 # from wmi import WMI
 import subprocess
-
+import os
 from ui.untitled import Ui_MainWindow
 from ui.get_check_string_window import Ui_MainWindow as Ui_StringWindow
 
 from components.CErrorLabel import TestResultLabel
 
 from common import send_message_box, SMBOX_ICON_TYPE, get_about_text, get_rules_text, send_message_box_triple_variant
+from enuuuums import PROGRAM_JOB_TYPE
 
 from components.CConfig import CNewConfig, BLOCKS_DATA, SYS_INFO_PARAMS, CONFIG_PARAMS
 from components.CTests import CTests, TEST_TYPE, CTestProcess, TEST_RESULT
@@ -52,9 +53,15 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         QFontDatabase.addApplicationFont("designs/Iosevka Bold.ttf")
-        self.setWindowTitle(f'Тестирование моноблоков Kvant 2024 v1.0')
-
+        self.PROGRAM_JOB_FLAG = PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE
+        if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_NORMAL:
+            self.setWindowTitle(f'Тестирование моноблоков Kvant 2024 v1.0 [ALL]')
+        elif self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:
+            self.setWindowTitle(f'Тестирование моноблоков Kvant 2024 v1.0 [LINE]')
+        else:
+            self.setWindowTitle(f'Тестирование моноблоков Kvant 2024 v1.0 [-]')
         self.load_with_error = False
+        self.auto_test_line_time_launch = False
 
         self.main_config = CMainConfig()
         # ---------------------------------------
@@ -151,12 +158,6 @@ class MainWindow(QMainWindow):
         # timer_update_cpu_temp.timeout.connect(self.on_timer_cpu_temp_update)
         # timer_update_cpu_temp.start(2000)
 
-        bat_file_path = "content/bats/time_sync.bat"
-        try:
-            subprocess.call([bat_file_path], shell=True)
-        except Exception as err:
-            print(err)
-
         only_config_name = self.main_config.get_only_config_name()
         if len(only_config_name):
             current_index = self.get_item_index_from_text(only_config_name)
@@ -195,7 +196,6 @@ class MainWindow(QMainWindow):
                          title="Внимание!",
                          variant_yes="Закрыть", variant_no="", callback=None)
 
-
     @staticmethod
     def run_external_program(program_path) -> bool:
         try:
@@ -203,15 +203,21 @@ class MainWindow(QMainWindow):
             return True
 
         except:
-           return False
+            return False
 
     @staticmethod
     def run_external_bat(program_path) -> bool:
         try:
-            subprocess.call([program_path], shell=True)
+            full_path = os.path.abspath(program_path)
+            subprocess.Popen(full_path)
             return True
 
-        except:
+        except subprocess.CalledProcessError as e:
+            print(f"Произошла ошибка при выполнении батника: {e}")
+            return False
+
+        except FileNotFoundError:
+            print("Файл не найден. Проверьте путь к .bat файлу.")
             return False
 
     def on_timer_cpu_temp_update(self):
@@ -316,14 +322,15 @@ class MainWindow(QMainWindow):
 
     def on_user_presed_launch_test(self, test_type: TEST_TYPE):
         print(f"Запущен тест: {test_type}")
-        test_list = CTests.get_avalible_test_list()
-        if len(test_list):
-            if test_type in test_list:
-                self.show_test_window_with_window(test_type, False)
+        if self.ctest_process.is_test_launch() == TEST_TYPE.TEST_NONE and self.auto_test_line_time_launch is False:
+            test_list = CTests.get_avalible_test_list()
+            if len(test_list):
+                if test_type in test_list:
+                    self.show_test_window_with_window(test_type, False)
 
     def on_changed_config(self):
+
         text = self.ui.comboBox_config_get.currentText()
-        print(text)
         if text:
 
             if self.ctest_process.is_test_launch() != TEST_TYPE.TEST_NONE:
@@ -383,6 +390,16 @@ class MainWindow(QMainWindow):
                                                                    CONFIG_PARAMS.CONFIG_NAME)
 
             self.ui.label_monoblock_config_name.setText(f"Тест моноблоков: {config_human_name}")
+
+            self.ui.pushButton_get_strings.setHidden(True)
+            if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:
+                self.ui.pushButton_get_strings.setEnabled(False)
+                self.ui.comboBox_config_get.setEnabled(False)
+                self.ui.pushButton_launchall.setEnabled(False)
+                self.ui.pushButton_clear.setEnabled(False)
+                self.ui.pushButton_furmark.setHidden(True)
+                self.ui.label_monoblock_config_name.setText("Тесты для сборочной линии линии")
+
             self.main_config.save_last_config(text)
 
             # LOAD
@@ -540,6 +557,7 @@ class MainWindow(QMainWindow):
             CButtoms.set_clear_callbacks_for_all()
 
             btn_index = 0
+            tests_list = list()
             tests_list = \
                 [
                     [CSystemInfo, TEST_TYPE.TEST_SYSTEM_INFO, SYS_INFO_PARAMS.TEST_USED, None],
@@ -553,6 +571,27 @@ class MainWindow(QMainWindow):
                     [CPatternsTest, TEST_TYPE.TEST_PATTERNS, PATTERNS_TEST_PARAMS.TEST_USED, None],
                 ]
 
+            if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:
+                tests_list = \
+                    [
+                        [CPatternsTest, TEST_TYPE.TEST_PATTERNS, PATTERNS_TEST_PARAMS.TEST_USED, None],
+                        [CVideoCam, TEST_TYPE.TEST_FRONT_CAMERA, VIDEO_CAM_PARAMS.TEST_USED, None]
+                    ]
+            else:
+                tests_list = \
+                    [
+                        [CSystemInfo, TEST_TYPE.TEST_SYSTEM_INFO, SYS_INFO_PARAMS.TEST_USED, None],
+                        [CExternalDisplay, TEST_TYPE.TEST_EXTERNAL_DISPLAY, EXTERNAL_DISPLAY_PARAMS.TEST_USED, None],
+                        [CVideoCam, TEST_TYPE.TEST_FRONT_CAMERA, VIDEO_CAM_PARAMS.TEST_USED, None],
+                        [CSpeakerTest, TEST_TYPE.TEST_SPEAKER_MIC, SPEAKER_PARAMS.SPEAKER_TEST_USED, None],
+                        [CSpeakerTest, TEST_TYPE.TEST_HEADSET_MIC, SPEAKER_PARAMS.HEADSET_TEST_USED, None],
+                        [CKeyTest, TEST_TYPE.TEST_HARDWARE_BTN, KEYSBUTTOMS_PARAMS.TEST_USED, None],
+                        [CBrightnessTest, TEST_TYPE.TEST_BRIGHTNESS, BRIGHTNESS_PARAMS.TEST_USED, None],
+                        [CUSBDevicesTest, TEST_TYPE.TEST_USB_DEVICES, USB_TEST_PARAMS.TEST_USED, None],
+                        [CPatternsTest, TEST_TYPE.TEST_PATTERNS, PATTERNS_TEST_PARAMS.TEST_USED, None],
+                    ]
+
+            self.ui.pushButton_get_strings.setHidden(True)
             # name insert
             for test in tests_list:
                 test[3] = CTests.get_test_name_from_test_type(test[1])
@@ -562,6 +601,8 @@ class MainWindow(QMainWindow):
                 test_class, btype, on_params, bname = test
 
                 if test_class.get_test_stats(on_params) is True:
+                    if btype == TEST_TYPE.TEST_SYSTEM_INFO:
+                        self.ui.pushButton_get_strings.setHidden(False)
                     btn_unit = CButtoms.get_unit_from_index(btn_index)
                     btn_unit.set_callback(btype, self.on_user_presed_launch_test)
                     btn_unit.set_name(bname)
@@ -576,6 +617,19 @@ class MainWindow(QMainWindow):
                     btn_unit = CButtoms.get_unit_from_index(index)
                     btn_unit.set_enabled(False)
                     btn_unit.set_hidden(True)
+
+            if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:
+                self.auto_test_line_time_launch = True
+
+                timer = QTimer(self)
+                timer.timeout.connect(
+                    lambda: self.on_launch_line_start(timer))  # сколько навесиш раз функцию столько и будет вызываться
+                timer.start(1500)
+
+    def on_launch_line_start(self, timer_id: QTimer):
+        timer_id.stop()
+        self.auto_test_line_time_launch = False
+        self.on_user_pressed_start_all_test()
 
     def on_config_is_broken(self, variants: QPushButton | None):
         """
@@ -853,12 +907,15 @@ class MainWindow(QMainWindow):
         if TestResultLabel.is_label_show():
             test_name = CTests.get_test_name_from_test_type(test_type)
             TestResultLabel.delete_test(test_name)
+            if not TestResultLabel.is_any_element():
+                TestResultLabel.set_show_status(False)
 
         btn_unit: CButtoms = CButtoms.get_unit_from_test_type(test_type)
         if btn_unit is not None:
             btn_unit.set_btn_color_green()
 
         self.close_current_test_window(test_type)
+
 
     def on_test_phb_fail(self, test_type: TEST_TYPE, is_window_open: bool = True):
 
@@ -904,9 +961,9 @@ class MainWindow(QMainWindow):
     def closeEvent(self, e):
         e.accept()
 
-    @staticmethod
-    def set_close():
-        exit()
+    def set_close(self):
+        if self.auto_test_line_time_launch is False:
+            exit()
 
 
 class CStringWindow(QMainWindow):

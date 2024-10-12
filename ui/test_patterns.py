@@ -24,7 +24,7 @@ class Ui_TestPatternsWindow(object):
     def setupUi(self, TestPatternsWindow):
         if not TestPatternsWindow.objectName():
             TestPatternsWindow.setObjectName(u"TestPatternsWindow")
-        TestPatternsWindow.resize(1496, 785)
+        TestPatternsWindow.resize(1496, 759)
         icon = QIcon()
         icon.addFile(u":/res/images/logo.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         TestPatternsWindow.setWindowIcon(icon)

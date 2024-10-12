@@ -294,7 +294,7 @@ class Ui_MainWindow(object):
         self.pushButton_btn11.setText(QCoreApplication.translate("MainWindow", u"btn11", None))
         self.pushButton_btn12.setText(QCoreApplication.translate("MainWindow", u"btn12", None))
         self.label_tests_failed.setText(QCoreApplication.translate("MainWindow", u"\u0422\u0435\u0441\u0442\u044b \u043d\u0435 \u043f\u0440\u043e\u0439\u0434\u0435\u043d\u044b:", None))
-        self.pushButton_furmark.setText(QCoreApplication.translate("MainWindow", u"Fur Mark", None))
+        self.pushButton_furmark.setText(QCoreApplication.translate("MainWindow", u"Stress Test", None))
         self.pushButton_alter_prog.setText(QCoreApplication.translate("MainWindow", u"run_alter_prog", None))
         self.pushButton_cpu_temp.setText(QCoreApplication.translate("MainWindow", u"CPU TEMP", None))
         self.menu_info.setTitle(QCoreApplication.translate("MainWindow", u"\u0418\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u044f", None))

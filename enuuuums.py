@@ -8,6 +8,11 @@ class SMBOX_ICON_TYPE(IntEnum):
     ICON_INFO = auto()
 
 
+class PROGRAM_JOB_TYPE(IntEnum):
+    JOB_NORMAL = 0,
+    JOB_ONLY_FOR_LINE = 1
+
+
 class TEST_ARRAY_ID(IntEnum):
     ARRAY_NAME = 0,
     ARRAY_TYPE = 1,
@@ -32,12 +37,14 @@ class AUDIO_STATUS(IntEnum):
     STATUS_PLAY = auto(),
     STATUS_STOP = auto(),
 
+
 class AUDIO_TEST_STEP(IntEnum):
     STEP_NONE = auto(),
     STEP_RECORD = auto(),
     STEP_LEFT_CHANNEL = auto(),
     STEP_RIGHT_CHANNEL = auto(),
     STEP_PLAY = auto(),
+
 
 class TEST_TYPE(IntEnum):
     TEST_NONE = auto(),
