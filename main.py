@@ -1,12 +1,13 @@
 import time
 from sys import argv, exit
 from os.path import isdir as file_isdir
+from os.path import abspath as os_abspath
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton
 from PySide6.QtGui import QFontDatabase
 from PySide6.QtCore import QTimer
 # from wmi import WMI
 import subprocess
-import os
+import argparse
 from ui.untitled import Ui_MainWindow
 from ui.get_check_string_window import Ui_MainWindow as Ui_StringWindow
 
@@ -45,7 +46,7 @@ from components.CButtons import CButtoms
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, parent=None):
+    def __init__(self, pr_type: PROGRAM_JOB_TYPE, parent=None):
         super().__init__(parent)
 
         self.__base_program_version = "0.2"  # Менять при каждом обновлении любой из подпрограмм
@@ -53,7 +54,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         QFontDatabase.addApplicationFont("designs/Iosevka Bold.ttf")
-        self.PROGRAM_JOB_FLAG = PROGRAM_JOB_TYPE.JOB_NORMAL
+        self.PROGRAM_JOB_FLAG = pr_type
         if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_NORMAL:
             self.setWindowTitle(f'Тестирование моноблоков Kvant 2024 v1.0 [ALL]')
         elif self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:
@@ -208,7 +209,7 @@ class MainWindow(QMainWindow):
     @staticmethod
     def run_external_bat(program_path) -> bool:
         try:
-            full_path = os.path.abspath(program_path)
+            full_path = os_abspath(program_path)
             subprocess.Popen(full_path)
             return True
 
@@ -989,8 +990,21 @@ class CStringWindow(QMainWindow):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Please select job type mode")
+    parser.add_argument('command', type=str, help='Command for set select job type')
+    args = parser.parse_args()
+    pr_type = PROGRAM_JOB_TYPE.JOB_NORMAL
+    if args.command == "PROGRAM_LINE":
+        pr_type = PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE
+        print("Program job: PROGRAM_JOB_TYPE.PROGRAM_LINE")
+    elif args.command == "PROGRAM_FULL":
+        pr_type = PROGRAM_JOB_TYPE.JOB_NORMAL
+        print("Program job: PROGRAM_JOB_TYPE.JOB_NORMAL")
+    else:
+        print("Unknown command.")
+
     app = QApplication(argv)
-    window = MainWindow()
+    window = MainWindow(pr_type)
     window.show()
 
     exit(app.exec())
