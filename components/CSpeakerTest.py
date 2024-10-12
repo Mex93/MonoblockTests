@@ -145,7 +145,7 @@ class CSpeakerTestWindow(QMainWindow):
 
     def set_auto_test_enabled_ui_event(self, status: bool):
         if status:  # запустить
-            self.ui.pushButton_start_test.setText("Запущен тест. Далее ->")
+            self.ui.pushButton_start_test.setText("Запущен тест...\nДалее ->")
             self.ui.pushButton_record.setDisabled(True)
             self.ui.pushButton_right.setDisabled(True)
             self.ui.pushButton_left.setDisabled(True)
@@ -349,6 +349,7 @@ class CSpeakerTestWindow(QMainWindow):
         # self.ui.pushButton_fail.setHidden(status)
         self.ui.pushButton_success.setHidden(status)
         self.ui.pushButton_repeat.setHidden(status)
+        self.ui.pushButton_start_test.setHidden(not status)
 
     @classmethod
     def is_any_record_avalible(cls) -> bool:

@@ -149,21 +149,134 @@ class CSystemInfo:
     def get_bios_info():
         c = WMI()
         bios_info = c.Win32_BIOS()[0]
-        man2 = ""
-        prod = ""
-        for baseboard in c.Win32_BaseBoard():
-            man2 = baseboard.Manufacturer
-            prod = baseboard.Product
-            break
+        # logging.basicConfig(level=logging.INFO, filename="bios_params.log", filemode="a",
+        #                     format="%(asctime)s %(levelname)s %(message)s")
+
+        # bios_properties = [
+        #     bios_info.BiosCharacteristics,  # Характеристики BIOS
+        #     bios_info.BIOSVersion,  # Версия BIOS
+        #     bios_info.BuildNumber,  # Номер сборки
+        #     bios_info.Caption,  # Заголовок
+        #     bios_info.CodeSet,  # Набор кодов
+        #     bios_info.CurrentLanguage,  # Текущий язык
+        #     bios_info.Description,  # Описание
+        #     bios_info.EmbeddedControllerMajorVersion,  # Основная версия встроенного контроллера
+        #     bios_info.EmbeddedControllerMinorVersion,  # Небольшая версия встроенного контроллера
+        #     bios_info.IdentificationCode,  # Код идентификации
+        #     bios_info.InstallableLanguages,  # Устанавливаемые языки
+        #     bios_info.InstallDate,  # Дата установки
+        #     bios_info.LanguageEdition,  # Версия языка
+        #     bios_info.ListOfLanguages,  # Список языков
+        #     bios_info.Manufacturer,  # Производитель
+        #     bios_info.Name,  # Имя
+        #     bios_info.OtherTargetOS,  # Другие целевые операционные системы
+        #     bios_info.PrimaryBIOS,  # Основной BIOS
+        #     bios_info.ReleaseDate,  # Дата выпуска
+        #     bios_info.SerialNumber,  # Серийный номер
+        #     bios_info.SMBIOSBIOSVersion,  # Версия BIOS SMBIOS
+        #     bios_info.SMBIOSMajorVersion,  # Основная версия SMBIOS
+        #     bios_info.SMBIOSMinorVersion,  # Небольшая версия SMBIOS
+        #     bios_info.SMBIOSPresent,  # Наличие SMBIOS
+        #     bios_info.SoftwareElementID,  # Идентификатор программного элемента
+        #     bios_info.SoftwareElementState,  # Состояние программного элемента
+        #     bios_info.Status,  # Статус
+        #     bios_info.SystemBiosMajorVersion,  # Основная версия системного BIOS
+        #     bios_info.SystemBiosMinorVersion,  # Небольшая версия системного BIOS
+        #     bios_info.TargetOperatingSystem,  # Целевая операционная система
+        #     bios_info.Version  # Версия
+        # ]
+
+        # # Печать списка для проверки
+        # for prop in bios_properties:
+        #     logging.info(f"Параметр {str(prop)} -> {prop}")
+        # baseboard_attributes = [
+        #     "baseboard.Caption",
+        #     "baseboard.ConfigOptions",
+        #     "baseboard.CreationClassName",
+        #     "baseboard.Depth",
+        #     "baseboard.Description",
+        #     "baseboard.Height",
+        #     "baseboard.HostingBoard",
+        #     "baseboard.HotSwappable",
+        #     "baseboard.InstallDate",
+        #     "baseboard.Manufacturer",
+        #     "baseboard.Model",
+        #     "baseboard.Name",
+        #     "baseboard.OtherIdentifyingInfo",
+        #     "baseboard.PartNumber",
+        #     "baseboard.PoweredOn",
+        #     "baseboard.Product",
+        #     "baseboard.Removable",
+        #     "baseboard.Replaceable",
+        #     "baseboard.RequirementsDescription",
+        #     "baseboard.RequiresDaughterBoard",
+        #     "baseboard.SerialNumber",
+        #     "baseboard.SKU",
+        #     "baseboard.SlotLayout",
+        #     "baseboard.SpecialRequirements",
+        #     "baseboard.Status",
+        #     "baseboard.Tag",
+        #     "baseboard.Version",
+        #     "baseboard.Weight",
+        #     "baseboard.Width"
+        # ]
+
+        # for baseboard in c.Win32_BaseBoard():
+        #     logging.info(baseboard)
+        #     logging.info(f"baseboard.Caption {baseboard.Caption}")
+        #     logging.info(f"baseboard.ConfigOptions {baseboard.ConfigOptions}")
+        #     logging.info(f"baseboard.CreationClassName {baseboard.CreationClassName}")
+        #     logging.info(f"baseboard.Depth {baseboard.Depth}")
+        #     logging.info(f"baseboard.Description {baseboard.Description}")
+        #     logging.info(f"baseboard.Height {baseboard.Height}")
+        #     logging.info(f"baseboard.HostingBoard {baseboard.HostingBoard}")
+        #     logging.info(f"baseboard.HotSwappable {baseboard.HotSwappable}")
+        #     logging.info(f"baseboard.InstallDate {baseboard.InstallDate}")
+        #     logging.info(f"baseboard.Manufacturer {baseboard.Manufacturer}")
+        #     logging.info(f"baseboard.Model {baseboard.Model}")
+        #     logging.info(f"baseboard.Name {baseboard.Name}")
+        #     logging.info(f"baseboard.OtherIdentifyingInfo {baseboard.OtherIdentifyingInfo}")
+        #     logging.info(f"baseboard.PartNumber {baseboard.PartNumber}")
+        #     logging.info(f"baseboard.PoweredOn {baseboard.PoweredOn}")
+        #     logging.info(f"baseboard.Product {baseboard.Product}")
+        #     logging.info(f"baseboard.Removable {baseboard.Removable}")
+        #     logging.info(f"baseboard.Replaceable {baseboard.Replaceable}")
+        #     logging.info(f"baseboard.RequirementsDescription {baseboard.RequirementsDescription}")
+        #     logging.info(f"baseboard.RequiresDaughterBoard {baseboard.RequiresDaughterBoard}")
+        #     logging.info(f"baseboard.SerialNumber {baseboard.SerialNumber}")
+        #     logging.info(f"baseboard.SKU {baseboard.SKU}")
+        #     logging.info(f"baseboard.SlotLayout {baseboard.SlotLayout}")
+        #     logging.info(f"baseboard.SpecialRequirements {baseboard.SpecialRequirements}")
+        #     logging.info(f"baseboard.Status {baseboard.Status}")
+        #     logging.info(f"baseboard.Tag {baseboard.Tag}")
+        #     logging.info(f"baseboard.Version {baseboard.Version}")
+        #     logging.info(f"baseboard.Weight {baseboard.Weight}")
+        #     logging.info(f"baseboard.Width {baseboard.Width}")
+
+        # for systems in c.Win32_ComputerSystem():
+        #     print(f"Manufacturer: {systems.Manufacturer}")
+        #     print(f"Model: {systems.Model}")
+        #
+        # for baseboard in c.Win32_BaseBoard():
+        #     print(f"Manufacturer: {baseboard.Manufacturer}")
+        #     print(f"Product: {baseboard.OtherIdentifyingInfo}")
+        cs_model = ""
+        cs_system_family = ""
+        cs_system_sku_number = ""
+        for systems in c.Win32_ComputerSystem():
+            cs_model = systems.Model
+            cs_system_family = systems.SystemFamily
+            cs_system_sku_number = systems.SystemSKUNumber
+
         return {
             'manufacturer': bios_info.Manufacturer,
             'version': bios_info.Version,
             'serial_number': bios_info.SerialNumber,
-            'release_date': bios_info.ReleaseDate,
-            'manufacturer2': man2,
-            'product': prod,
+            'release_date': bios_info.ReleaseDate,  # bios_info.ReleaseDate
+            'cs_model': cs_model,
+            'cs_system_family': cs_system_family,
+            'cs_system_sku_number': cs_system_sku_number,
         }
-
 
     @staticmethod
     def get_network_interfaces():
@@ -325,8 +438,9 @@ class CSystemInfoWindow(QMainWindow):
                             return ("<span style=\" font-size:14pt; font-weight:700; color:#8fdd60;\">Сравнение "
                                     "успешно!</span>"), True
 
-            return (f"<span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">Сравнение не пройдено!</span> <br>"
-                    f"Check_string: {saved_string}<br>"), False
+            return (
+                f"<span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">Сравнение не пройдено!</span> <br>"
+                f"Check_string: {saved_string}<br>"), False
 
         test_name = CSystemInfo.get_sub_test_name_from_type(TEST_SYSTEM_INFO_TYPES.RAM_STATS)
         if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.RAM_CHECK) is True:
@@ -353,24 +467,26 @@ class CSystemInfoWindow(QMainWindow):
             elif result_test is None:  # сравнение не надо
                 pass
 
-            ram_dict.update({"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Всего: {total / (1024 ** 3):.2f} | "
-                                     f"Доступно: {available / (1024 ** 3):.2f} | "
-                                     f"Использовано: {used / (1024 ** 3):.2f} ГБ {test_result_string}",
+            ram_dict.update({
+                "data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Всего: {total / (1024 ** 3):.2f} | "
+                        f"Доступно: {available / (1024 ** 3):.2f} | "
+                        f"Использовано: {used / (1024 ** 3):.2f} ГБ {test_result_string}",
 
-                             "only_data": f"Всего: {total / (1024 ** 3):.2f} | "
-                                          f"Доступно: {available / (1024 ** 3):.2f} | "
-                                          f"Использовано: {used / (1024 ** 3):.2f} ГБ",
+                "only_data": f"Всего: {total / (1024 ** 3):.2f} | "
+                             f"Доступно: {available / (1024 ** 3):.2f} | "
+                             f"Использовано: {used / (1024 ** 3):.2f} ГБ",
 
-                             "check_string": check_string,
-                             "test_id": TEST_SYSTEM_INFO_TYPES.RAM_STATS})
+                "check_string": check_string,
+                "test_id": TEST_SYSTEM_INFO_TYPES.RAM_STATS})
             on_test_count += 1
         else:
-            ram_dict.update({"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Проверка отключена",
+            ram_dict.update(
+                {"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Проверка отключена",
 
-                             "only_data": f"Проверка отключена",
+                 "only_data": f"Проверка отключена",
 
-                             "check_string": "result_none",
-                             "test_id": TEST_SYSTEM_INFO_TYPES.RAM_STATS})
+                 "check_string": "result_none",
+                 "test_id": TEST_SYSTEM_INFO_TYPES.RAM_STATS})
 
         result_list.append(ram_dict)
 
@@ -383,21 +499,29 @@ class CSystemInfoWindow(QMainWindow):
             version = bios_info.get("version", None)
             serial_number = bios_info.get("serial_number", None)
             release_date = bios_info.get("release_date", None)
-            man2 = bios_info.get("manufacturer2", None)
-            product = bios_info.get("product", None)
-
-            if None not in (manufacturer, version, serial_number, release_date, man2, product):
+            cs_model = bios_info.get("cs_model", None)
+            cs_system_family = bios_info.get("cs_system_family", None)
+            cs_system_sku_number = bios_info.get("cs_system_sku_number", None)
+            # if None not in (manufacturer, version, serial_number, release_date):
+            #     is_test_passed_count += 1
+            if None not in (manufacturer, version, serial_number, release_date):
                 is_test_passed_count += 1
             else:
                 if error_label_used:
                     cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.BIOS_STATS)
 
+            # check_string = f"m_{'-' if manufacturer is None else manufacturer}_" \
+            #                f"v_{'-' if version is None else version}_" \
+            #                f"sn_{'-' if serial_number is None else serial_number}_" \
+            #                f"rd_{'-' if release_date is None else release_date}" \
+            #                f"cm_{'-' if cs_model is None else cs_model}" \
+            #                f"sf_{'-' if cs_system_family is None else cs_system_family}" \
+            #                f"sskn_{'-' if cs_system_sku_number is None else cs_system_sku_number}".replace(" ", "_")
+
             check_string = f"m_{'-' if manufacturer is None else manufacturer}_" \
-                           f"v_{'-' if version is None else version}_" \
-                           f"sn_{'-' if serial_number is None else serial_number}_" \
-                           f"rd_{'-' if release_date is None else release_date}" \
-                           f"mn2_{'-' if man2 is None else man2}" \
-                           f"pr_{'-' if product is None else product}".replace(" ", "_")
+                           f"cm_{'-' if cs_model is None else cs_model}_" \
+                           f"sf_{'-' if cs_system_family is None else cs_system_family}_" \
+                           f"sskn_{'-' if cs_system_sku_number is None else cs_system_sku_number}".replace(" ", "_")
 
             test_result_string, result_test = get_checked_string(check_string, SYS_INFO_PARAMS.BIOS_STRING)
 
@@ -408,25 +532,38 @@ class CSystemInfoWindow(QMainWindow):
             elif result_test is None:  # сравнение не надо
                 pass
 
-            bios_dict.update({"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> {manufacturer} | {version} | "
-                                      f"SN: {serial_number}Vendor: {man2}-{product} | <br>Date: {release_date} {test_result_string}",
+            # bios_dict.update({"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> {manufacturer} | {version} | "
+            #                           f"SN: {serial_number} | Vendor: {cs_model}-{cs_system_family}-{cs_system_sku_number} <br> Date: {release_date} {test_result_string}",
+            #
+            #                   "only_data": f"{manufacturer} | {version} | "
+            #                                f"SN: {serial_number} | Vendor: {cs_model}-{cs_system_family}-{cs_system_sku_number} | Date: {release_date}",
+            #
+            #                   "check_string":
+            #                       check_string,
+            #
+            #                   "test_id": TEST_SYSTEM_INFO_TYPES.BIOS_STATS})
 
-                              "only_data": f"{manufacturer} | {version} | "
-                                           f"SN: {serial_number} | Vendor: {man2}-{product} | Date: {release_date}",
+            bios_dict.update({
+                "data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> {manufacturer}<br>"
+                        f"Vendor: {cs_model}-{cs_system_family}-{cs_system_sku_number} {test_result_string}",
 
-                              "check_string":
-                                  check_string,
+                "only_data": f"{manufacturer} | Vendor: {cs_model}-{cs_system_family}-{cs_system_sku_number}",
 
-                              "test_id": TEST_SYSTEM_INFO_TYPES.BIOS_STATS})
+                "check_string":
+                    check_string,
+
+                "test_id": TEST_SYSTEM_INFO_TYPES.BIOS_STATS})
+
             on_test_count += 1
         else:
-            bios_dict.update({"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Проверка отключена",
+            bios_dict.update(
+                {"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Проверка отключена",
 
-                              "only_data": f"Проверка отключена",
-                              "check_string":
-                                  f"result_none",
+                 "only_data": f"Проверка отключена",
+                 "check_string":
+                     f"result_none",
 
-                              "test_id": TEST_SYSTEM_INFO_TYPES.BIOS_STATS})
+                 "test_id": TEST_SYSTEM_INFO_TYPES.BIOS_STATS})
 
         result_list.append(bios_dict)
 
@@ -451,24 +588,26 @@ class CSystemInfoWindow(QMainWindow):
             elif result_test is None:  # сравнение не надо
                 pass
 
-            cpu_dict.update({"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> {cpu_name} {test_result_string}",
+            cpu_dict.update({
+                "data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> {cpu_name} {test_result_string}",
 
-                             "only_data": f"{cpu_name}",
-                             "check_string":
-                                 check_string,
+                "only_data": f"{cpu_name}",
+                "check_string":
+                    check_string,
 
-                             "test_id": TEST_SYSTEM_INFO_TYPES.CPU_STATS})
+                "test_id": TEST_SYSTEM_INFO_TYPES.CPU_STATS})
 
             on_test_count += 1
 
         else:
-            cpu_dict.update({"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Проверка отключена",
+            cpu_dict.update(
+                {"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Проверка отключена",
 
-                             "only_data": f"Проверка отключена",
-                             "check_string":
-                                 f"result_none",
+                 "only_data": f"Проверка отключена",
+                 "check_string":
+                     f"result_none",
 
-                             "test_id": TEST_SYSTEM_INFO_TYPES.CPU_STATS})
+                 "test_id": TEST_SYSTEM_INFO_TYPES.CPU_STATS})
 
         result_list.append(cpu_dict)
 
@@ -501,24 +640,26 @@ class CSystemInfoWindow(QMainWindow):
             elif result_test is None:  # сравнение не надо
                 pass
 
-            os_dict.update({"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> {csystem} {crelease} {cversion} | "
-                                    f"{ccomputer_name} {test_result_string}",
+            os_dict.update({
+                "data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> {csystem} {crelease} {cversion} | "
+                        f"{ccomputer_name} {test_result_string}",
 
-                            "check_string":
-                                check_string,
-                            "only_data": f"{csystem} {crelease} {cversion} | "
-                                         f"{ccomputer_name}",
+                "check_string":
+                    check_string,
+                "only_data": f"{csystem} {crelease} {cversion} | "
+                             f"{ccomputer_name}",
 
-                            "test_id": TEST_SYSTEM_INFO_TYPES.OS_STATS})
+                "test_id": TEST_SYSTEM_INFO_TYPES.OS_STATS})
             on_test_count += 1
         else:
-            os_dict.update({"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Проверка отключена",
+            os_dict.update(
+                {"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Проверка отключена",
 
-                            "only_data": f"Проверка отключена",
-                            "check_string":
-                                f"result_none",
+                 "only_data": f"Проверка отключена",
+                 "check_string":
+                     f"result_none",
 
-                            "test_id": TEST_SYSTEM_INFO_TYPES.OS_STATS})
+                 "test_id": TEST_SYSTEM_INFO_TYPES.OS_STATS})
 
         result_list.append(os_dict)
 
@@ -567,12 +708,13 @@ class CSystemInfoWindow(QMainWindow):
                              "test_id": TEST_SYSTEM_INFO_TYPES.LAN_STATS})
             on_test_count += 1
         else:
-            lan_dict.update({"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Проверка отключена",
-                             "only_data": "Проверка отключена",
-                             "check_string":
-                                 f"result_none",
+            lan_dict.update(
+                {"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Проверка отключена",
+                 "only_data": "Проверка отключена",
+                 "check_string":
+                     f"result_none",
 
-                             "test_id": TEST_SYSTEM_INFO_TYPES.LAN_STATS})
+                 "test_id": TEST_SYSTEM_INFO_TYPES.LAN_STATS})
 
         result_list.append(lan_dict)
 
@@ -639,12 +781,13 @@ class CSystemInfoWindow(QMainWindow):
                               "test_id": TEST_SYSTEM_INFO_TYPES.WIFI_STATS})
             on_test_count += 1
         else:
-            wifi_dict.update({"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Проверка отключена",
-                              "only_data": "Проверка отключена",
-                              "check_string":
-                                  f"result_none",
+            wifi_dict.update(
+                {"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Проверка отключена",
+                 "only_data": "Проверка отключена",
+                 "check_string":
+                     f"result_none",
 
-                              "test_id": TEST_SYSTEM_INFO_TYPES.WIFI_STATS})
+                 "test_id": TEST_SYSTEM_INFO_TYPES.WIFI_STATS})
 
         result_list.append(wifi_dict)
 
@@ -717,12 +860,13 @@ class CSystemInfoWindow(QMainWindow):
                             "test_id": TEST_SYSTEM_INFO_TYPES.BT_STATS})
             on_test_count += 1
         else:
-            bt_dict.update({"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Проверка отключена",
-                            "only_data": "Проверка отключена",
-                            "check_string":
-                                f"result_none",
+            bt_dict.update(
+                {"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Проверка отключена",
+                 "only_data": "Проверка отключена",
+                 "check_string":
+                     f"result_none",
 
-                            "test_id": TEST_SYSTEM_INFO_TYPES.BT_STATS})
+                 "test_id": TEST_SYSTEM_INFO_TYPES.BT_STATS})
 
         result_list.append(bt_dict)
 
@@ -812,12 +956,13 @@ class CSystemInfoWindow(QMainWindow):
                               "test_id": TEST_SYSTEM_INFO_TYPES.DISKS_STATS})
             on_test_count += 1
         else:
-            disk_dict.update({"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Проверка отключена",
-                              "only_data": "Проверка отключена",
-                              "check_string":
-                                  f"result_none",
+            disk_dict.update(
+                {"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Проверка отключена",
+                 "only_data": "Проверка отключена",
+                 "check_string":
+                     f"result_none",
 
-                              "test_id": TEST_SYSTEM_INFO_TYPES.DISKS_STATS})
+                 "test_id": TEST_SYSTEM_INFO_TYPES.DISKS_STATS})
 
         result_list.append(disk_dict)
 
