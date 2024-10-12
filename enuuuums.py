@@ -37,6 +37,7 @@ class AUDIO_TEST_STEP(IntEnum):
     STEP_RECORD = auto(),
     STEP_LEFT_CHANNEL = auto(),
     STEP_RIGHT_CHANNEL = auto(),
+    STEP_PLAY = auto(),
 
 class TEST_TYPE(IntEnum):
     TEST_NONE = auto(),

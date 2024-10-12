@@ -106,6 +106,9 @@ class CSpeakerTestWindow(QMainWindow):
                 AutoTest.set_step(4, AUDIO_TEST_STEP.STEP_RECORD)
                 self.on_user_pressed_micro_record()
             elif current_test == AUDIO_TEST_STEP.STEP_RECORD:
+                return
+                # AutoTest.set_step(4, AUDIO_TEST_STEP.STEP_PLAY)
+            elif current_test == AUDIO_TEST_STEP.STEP_PLAY:
                 AutoTest.stop()
                 self.set_auto_test_enabled_ui_event(False)
                 self.show_result_btns(True)
@@ -116,6 +119,7 @@ class CSpeakerTestWindow(QMainWindow):
                 self.play_record_timer_count -= 1
             if self.play_record_timer_count == 0:
                 self.on_stop_record_play_time()
+                self.show_result_btns(True)
 
         current_test = AutoTest.get_current_auto_test()
         if current_test == AUDIO_TEST_STEP.STEP_LEFT_CHANNEL:
@@ -131,9 +135,13 @@ class CSpeakerTestWindow(QMainWindow):
         elif current_test == AUDIO_TEST_STEP.STEP_RECORD:
             result = AutoTest.set_update_time_count()
             if result:  # выполнился
+                AutoTest.set_step(4, AUDIO_TEST_STEP.STEP_PLAY)
+        elif current_test == AUDIO_TEST_STEP.STEP_PLAY:
+            result = AutoTest.set_update_time_count()
+            if result:  # выполнился
                 AutoTest.stop()
-                self.set_auto_test_enabled_ui_event(False)
                 self.show_result_btns(True)
+                self.set_auto_test_enabled_ui_event(False)
 
     def set_auto_test_enabled_ui_event(self, status: bool):
         if status:  # запустить
