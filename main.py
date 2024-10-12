@@ -382,6 +382,11 @@ class MainWindow(QMainWindow):
             CSystemInfo.set_test_stats(SYS_INFO_PARAMS.BIOS_CHECK,
                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
                                                                           SYS_INFO_PARAMS.BIOS_CHECK))
+
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.MB_CHECK,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.MB_CHECK))
+
             CSystemInfo.set_test_stats(SYS_INFO_PARAMS.CPU_CHECK,
                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
                                                                           SYS_INFO_PARAMS.CPU_CHECK))
@@ -434,6 +439,15 @@ class MainWindow(QMainWindow):
             CSystemInfo.set_test_stats(SYS_INFO_PARAMS.LAN_STRING,
                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
                                                                           SYS_INFO_PARAMS.LAN_STRING))
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.MB_MODEL_STRING,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.MB_MODEL_STRING))
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.MB_FAMILY_STRING,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.MB_FAMILY_STRING))
+            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.MB_SKU_NUMBER_STRING,
+                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                          SYS_INFO_PARAMS.MB_SKU_NUMBER_STRING))
 
             # External display
             # check
@@ -811,6 +825,10 @@ class MainWindow(QMainWindow):
             time.sleep(0.5)
             self.ctest_process.switch_launch_test(next_test)
             self.show_test_window_no_window(next_test, True)
+
+        if TestResultLabel.is_any_element():
+            if not TestResultLabel.is_label_show():
+                TestResultLabel.set_show_status(True)
 
     def on_test_phb_success(self, test_type: TEST_TYPE):
 

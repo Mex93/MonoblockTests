@@ -75,6 +75,15 @@ class Ui_TestSysInfoWindow(object):
 
         self.verticalLayout.addWidget(self.label_bios_info)
 
+        self.label_mb_info = QLabel(self.groupBox_2)
+        self.label_mb_info.setObjectName(u"label_mb_info")
+        sizePolicy1.setHeightForWidth(self.label_mb_info.sizePolicy().hasHeightForWidth())
+        self.label_mb_info.setSizePolicy(sizePolicy1)
+        self.label_mb_info.setFont(font)
+        self.label_mb_info.setWordWrap(False)
+
+        self.verticalLayout.addWidget(self.label_mb_info)
+
         self.label_cpu_info = QLabel(self.groupBox_2)
         self.label_cpu_info.setObjectName(u"label_cpu_info")
         sizePolicy1.setHeightForWidth(self.label_cpu_info.sizePolicy().hasHeightForWidth())
@@ -207,6 +216,7 @@ class Ui_TestSysInfoWindow(object):
         TestSysInfoWindow.setWindowTitle(QCoreApplication.translate("TestSysInfoWindow", u"Test_SystemInfo", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("TestSysInfoWindow", u"\u0422\u0435\u0441\u0442 \u0438\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u0438 \u043e \u0441\u0438\u0441\u0442\u0435\u043c\u0435:", None))
         self.label_bios_info.setText(QCoreApplication.translate("TestSysInfoWindow", u"BIOS:4EUEHFG2978HGF429W87UFVU9", None))
+        self.label_mb_info.setText(QCoreApplication.translate("TestSysInfoWindow", u"MB: 1222", None))
         self.label_cpu_info.setText(QCoreApplication.translate("TestSysInfoWindow", u"\u041c\u043e\u0434\u0435\u043b\u044c \u043f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440\u0430: Ryazan", None))
         self.label_ram_info.setText(QCoreApplication.translate("TestSysInfoWindow", u"\u041e\u0417\u0423: 100500 \u0433\u0431", None))
         self.label_os_info.setText(QCoreApplication.translate("TestSysInfoWindow", u"OS:", None))

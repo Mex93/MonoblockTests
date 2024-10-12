@@ -35,6 +35,8 @@ class CSystemInfo:
         match sub_test_type:
             case TEST_SYSTEM_INFO_TYPES.BT_STATS:
                 return "Bluetooth Test"
+            case TEST_SYSTEM_INFO_TYPES.MB_STATS:
+                return "МП"
             case TEST_SYSTEM_INFO_TYPES.OS_STATS:
                 return "OS"
             case TEST_SYSTEM_INFO_TYPES.CPU_STATS:
@@ -55,6 +57,7 @@ class CSystemInfo:
     @classmethod
     def get_tests_list(cls) -> list:
         tests = [TEST_SYSTEM_INFO_TYPES.BT_STATS,
+                 TEST_SYSTEM_INFO_TYPES.MB_STATS,
                  TEST_SYSTEM_INFO_TYPES.OS_STATS,
                  TEST_SYSTEM_INFO_TYPES.CPU_STATS,
                  TEST_SYSTEM_INFO_TYPES.WIFI_STATS,
@@ -415,6 +418,7 @@ class CSystemInfoWindow(QMainWindow):
 
         self.ui.label_ram_info.setText("-")
         self.ui.label_bios_info.setText("-")
+        self.ui.label_mb_info.setText("-")
         self.ui.label_cpu_info.setText("-")
         self.ui.label_os_info.setText("-")
 
@@ -499,9 +503,6 @@ class CSystemInfoWindow(QMainWindow):
             version = bios_info.get("version", None)
             serial_number = bios_info.get("serial_number", None)
             release_date = bios_info.get("release_date", None)
-            cs_model = bios_info.get("cs_model", None)
-            cs_system_family = bios_info.get("cs_system_family", None)
-            cs_system_sku_number = bios_info.get("cs_system_sku_number", None)
             # if None not in (manufacturer, version, serial_number, release_date):
             #     is_test_passed_count += 1
             if None not in (manufacturer, version, serial_number, release_date):
@@ -518,10 +519,7 @@ class CSystemInfoWindow(QMainWindow):
             #                f"sf_{'-' if cs_system_family is None else cs_system_family}" \
             #                f"sskn_{'-' if cs_system_sku_number is None else cs_system_sku_number}".replace(" ", "_")
 
-            check_string = f"m_{'-' if manufacturer is None else manufacturer}_" \
-                           f"cm_{'-' if cs_model is None else cs_model}_" \
-                           f"sf_{'-' if cs_system_family is None else cs_system_family}_" \
-                           f"sskn_{'-' if cs_system_sku_number is None else cs_system_sku_number}".replace(" ", "_")
+            check_string = f"m_{'-' if manufacturer is None else manufacturer}".replace(" ", "_")
 
             test_result_string, result_test = get_checked_string(check_string, SYS_INFO_PARAMS.BIOS_STRING)
 
@@ -544,10 +542,9 @@ class CSystemInfoWindow(QMainWindow):
             #                   "test_id": TEST_SYSTEM_INFO_TYPES.BIOS_STATS})
 
             bios_dict.update({
-                "data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> {manufacturer}<br>"
-                        f"Vendor: {cs_model}-{cs_system_family}-{cs_system_sku_number} {test_result_string}",
+                "data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> {manufacturer} {test_result_string}",
 
-                "only_data": f"{manufacturer} | Vendor: {cs_model}-{cs_system_family}-{cs_system_sku_number}",
+                "only_data": f"{manufacturer}",
 
                 "check_string":
                     check_string,
@@ -566,6 +563,113 @@ class CSystemInfoWindow(QMainWindow):
                  "test_id": TEST_SYSTEM_INFO_TYPES.BIOS_STATS})
 
         result_list.append(bios_dict)
+
+        # MB Test
+        mb_dict = dict()
+        test_name = CSystemInfo.get_sub_test_name_from_type(TEST_SYSTEM_INFO_TYPES.MB_STATS)
+        if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.MB_CHECK) is True:
+
+            bios_info = CSystemInfo.get_bios_info()
+            cs_model = bios_info.get("cs_model", None)
+            cs_system_family = bios_info.get("cs_system_family", None)
+            cs_system_sku_number = bios_info.get("cs_system_sku_number", None)
+
+            if None not in (cs_model, cs_system_family, cs_system_sku_number):
+                is_test_passed_count += 1
+            else:
+                if error_label_used:
+                    cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.MB_STATS)
+
+            mb_model_string = CSystemInfo.get_test_stats(SYS_INFO_PARAMS.MB_MODEL_STRING)
+            mb_family_string = CSystemInfo.get_test_stats(SYS_INFO_PARAMS.MB_FAMILY_STRING)
+            mb_sku_number_string = CSystemInfo.get_test_stats(SYS_INFO_PARAMS.MB_SKU_NUMBER_STRING)
+
+            not_compared_list = list()
+            in_test_used_strings_list = list()
+
+            in_result_list = [[SYS_INFO_PARAMS.MB_MODEL_STRING, cs_model],
+                                [SYS_INFO_PARAMS.MB_FAMILY_STRING, cs_system_family],
+                                [SYS_INFO_PARAMS.MB_SKU_NUMBER_STRING, cs_system_sku_number],
+                                ]
+
+            for string_tuple in ((mb_model_string, cs_model, "Model", SYS_INFO_PARAMS.MB_MODEL_STRING),
+                                 (mb_family_string, cs_system_family, "Family", SYS_INFO_PARAMS.MB_FAMILY_STRING),
+                                 (mb_sku_number_string, cs_system_sku_number, "SKUN",  SYS_INFO_PARAMS.MB_SKU_NUMBER_STRING)):
+
+                in_config_string, mb_string, block_name, string_config_name = string_tuple
+                if isinstance(in_config_string, str):
+                    if not len(in_config_string) or in_config_string == "-":
+                        continue
+
+                    in_test_used_strings_list.append([mb_string, string_config_name])
+
+                    if in_config_string != mb_string:
+                        not_compared_list.append([block_name, in_config_string])
+
+            if not len(in_test_used_strings_list):
+                mb_dict.update({
+                    "data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Model: {cs_model} "
+                            f"Family: {cs_system_family}  SKUN: {cs_system_sku_number} <span style=\"font-size:14pt;font-weight:700;color:#ff5733;\">Нет данных в файле конфигурации для проверки!</span>",
+
+                    "only_data": f"Model: {cs_model} Family: {cs_system_family} SKUN: {cs_system_sku_number}",
+
+                    "check_string":
+                        "result_none",
+
+                    "test_id": TEST_SYSTEM_INFO_TYPES.MB_STATS})
+                on_test_count += 1
+            else:
+                check_string = list()
+                for item in in_result_list:
+                    check_string.append(f"{item[0]} = {item[1]}")
+
+                if len(not_compared_list):  # если по сравнению у нас что то прилетело и плохо сравнилось
+                    result_string = list()
+
+                    for item in not_compared_list:
+                        result_string.append(f"{item[0]}:{item[1]}")
+
+                    mb_dict.update({
+                        "data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Model: {cs_model} "
+                                f"Family: {cs_system_family} SKUN: {cs_system_sku_number} "
+                                f"<span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">Сравнение не пройдено!</span><br>"
+                                f"Не пройдено: {', '.join(result_string)}",
+
+                        "only_data": f"Model: {cs_model} Family: {cs_system_family} SKUN: {cs_system_sku_number}",
+
+                        "check_string":
+                            f"\n{'\n'.join(check_string)}",
+
+                        "test_id": TEST_SYSTEM_INFO_TYPES.MB_STATS})
+                    is_test_fail_string_check_count += 1
+                    cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.MB_STATS)
+                else:
+
+                    mb_dict.update({
+                        "data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Model: {cs_model} "
+                                f"Family: {cs_system_family} SKUN: {cs_system_sku_number} "
+                                f"<span style=\" font-size:14pt; font-weight:700; color:#8fdd60;\">Сравнение "
+                                    "успешно!</span>",
+
+                        "only_data": f"Model: {cs_model} Family: {cs_system_family} SKUN: {cs_system_sku_number}",
+
+                        "check_string":
+                            f"\n{'\n'.join(check_string)}",
+
+                        "test_id": TEST_SYSTEM_INFO_TYPES.MB_STATS})
+                on_test_count += 1
+
+        else:
+            mb_dict.update(
+                {"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Проверка отключена",
+
+                 "only_data": f"Проверка отключена",
+                 "check_string":
+                     f"result_none",
+
+                 "test_id": TEST_SYSTEM_INFO_TYPES.MB_STATS})
+
+        result_list.append(mb_dict)
 
         #
         # cpu
@@ -1001,10 +1105,20 @@ class CSystemInfoWindow(QMainWindow):
                 case TEST_SYSTEM_INFO_TYPES.BIOS_STATS:
 
                     if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.BIOS_CHECK) is True:
+                        self.ui.label_mb_info.setHidden(False)
+                        self.ui.label_mb_info.setText(data)
+                    else:
+                        self.ui.label_mb_info.setHidden(True)
+
+                # mb
+                case TEST_SYSTEM_INFO_TYPES.MB_STATS:
+
+                    if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.MB_CHECK) is True:
                         self.ui.label_bios_info.setHidden(False)
                         self.ui.label_bios_info.setText(data)
                     else:
                         self.ui.label_bios_info.setHidden(True)
+
 
                 # cpu
                 case TEST_SYSTEM_INFO_TYPES.CPU_STATS:

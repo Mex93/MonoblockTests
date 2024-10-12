@@ -57,6 +57,7 @@ class TEST_TYPE(IntEnum):
 
 class TEST_SYSTEM_INFO_TYPES(IntEnum):
     BIOS_STATS = auto(),
+    MB_STATS = auto(),
     CPU_STATS = auto(),
     RAM_STATS = auto(),
     DISKS_STATS = auto(),
@@ -86,6 +87,7 @@ class CONFIG_PARAMS:
 class SYS_INFO_PARAMS:
     TEST_USED = "test_used"
     BIOS_CHECK = "bios_check"
+    MB_CHECK = "mb_check"
     CPU_CHECK = "cpu_check"
     RAM_CHECK = "ram_check"
     DISK_CHECK = "disk_check"
@@ -95,6 +97,10 @@ class SYS_INFO_PARAMS:
     OS_CHECK = "os_check"
 
     LAN_IP = "lan_ip"
+
+    MB_MODEL_STRING = "mb_model_string"
+    MB_FAMILY_STRING = "mb_family_string"
+    MB_SKU_NUMBER_STRING = "mb_sku_number_string"
 
     OS_STRING = "os_string"
     BIOS_STRING = "bios_string"

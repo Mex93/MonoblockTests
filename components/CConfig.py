@@ -162,6 +162,7 @@ class CNewConfig:
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.TEST_USED, bool, "true")
 
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.BIOS_CHECK, bool, "true")
+        self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.MB_CHECK, bool, "true")
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.CPU_CHECK, bool, "true")
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.RAM_CHECK, bool, "true")
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.DISK_CHECK, bool, "true")
@@ -180,6 +181,10 @@ class CNewConfig:
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.BT_STRING, str, "-")
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.LAN_STRING, str, "-")
         self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.OS_STRING, bool, "-")
+
+        self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.MB_MODEL_STRING, bool, "-")
+        self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.MB_FAMILY_STRING, bool, "-")
+        self.add_params(BLOCKS_DATA.SYS_INFO_TEST, SYS_INFO_PARAMS.MB_SKU_NUMBER_STRING, bool, "-")
 
         # external display
         self.add_params(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST, EXTERNAL_DISPLAY_PARAMS.TEST_USED, bool, "true")
