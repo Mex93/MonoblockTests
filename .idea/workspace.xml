@@ -4,15 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="added button furmark">
+    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="added mb test">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CConfig.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CConfig.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CSystemInfoTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSystemInfoTest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/configs/test.ini" beforeDir="false" afterPath="$PROJECT_DIR$/configs/test.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/enuuuums.py" beforeDir="false" afterPath="$PROJECT_DIR$/enuuuums.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/test_sys_info.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_sys_info.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/test_sys_info.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_sys_info.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -114,14 +108,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1726470153327</updated>
-    </task>
-    <task id="LOCAL-00009" summary="external display">
-      <option name="closed" value="true" />
-      <created>1727790315458</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1727790315458</updated>
     </task>
     <task id="LOCAL-00010" summary="external display">
       <option name="closed" value="true" />
@@ -507,7 +493,15 @@
       <option name="project" value="LOCAL" />
       <updated>1728746151122</updated>
     </task>
-    <option name="localTasksCounter" value="58" />
+    <task id="LOCAL-00058" summary="added mb test">
+      <option name="closed" value="true" />
+      <created>1728752381693</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1728752381693</updated>
+    </task>
+    <option name="localTasksCounter" value="59" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -545,7 +539,8 @@
     <MESSAGE value="bts list compare" />
     <MESSAGE value="added failed test label" />
     <MESSAGE value="added button furmark" />
-    <option name="LAST_COMMIT_MESSAGE" value="added button furmark" />
+    <MESSAGE value="added mb test" />
+    <option name="LAST_COMMIT_MESSAGE" value="added mb test" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

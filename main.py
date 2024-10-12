@@ -157,7 +157,6 @@ class MainWindow(QMainWindow):
         except Exception as err:
             print(err)
 
-
         only_config_name = self.main_config.get_only_config_name()
         if len(only_config_name):
             current_index = self.get_item_index_from_text(only_config_name)
@@ -180,13 +179,18 @@ class MainWindow(QMainWindow):
     def on_user_clicked_on_run_furmark(self):
         patch = self.main_config.get_furmark_patch()
         if isinstance(patch, str) and len(patch):
-            print(patch)
-            result = self.run_external_program(patch)
-            if result:
-                return
+            if patch.find('.exe') != -1:
+                result = self.run_external_program(patch)
+                if result:
+                    return
+            elif patch.find('.bat') != -1:
+                result = self.run_external_bat(patch)
+                if result:
+                    return
 
         send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
                          text="Не удалось запустить программу!\n"
+                              "Поддерживается .exe, .bat файлы.\n"
                               f"Путь: {patch}!",
                          title="Внимание!",
                          variant_yes="Закрыть", variant_no="", callback=None)
@@ -200,6 +204,15 @@ class MainWindow(QMainWindow):
 
         except:
            return False
+
+    @staticmethod
+    def run_external_bat(program_path) -> bool:
+        try:
+            subprocess.call([program_path], shell=True)
+            return True
+
+        except:
+            return False
 
     def on_timer_cpu_temp_update(self):
         print(self.cpu_temperature())
