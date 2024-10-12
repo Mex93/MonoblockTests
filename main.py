@@ -10,6 +10,8 @@ import subprocess
 from ui.untitled import Ui_MainWindow
 from ui.get_check_string_window import Ui_MainWindow as Ui_StringWindow
 
+from components.CErrorLabel import TestResultLabel
+
 from common import send_message_box, SMBOX_ICON_TYPE, get_about_text, get_rules_text, send_message_box_triple_variant
 
 from components.CConfig import CNewConfig, BLOCKS_DATA, SYS_INFO_PARAMS, CONFIG_PARAMS
@@ -228,14 +230,14 @@ class MainWindow(QMainWindow):
         return self.windowTitle()
 
     def on_user_pressed_check_string(self):
-        result = self.ctest_window_sys_info.get_data()
+        result = self.ctest_window_sys_info.get_data(False)
         string_window = self.cmain_window_get_string
         string_window.ui.textBrowser_set_string.clear()
         string_window.ui.textBrowser_set_string.setStyleSheet("font-size:14pt;"
                                                               ""
                                                               "")
         if result:
-            data, on_test_count, is_test_passed_count, is_test_fail_string_check_count = self.ctest_window_sys_info.get_data()
+            data, on_test_count, is_test_passed_count, is_test_fail_string_check_count = result
             string_window.ui.textBrowser_set_string.append("Получение информации...\n")
             if data is None:
                 string_window.ui.textBrowser_set_string.append("Все тесты отключены. "
@@ -263,6 +265,7 @@ class MainWindow(QMainWindow):
         else:
             string_window.ui.textBrowser_set_string.append("Все тесты отключены!\n")
         string_window.show()
+        string_window.setFocus()
 
     def on_user_pressed_start_all_test(self):
         current_test = self.ctest_process.is_test_launch()
@@ -607,10 +610,10 @@ class MainWindow(QMainWindow):
                 if btn_unit is not None:
                     current_test = self.ctest_process.is_test_launch()
                     if current_test != TEST_TYPE.TEST_NONE:
+                        CSystemInfoWindow.clear_all_test_in_error_label()
                         result = self.ctest_window_sys_info.get_data()
                         if result:
-                            data, on_test_count, is_test_passed_count, is_test_fail_string_check_count = (
-                                self.ctest_window_sys_info.get_data())
+                            data, on_test_count, is_test_passed_count, is_test_fail_string_check_count = result
                             if on_test_count > 0:
                                 if on_test_count - is_test_passed_count == 0 and is_test_fail_string_check_count == 0:
                                     btn_unit.set_btn_color_green()
@@ -653,7 +656,7 @@ class MainWindow(QMainWindow):
         match test_type:
             case TEST_TYPE.TEST_SYSTEM_INFO:
                 self.ctest_window_sys_info.set_default_string()
-
+                CSystemInfoWindow.clear_all_test_in_error_label()
                 self.ctest_window_sys_info.show()
                 self.set_hidden_break_test_btn(auto_test_launch,
                                                self.ctest_window_sys_info.ui.pushButton_all_test_break)
@@ -835,8 +838,11 @@ class MainWindow(QMainWindow):
 
         if not TestResultLabel.is_label_show():
             TestResultLabel.set_show_status(True)
-        test_name = CTests.get_test_name_from_test_type(test_type)
-        TestResultLabel.add_text(test_name)
+
+        if test_type != TEST_TYPE.TEST_SYSTEM_INFO:
+            # У сис инфо свои суб тесты отправляют строку
+            test_name = CTests.get_test_name_from_test_type(test_type)
+            TestResultLabel.add_text(test_name)
 
         btn_unit: CButtoms = CButtoms.get_unit_from_test_type(test_type)
         if btn_unit is not None:
@@ -884,52 +890,6 @@ class CStringWindow(QMainWindow):
         # self.setWindowModality(Qt.WindowModality.ApplicationModal)
 
         self.setWindowTitle(main_window.get_window_title())
-
-
-class TestResultLabel:
-    __list_of_tests = list()
-    __main_window: MainWindow
-    __text_of_tests = set()
-
-    @classmethod
-    def set_main_window(cls,  main_window: MainWindow):
-        TestResultLabel.__main_window = main_window
-
-    @classmethod
-    def is_label_show(cls) -> bool:
-        return not cls.__main_window.ui.label_tests_failed.isHidden()
-
-    @classmethod
-    def set_show_status(cls, result: bool):
-        result = not result
-        cls.__main_window.ui.label_tests_failed.setHidden(result)
-
-    @classmethod
-    def clear_text(cls):
-        cls.__text_of_tests.clear()
-        cls.__update_text()
-
-    @classmethod
-    def delete_test(cls, text: str):
-        try:
-            cls.__text_of_tests.remove(text)
-            cls.__update_text()
-        except KeyError:
-
-            if not len(cls.__text_of_tests):
-                cls.set_show_status(False)
-
-    @classmethod
-    def __update_text(cls):
-        if not len(cls.__text_of_tests):
-            cls.__main_window.ui.label_tests_failed.setText("Тесты провалены: -")
-        else:
-            cls.__main_window.ui.label_tests_failed.setText(f"<span style=\" font-size:14pt; font-weight:700; color:#FF0000;\">Тесты провалены: </span> <br> {'<br>'.join(cls.__text_of_tests)}")
-
-    @classmethod
-    def add_text(cls, text: str):
-        cls.__text_of_tests.add(text)
-        cls.__update_text()
 
 
 if __name__ == '__main__':

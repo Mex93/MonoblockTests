@@ -1,3 +1,5 @@
+import time
+
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtMultimedia import QAudioOutput
 from PySide6.QtMultimedia import QMediaPlayer
@@ -115,6 +117,7 @@ class CExternalDisplayWindow(QMainWindow):
             return "Не найден второй монитор"
 
         CExternalDisplay.setup_window_for_dual_monitor()
+        time.sleep(2.0)
         self.player.setSource(QUrl.fromLocalFile(patch))
 
         # потому что в общей куче конфигов
@@ -132,4 +135,5 @@ class CExternalDisplayWindow(QMainWindow):
     def closeEvent(self, e):
         self.player.stop()
         CExternalDisplay.setup_window_for_single_monitor()
+        time.sleep(2.0)
         e.accept()
