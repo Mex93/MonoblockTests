@@ -146,9 +146,6 @@ class CVideoCamWindow(QMainWindow):
         if event.button() == Qt.MouseButton.LeftButton:  # Проверяем, что нажата левая кнопка мыши
             if self.__main_window.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:  # Проверяем, что нажата левая кнопка мыши
                 self.__main_window.on_test_phb_success(TEST_TYPE.TEST_FRONT_CAMERA)
-                if self.__main_window.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:
-                    bat_file_path = "content/bats/power_off.bat"
-                    self.__main_window.run_external_bat(bat_file_path)
                 return
 
         event.accept()

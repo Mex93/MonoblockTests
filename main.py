@@ -886,6 +886,10 @@ class MainWindow(QMainWindow):
 
         if next_test is None:
             self.ctest_process.stop_test()
+
+            if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:  # Проверяем, что нажата левая кнопка мыши
+                self.call_power_off_bat()
+
             print("тест завершён так как дальше нету")
         else:
             print("Я ещё нашёл тесты")
@@ -916,6 +920,10 @@ class MainWindow(QMainWindow):
 
         self.close_current_test_window(test_type)
 
+    def call_power_off_bat(self):
+        bat_file_path = "content/bats/power_off.bat"
+        self.run_external_bat(bat_file_path)
+        return
 
     def on_test_phb_fail(self, test_type: TEST_TYPE, is_window_open: bool = True):
 
