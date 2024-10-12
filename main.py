@@ -53,7 +53,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         QFontDatabase.addApplicationFont("designs/Iosevka Bold.ttf")
-        self.PROGRAM_JOB_FLAG = PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE
+        self.PROGRAM_JOB_FLAG = PROGRAM_JOB_TYPE.JOB_NORMAL
         if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_NORMAL:
             self.setWindowTitle(f'Тестирование моноблоков Kvant 2024 v1.0 [ALL]')
         elif self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:

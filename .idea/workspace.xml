@@ -4,19 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="added mb test">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/build_config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CPatternsTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CPatternsTest.py" afterDir="false" />
+    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="added tests for line">
       <change beforePath="$PROJECT_DIR$/components/CVideoCamTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CVideoCamTest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/content/bats/time_sync.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/enuuuums.py" beforeDir="false" afterPath="$PROJECT_DIR$/enuuuums.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/res.qrc" beforeDir="false" afterPath="$PROJECT_DIR$/ui/res.qrc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/test_patterns.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_patterns.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/test_patterns.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/test_patterns.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/untitled.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/untitled.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/untitled.ui" beforeDir="false" afterPath="$PROJECT_DIR$/ui/untitled.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -118,22 +108,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1726470153327</updated>
-    </task>
-    <task id="LOCAL-00011" summary="external display">
-      <option name="closed" value="true" />
-      <created>1727877243215</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1727877243215</updated>
-    </task>
-    <task id="LOCAL-00012" summary="external display">
-      <option name="closed" value="true" />
-      <created>1727936347727</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1727936347727</updated>
     </task>
     <task id="LOCAL-00013" summary="external display">
       <option name="closed" value="true" />
@@ -511,7 +485,23 @@
       <option name="project" value="LOCAL" />
       <updated>1728757238323</updated>
     </task>
-    <option name="localTasksCounter" value="60" />
+    <task id="LOCAL-00060" summary="added tests for line">
+      <option name="closed" value="true" />
+      <created>1728768991050</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1728768991050</updated>
+    </task>
+    <task id="LOCAL-00061" summary="added tests for line">
+      <option name="closed" value="true" />
+      <created>1728769021524</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1728769021524</updated>
+    </task>
+    <option name="localTasksCounter" value="62" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -550,7 +540,8 @@
     <MESSAGE value="added failed test label" />
     <MESSAGE value="added button furmark" />
     <MESSAGE value="added mb test" />
-    <option name="LAST_COMMIT_MESSAGE" value="added mb test" />
+    <MESSAGE value="added tests for line" />
+    <option name="LAST_COMMIT_MESSAGE" value="added tests for line" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
