@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="added argpars">
+    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="rebuild all tests gui, is process for rebuilding all for Danil">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CSystemInfoTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSystemInfoTest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/configs/test.ini" beforeDir="false" afterPath="$PROJECT_DIR$/configs/test.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CSpeakerTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSpeakerTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/content/output_sound.wav" beforeDir="false" afterPath="$PROJECT_DIR$/content/output_sound.wav" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -23,7 +23,6 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="PUSH_AUTO_UPDATE" value="true" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
         <entry key="$PROJECT_DIR$" value="master" />
@@ -55,7 +54,7 @@
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Ryazanov/PycharmProjects/TricolorDocumentScans&quot;
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Ryazanov/PycharmProjects/MonoblockTests/content&quot;
   }
 }</component>
   <component name="RecentsManager">
@@ -74,7 +73,6 @@
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="MonoblockTests" />
-      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -110,6 +108,126 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1726470153327</updated>
+    </task>
+    <task id="LOCAL-00001" summary="first">
+      <option name="closed" value="true" />
+      <created>1727245237388</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1727245237388</updated>
+    </task>
+    <task id="LOCAL-00002" summary="first">
+      <option name="closed" value="true" />
+      <created>1727264457203</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1727264457203</updated>
+    </task>
+    <task id="LOCAL-00003" summary="first">
+      <option name="closed" value="true" />
+      <created>1727358398554</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1727358398554</updated>
+    </task>
+    <task id="LOCAL-00004" summary="first">
+      <option name="closed" value="true" />
+      <created>1727444171956</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1727444171956</updated>
+    </task>
+    <task id="LOCAL-00005" summary="first">
+      <option name="closed" value="true" />
+      <created>1727769542917</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1727769542917</updated>
+    </task>
+    <task id="LOCAL-00006" summary="first">
+      <option name="closed" value="true" />
+      <created>1727769637090</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1727769637090</updated>
+    </task>
+    <task id="LOCAL-00007" summary="external display">
+      <option name="closed" value="true" />
+      <created>1727788061923</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1727788061923</updated>
+    </task>
+    <task id="LOCAL-00008" summary="external display">
+      <option name="closed" value="true" />
+      <created>1727789802603</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1727789802603</updated>
+    </task>
+    <task id="LOCAL-00009" summary="external display">
+      <option name="closed" value="true" />
+      <created>1727790315458</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1727790315458</updated>
+    </task>
+    <task id="LOCAL-00010" summary="external display">
+      <option name="closed" value="true" />
+      <created>1727791387883</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1727791387883</updated>
+    </task>
+    <task id="LOCAL-00011" summary="external display">
+      <option name="closed" value="true" />
+      <created>1727877243215</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1727877243215</updated>
+    </task>
+    <task id="LOCAL-00012" summary="external display">
+      <option name="closed" value="true" />
+      <created>1727936347727</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1727936347727</updated>
+    </task>
+    <task id="LOCAL-00013" summary="external display">
+      <option name="closed" value="true" />
+      <created>1727946484471</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1727946484471</updated>
+    </task>
+    <task id="LOCAL-00014" summary="external display">
+      <option name="closed" value="true" />
+      <created>1727952116222</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1727952116222</updated>
+    </task>
+    <task id="LOCAL-00015" summary="external display">
+      <option name="closed" value="true" />
+      <created>1728021561147</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1728021561147</updated>
     </task>
     <task id="LOCAL-00016" summary="speaker">
       <option name="closed" value="true" />
@@ -343,167 +461,47 @@
       <option name="project" value="LOCAL" />
       <updated>1728413894998</updated>
     </task>
-    <task id="LOCAL-00045" summary="Merge remote-tracking branch 'master/master'&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
+    <task id="LOCAL-00045" summary="fix bugs, added checked web cam and microphone">
       <option name="closed" value="true" />
-      <created>1728568903531</created>
+      <created>1728414596449</created>
       <option name="number" value="00045" />
       <option name="presentableId" value="LOCAL-00045" />
       <option name="project" value="LOCAL" />
-      <updated>1728568903531</updated>
+      <updated>1728414596449</updated>
     </task>
-    <task id="LOCAL-00046" summary="Merge remote-tracking branch 'master/master'&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
+    <task id="LOCAL-00046" summary="fix bugs, added checked web cam and microphone">
       <option name="closed" value="true" />
-      <created>1728628240626</created>
+      <created>1728414619602</created>
       <option name="number" value="00046" />
       <option name="presentableId" value="LOCAL-00046" />
       <option name="project" value="LOCAL" />
-      <updated>1728628240626</updated>
+      <updated>1728414619602</updated>
     </task>
-    <task id="LOCAL-00047" summary="Merge remote-tracking branch 'master/master'&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
+    <task id="LOCAL-00047" summary="audio test rebuild">
       <option name="closed" value="true" />
-      <created>1728641762618</created>
+      <created>1728584787276</created>
       <option name="number" value="00047" />
       <option name="presentableId" value="LOCAL-00047" />
       <option name="project" value="LOCAL" />
-      <updated>1728641762618</updated>
+      <updated>1728584787276</updated>
     </task>
-    <task id="LOCAL-00048" summary="Merge remote-tracking branch 'master/master'&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
+    <task id="LOCAL-00048" summary="audio test rebuild completed">
       <option name="closed" value="true" />
-      <created>1728643438380</created>
+      <created>1728592736892</created>
       <option name="number" value="00048" />
       <option name="presentableId" value="LOCAL-00048" />
       <option name="project" value="LOCAL" />
-      <updated>1728643438380</updated>
+      <updated>1728592736892</updated>
     </task>
-    <task id="LOCAL-00049" summary="wlan list compare">
+    <task id="LOCAL-00049" summary="rebuild all tests gui, is process for rebuilding all for Danil">
       <option name="closed" value="true" />
-      <created>1728646550076</created>
+      <created>1728598592200</created>
       <option name="number" value="00049" />
       <option name="presentableId" value="LOCAL-00049" />
       <option name="project" value="LOCAL" />
-      <updated>1728646550076</updated>
+      <updated>1728598592200</updated>
     </task>
-    <task id="LOCAL-00050" summary="bts list compare">
-      <option name="closed" value="true" />
-      <created>1728647559984</created>
-      <option name="number" value="00050" />
-      <option name="presentableId" value="LOCAL-00050" />
-      <option name="project" value="LOCAL" />
-      <updated>1728647559985</updated>
-    </task>
-    <task id="LOCAL-00051" summary="added failed test label">
-      <option name="closed" value="true" />
-      <created>1728651366986</created>
-      <option name="number" value="00051" />
-      <option name="presentableId" value="LOCAL-00051" />
-      <option name="project" value="LOCAL" />
-      <updated>1728651366986</updated>
-    </task>
-    <task id="LOCAL-00052" summary="added button furmark">
-      <option name="closed" value="true" />
-      <created>1728653627929</created>
-      <option name="number" value="00052" />
-      <option name="presentableId" value="LOCAL-00052" />
-      <option name="project" value="LOCAL" />
-      <updated>1728653627929</updated>
-    </task>
-    <task id="LOCAL-00053" summary="added button furmark">
-      <option name="closed" value="true" />
-      <created>1728653813076</created>
-      <option name="number" value="00053" />
-      <option name="presentableId" value="LOCAL-00053" />
-      <option name="project" value="LOCAL" />
-      <updated>1728653813076</updated>
-    </task>
-    <task id="LOCAL-00054" summary="added button furmark">
-      <option name="closed" value="true" />
-      <created>1728660600669</created>
-      <option name="number" value="00054" />
-      <option name="presentableId" value="LOCAL-00054" />
-      <option name="project" value="LOCAL" />
-      <updated>1728660600669</updated>
-    </task>
-    <task id="LOCAL-00055" summary="added button furmark">
-      <option name="closed" value="true" />
-      <created>1728665486736</created>
-      <option name="number" value="00055" />
-      <option name="presentableId" value="LOCAL-00055" />
-      <option name="project" value="LOCAL" />
-      <updated>1728665486736</updated>
-    </task>
-    <task id="LOCAL-00056" summary="added button furmark">
-      <option name="closed" value="true" />
-      <created>1728739973387</created>
-      <option name="number" value="00056" />
-      <option name="presentableId" value="LOCAL-00056" />
-      <option name="project" value="LOCAL" />
-      <updated>1728739973387</updated>
-    </task>
-    <task id="LOCAL-00057" summary="added button furmark">
-      <option name="closed" value="true" />
-      <created>1728746151122</created>
-      <option name="number" value="00057" />
-      <option name="presentableId" value="LOCAL-00057" />
-      <option name="project" value="LOCAL" />
-      <updated>1728746151122</updated>
-    </task>
-    <task id="LOCAL-00058" summary="added mb test">
-      <option name="closed" value="true" />
-      <created>1728752381693</created>
-      <option name="number" value="00058" />
-      <option name="presentableId" value="LOCAL-00058" />
-      <option name="project" value="LOCAL" />
-      <updated>1728752381693</updated>
-    </task>
-    <task id="LOCAL-00059" summary="added mb test">
-      <option name="closed" value="true" />
-      <created>1728757238322</created>
-      <option name="number" value="00059" />
-      <option name="presentableId" value="LOCAL-00059" />
-      <option name="project" value="LOCAL" />
-      <updated>1728757238323</updated>
-    </task>
-    <task id="LOCAL-00060" summary="added tests for line">
-      <option name="closed" value="true" />
-      <created>1728768991050</created>
-      <option name="number" value="00060" />
-      <option name="presentableId" value="LOCAL-00060" />
-      <option name="project" value="LOCAL" />
-      <updated>1728768991050</updated>
-    </task>
-    <task id="LOCAL-00061" summary="added tests for line">
-      <option name="closed" value="true" />
-      <created>1728769021524</created>
-      <option name="number" value="00061" />
-      <option name="presentableId" value="LOCAL-00061" />
-      <option name="project" value="LOCAL" />
-      <updated>1728769021524</updated>
-    </task>
-    <task id="LOCAL-00062" summary="added tests for line">
-      <option name="closed" value="true" />
-      <created>1728769477360</created>
-      <option name="number" value="00062" />
-      <option name="presentableId" value="LOCAL-00062" />
-      <option name="project" value="LOCAL" />
-      <updated>1728769477360</updated>
-    </task>
-    <task id="LOCAL-00063" summary="added tests for line">
-      <option name="closed" value="true" />
-      <created>1728769669319</created>
-      <option name="number" value="00063" />
-      <option name="presentableId" value="LOCAL-00063" />
-      <option name="project" value="LOCAL" />
-      <updated>1728769669319</updated>
-    </task>
-    <task id="LOCAL-00064" summary="added argpars">
-      <option name="closed" value="true" />
-      <created>1728771375866</created>
-      <option name="number" value="00064" />
-      <option name="presentableId" value="LOCAL-00064" />
-      <option name="project" value="LOCAL" />
-      <updated>1728771375866</updated>
-    </task>
-    <option name="localTasksCounter" value="65" />
+    <option name="localTasksCounter" value="50" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -533,21 +531,22 @@
     <MESSAGE value="display test completed" />
     <MESSAGE value="brightness test" />
     <MESSAGE value="brightness test completed" />
-    <MESSAGE value="fix bugs, added checked web cam and microphone" />
     <MESSAGE value="added old brightness return for pc after end test" />
-    <MESSAGE value="hz" />
-    <MESSAGE value="Merge remote-tracking branch 'master/master'&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml" />
-    <MESSAGE value="wlan list compare" />
-    <MESSAGE value="bts list compare" />
-    <MESSAGE value="added failed test label" />
-    <MESSAGE value="added button furmark" />
-    <MESSAGE value="added mb test" />
-    <MESSAGE value="added tests for line" />
-    <MESSAGE value="added argpars" />
-    <option name="LAST_COMMIT_MESSAGE" value="added argpars" />
+    <MESSAGE value="fix bugs, added checked web cam and microphone" />
+    <MESSAGE value="audio test rebuild" />
+    <MESSAGE value="audio test rebuild completed" />
+    <MESSAGE value="rebuild all tests gui, is process for rebuilding all for Danil" />
+    <option name="LAST_COMMIT_MESSAGE" value="rebuild all tests gui, is process for rebuilding all for Danil" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/components/CSystemInfoTest.py</url>
+          <line>1010</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">

@@ -47,6 +47,7 @@ class CSpeakerTestWindow(QMainWindow):
 
         self.left_channel_player = MediaPlayer(AUDIO_CHANNEL.CHANNEL_LEFT)
         self.right_channel_player = MediaPlayer(AUDIO_CHANNEL.CHANNEL_RIGHT)
+        self.audio_hook = AudioChannelHookEvent(self.on_audio_channel_switch)
 
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
 
@@ -83,6 +84,9 @@ class CSpeakerTestWindow(QMainWindow):
         self.play_record_timer.timeout.connect(self.on_update_record_timer)
 
         self.setWindowTitle(f'Меню теста')
+
+    def on_audio_channel_switch(self, old_id: QAudioOutput.device, new_id: QAudioOutput.device):
+        MediaPlayer.update_output_device()
 
     def on_user_pressed_start_test_loop(self):
         if not AutoTest.is_auto_test_start():
@@ -269,6 +273,7 @@ class CSpeakerTestWindow(QMainWindow):
         if self.record_state == AUDIO_TEST_RECORD_STATE.STATE_NONE:
             current_channel = MediaPlayer.is_any_play()
             if current_channel is not None:
+                MediaPlayer.stop_any_play()
                 if current_channel == AUDIO_CHANNEL.CHANNEL_LEFT:
                     self.left_channel_player.stop_play()
                     self.set_audio_test_icon(current_channel, AUDIO_STATUS.STATUS_STOP)
@@ -285,6 +290,7 @@ class CSpeakerTestWindow(QMainWindow):
         if self.record_state == AUDIO_TEST_RECORD_STATE.STATE_NONE:
             current_channel = MediaPlayer.is_any_play()
             if current_channel is not None:
+                MediaPlayer.stop_any_play()
                 if current_channel == AUDIO_CHANNEL.CHANNEL_RIGHT:
                     self.right_channel_player.stop_play()
                     self.set_audio_test_icon(current_channel, AUDIO_STATUS.STATUS_STOP)
@@ -401,9 +407,10 @@ class RecordWorker(QThread):
             print("Вход в поток")
 
             frames = list()
+
             mw.stream = mw.precord.open(format=mw.FORMAT, channels=mw.CHANNELS,
                                         rate=mw.RATE, input=True,
-                                        )
+                                        input_device_index = 1)
 
             mw.stream.start_stream()
             for i in range(0, int(mw.RATE / mw.CHUNK * 3)):
@@ -490,6 +497,22 @@ class UserFollowTest:
         return cls.__show_buttons
 
 
+class AudioChannelHookEvent:
+
+    def __init__(self, callback_func):
+        self.current_audio_id = QAudioOutput().device().id()
+        self.callback_func = callback_func
+        self.timer_id = QTimer()
+        self.timer_id.timeout.connect(self.update_audio_output)
+        self.timer_id.start()
+
+    def update_audio_output(self):
+        if self.current_audio_id != QAudioOutput().device().id():
+            old = self.current_audio_id
+            self.current_audio_id = QAudioOutput().device().id()
+            self.callback_func(old, self.current_audio_id)
+
+
 class MediaPlayer:
     __player_units = list()
 
@@ -498,7 +521,16 @@ class MediaPlayer:
         self.__audio_output = QAudioOutput()
         self.__player.setAudioOutput(self.__audio_output)
         self.__channel_type = channel_type
-        MediaPlayer.__player_units.append([self.__player, channel_type])
+        MediaPlayer.__player_units.append([self, self.__player, channel_type])
+
+    @classmethod
+    def update_output_device(cls):
+        for index, player_list in enumerate(cls.__player_units, 0):
+            unit, player, channel = player_list
+
+            output = QAudioOutput()
+            unit.__audio_output = output
+            player.setAudioOutput(output)
 
     def set_volume(self, volume: float):
         self.__audio_output.setVolume(volume)
@@ -529,16 +561,15 @@ class MediaPlayer:
     @classmethod
     def stop_any_play(cls) -> None:
         for player_list in cls.__player_units:
-            player, channel = player_list
+            unit, player, channel = player_list
             if player.isPlaying():
                 player.stop()
 
     @classmethod
     def is_any_play(cls) -> AUDIO_CHANNEL | None:
         for player_list in cls.__player_units:
-            player, channel = player_list
+            unit, player, channel = player_list
             if player.isPlaying():
-                player.stop()
                 return channel
 
 

@@ -5,6 +5,7 @@ from os.path import abspath as os_abspath
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton
 from PySide6.QtGui import QFontDatabase
 from PySide6.QtCore import QTimer
+
 # from wmi import WMI
 import subprocess
 import argparse
@@ -46,7 +47,7 @@ from components.CButtons import CButtoms
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, pr_type: PROGRAM_JOB_TYPE, parent=None):
+    def __init__(self, pr_type2: PROGRAM_JOB_TYPE, parent=None):
         super().__init__(parent)
 
         self.__base_program_version = "0.2"  # Менять при каждом обновлении любой из подпрограмм
@@ -54,7 +55,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         QFontDatabase.addApplicationFont("designs/Iosevka Bold.ttf")
-        self.PROGRAM_JOB_FLAG = pr_type
+        self.PROGRAM_JOB_FLAG = pr_type2
         if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_NORMAL:
             self.setWindowTitle(f'Тестирование моноблоков Kvant 2024 v1.0 [ALL]')
         elif self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:
@@ -1000,7 +1001,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Please select job type mode")
     parser.add_argument('command', type=str, help='Command for set select job type')
 
-    args = parser.parse_args()  # args = parser.parse_args(["PROGRAM_FULL"])
+    args = parser.parse_args(["PROGRAM_FULL"])  # args = parser.parse_args(["PROGRAM_FULL"])
     pr_type = PROGRAM_JOB_TYPE.JOB_NORMAL
     if args.command == "PROGRAM_LINE":
         pr_type = PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE
