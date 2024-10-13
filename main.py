@@ -159,6 +159,7 @@ class MainWindow(QMainWindow):
         # timer_update_cpu_temp.timeout.connect(self.on_timer_cpu_temp_update)
         # timer_update_cpu_temp.start(2000)
 
+        self.call_time_sync_bat()
         only_config_name = self.main_config.get_only_config_name()
         if len(only_config_name):
             current_index = self.get_item_index_from_text(only_config_name)
@@ -926,6 +927,12 @@ class MainWindow(QMainWindow):
         self.run_external_bat(bat_file_path)
         return
 
+    def call_time_sync_bat(self):
+        bat_file_path = "content/bats/time_sync.bat"
+        self.run_external_bat(bat_file_path)
+        return
+
+
     def on_test_phb_fail(self, test_type: TEST_TYPE, is_window_open: bool = True):
 
         current_test = self.ctest_process.is_test_launch()
@@ -992,7 +999,8 @@ class CStringWindow(QMainWindow):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Please select job type mode")
     parser.add_argument('command', type=str, help='Command for set select job type')
-    args = parser.parse_args()
+
+    args = parser.parse_args()  # args = parser.parse_args(["PROGRAM_FULL"])
     pr_type = PROGRAM_JOB_TYPE.JOB_NORMAL
     if args.command == "PROGRAM_LINE":
         pr_type = PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE
