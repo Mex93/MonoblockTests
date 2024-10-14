@@ -393,6 +393,21 @@ class CSpeakerTestWindow(QMainWindow):
             if UserFollowTest.is_all_test_is_true():
                 self.show_result_btns(True)
 
+    def get_current_microfon_index(self) -> int:
+        p = PyAudio()
+        device_count = p.get_device_count()
+        try:
+
+            for i in range(device_count):
+                info = p.get_device_info_by_index(i)
+                if info['maxInputChannels'] == 1:  # Проверяем, является ли устройство микрофоном
+                    return i
+            return -1
+        except:
+            return -1
+        finally:
+            p.terminate()
+
 
 class RecordWorker(QThread):
     update_label = Signal(str)
@@ -407,10 +422,15 @@ class RecordWorker(QThread):
             print("Вход в поток")
 
             frames = list()
+            mindex = mw.get_current_microfon_index()
+            if mindex == -1:
+                return
+            # print(mindex)
+            # print(mw.precord.get_default_input_device_info())
 
             mw.stream = mw.precord.open(format=mw.FORMAT, channels=mw.CHANNELS,
                                         rate=mw.RATE, input=True,
-                                        input_device_index = 1)
+                                        input_device_index=mindex)
 
             mw.stream.start_stream()
             for i in range(0, int(mw.RATE / mw.CHUNK * 3)):

@@ -35,7 +35,7 @@ class CBrightnessTestWindow(QMainWindow):
         self.start_test = False
         self.secons_for_stop = 0
         self.to_up = False
-        self.old_bright = 0
+        self.old_bright = list()
 
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
 
@@ -86,9 +86,11 @@ class CBrightnessTestWindow(QMainWindow):
         if self.viewer is None:
             self.viewer = ImageView(image_path)  # Замените на путь к вашему изображению
             self.ui.verticalLayout_2.insertWidget(0, self.viewer)
+
+        self.old_bright = self.get_brightness_all()
         self.timer_test.start(1004)
         self.timer_brightness.start(150)
-        self.old_bright = self.get_brightness()
+
         self.set_brightness(100)
         self.start_test = True
         self.secons_for_stop = 5
@@ -108,17 +110,32 @@ class CBrightnessTestWindow(QMainWindow):
         self.clear_test()
         self.timer_test.stop()
         self.timer_brightness.stop()
-        if self.old_bright > 0:
-            self.set_brightness(self.old_bright)
-            self.old_bright = 0
+        if len(self.old_bright) > 0:
+            self.set_brightness_all(self.old_bright)
+            self.old_bright = []
         e.accept()
 
     @classmethod
     def set_brightness(cls, value):
-        sbc.set_brightness(max(value, 0))  # Не допускаем отрицательных значений
+        for index, monitor in enumerate(sbc.list_monitors(), 0):
+            sbc.set_brightness(max(value, index))  # Не допускаем отрицательных значений
 
     @classmethod
     def get_brightness(cls) -> int: return sbc.get_brightness()[0]
+
+    @classmethod
+    def get_brightness_all(cls) -> list:
+        monitores_bright = list()
+        for index, monitor in enumerate(sbc.list_monitors(), 0):
+            monitores_bright.append(sbc.get_brightness(index)[0])
+
+        return monitores_bright
+
+    @classmethod
+    def set_brightness_all(cls, old_data: list):
+        if len(old_data):
+            for index, count in enumerate(old_data, 0):
+                sbc.set_brightness(max(count, index))
 
 
 class ImageView(QGraphicsView):

@@ -8,7 +8,7 @@ from PySide6.QtCore import QUrl, Qt
 from os.path import isfile as file_isfile
 import subprocess
 from screeninfo import get_monitors
-
+from components.CSpeakerTest import AudioChannelHookEvent
 from enuuuums import EXTERNAL_DISPLAY_PARAMS, TEST_TYPE, CONFIG_PARAMS
 from ui.test_external_display import Ui_TestExternalDisplayWindow
 
@@ -73,6 +73,12 @@ class CExternalDisplayWindow(QMainWindow):
 
         self.setWindowTitle(f'Меню теста')
 
+        self.audio_hook = AudioChannelHookEvent(self.on_audio_channel_switch)
+
+    def on_audio_channel_switch(self, old_id: QAudioOutput.device, new_id: QAudioOutput.device):
+        self.audio_output = QAudioOutput()
+        self.player.setAudioOutput(self.audio_output)
+
     def center(self):
         """
         Центрируем экран
@@ -93,6 +99,8 @@ class CExternalDisplayWindow(QMainWindow):
     @classmethod
     def check_second_monitor(cls) -> bool:
         monitors = get_monitors()
+        # [Monitor(x=0, y=0, width=3440, height=1440, width_mm=797,
+        # height_mm=333, name='\\\\.\\DISPLAY1', is_primary=True)]
         if len(monitors) > 1:
             return True
         return False
