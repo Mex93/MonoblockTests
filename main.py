@@ -940,7 +940,8 @@ class MainWindow(QMainWindow):
         return
 
     def on_call_in_close_test_window(self, test_type: TEST_TYPE):
-        self.on_test_phb_break_all_test(test_type)
+        # self.on_test_phb_break_all_test(test_type)
+        pass
 
     def on_test_phb_fail(self, test_type: TEST_TYPE, is_window_open: bool = True):
 
@@ -1009,7 +1010,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Please select job type mode")
     parser.add_argument('command', type=str, help='Command for set select job type')
 
-    args = parser.parse_args(["PROGRAM_FULL"])  # args = parser.parse_args(["PROGRAM_FULL"])
+    args = parser.parse_args()  # args = parser.parse_args(["PROGRAM_FULL"])
     pr_type = PROGRAM_JOB_TYPE.JOB_NORMAL
     if args.command == "PROGRAM_LINE":
         pr_type = PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE
