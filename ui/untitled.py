@@ -277,7 +277,7 @@ class Ui_MainWindow(object):
         self.label_monoblock_config_name.setText(QCoreApplication.translate("MainWindow", u"\u0422\u0435\u0441\u0442 \u043c\u043e\u043d\u043e\u0431\u043b\u043e\u043a\u043e\u0432:", None))
         self.pushButton_get_strings.setText("")
         self.groupBox_2.setTitle(QCoreApplication.translate("MainWindow", u"\u041e\u043f\u0446\u0438\u0438:", None))
-        self.pushButton_launchall.setText(QCoreApplication.translate("MainWindow", u"\u0417\u0430\u043f\u0443\u0441\u0442\u0438\u0442\u044c \u0432\u0441\u0435", None))
+        self.pushButton_launchall.setText(QCoreApplication.translate("MainWindow", u"\u0417\u0430\u043f\u0443\u0441\u0442\u0438\u0442\u044c \u0432\u0441\u0451", None))
         self.pushButton_clear.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u044c \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442", None))
         self.pushButton_exit.setText(QCoreApplication.translate("MainWindow", u"\u0412\u044b\u0445\u043e\u0434", None))
         self.groupBox.setTitle(QCoreApplication.translate("MainWindow", u"\u041d\u0430\u0431\u043e\u0440 \u0442\u0435\u0441\u0442\u043e\u0432:", None))

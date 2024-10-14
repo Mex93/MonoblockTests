@@ -128,7 +128,7 @@
                 <string notr="true">padding:10px</string>
                </property>
                <property name="text">
-                <string>Запустить все</string>
+                <string>Запустить всё</string>
                </property>
               </widget>
              </item>

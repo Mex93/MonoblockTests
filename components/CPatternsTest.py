@@ -131,7 +131,7 @@ class CPatternsTestWindow(QMainWindow):
             self.set_image()
 
     def closeEvent(self, e):
-
+        self.__main_window.on_call_in_close_test_window(TEST_TYPE.TEST_PATTERNS)
         e.accept()
 
 

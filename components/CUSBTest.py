@@ -106,6 +106,8 @@ class CUSBDevicesTestWindow(QMainWindow):
 
     def closeEvent(self, e):
         self.timer.stop()
+
+        self.__main_window.on_call_in_close_test_window(TEST_TYPE.TEST_USB_DEVICES)
         e.accept()
 
 

@@ -63,8 +63,8 @@ class CKeyTestWindow(QMainWindow):
         return "True"
 
     def closeEvent(self, e):
-        # Освобождаем камеру при закрытии окна
 
+        self.__main_window.on_call_in_close_test_window(TEST_TYPE.TEST_HARDWARE_BTN)
         e.accept()
 
 

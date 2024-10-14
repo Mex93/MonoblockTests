@@ -1208,5 +1208,5 @@ class CSystemInfoWindow(QMainWindow):
         else:
             TestResultLabel.set_show_status(False)
             TestResultLabel.clear_text()
-
+        self.__main_window.on_call_in_close_test_window(TEST_TYPE.TEST_SYSTEM_INFO)
         e.accept()

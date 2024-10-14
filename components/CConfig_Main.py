@@ -40,12 +40,12 @@ class CMainConfig:
         return False
 
     def save_last_config(self, last_config_name: str):
-        with open(self.__patch, 'w') as config_file:
+        with open(self.__patch, 'w', encoding="utf-8") as config_file:
             self.__config.set("program", "LAST_CONFIG_NAME", last_config_name)
             self.__config.write(config_file)
 
     def create_config(self):
-        with open(self.__patch, 'w') as config_file:
+        with open(self.__patch, 'w', encoding="utf-8") as config_file:
             self.__config.set('program', 'LAST_CONFIG_NAME', "-")
             self.__config.set('program', 'ONLY_CONFIG_NAME', "-")
             self.__config.set("program", "FURMARK_PATCH", "furmark/furmark.exe")
@@ -65,11 +65,6 @@ class CMainConfig:
         if self.__LAST_CONFIG.find("-") != -1:
             return ""
         return self.__LAST_CONFIG
-
-    def save_config(self):
-        if self.is_config_created() is False:
-            with open(self.__patch, 'w') as config_file:
-                self.__config.write(config_file)
 
     def load_data(self):
         if self.is_config_created():

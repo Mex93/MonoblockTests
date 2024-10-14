@@ -113,6 +113,7 @@ class CBrightnessTestWindow(QMainWindow):
         if len(self.old_bright) > 0:
             self.set_brightness_all(self.old_bright)
             self.old_bright = []
+        self.__main_window.on_call_in_close_test_window(TEST_TYPE.TEST_BRIGHTNESS)
         e.accept()
 
     @classmethod

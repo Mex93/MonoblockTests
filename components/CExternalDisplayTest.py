@@ -144,4 +144,5 @@ class CExternalDisplayWindow(QMainWindow):
         self.player.stop()
         CExternalDisplay.setup_window_for_single_monitor()
         time.sleep(2.0)
+        self.__main_window.on_call_in_close_test_window(TEST_TYPE.TEST_EXTERNAL_DISPLAY)
         e.accept()

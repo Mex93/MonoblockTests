@@ -159,4 +159,6 @@ class CVideoCamWindow(QMainWindow):
             if self.capture.isOpened():
                 self.capture.release()
                 del self.capture
+
+        self.__main_window.on_call_in_close_test_window(TEST_TYPE.TEST_FRONT_CAMERA)
         e.accept()

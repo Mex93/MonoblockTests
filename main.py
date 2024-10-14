@@ -294,6 +294,8 @@ class MainWindow(QMainWindow):
         if current_test != TEST_TYPE.TEST_NONE:
             self.ctest_process.stop_test()
 
+        self.ui.pushButton_launchall.setText("Тесты запущены...")
+
         TestResultLabel.clear_text()
         TestResultLabel.set_show_status(False)
 
@@ -318,6 +320,7 @@ class MainWindow(QMainWindow):
         current_test = self.ctest_process.is_test_launch()
         if current_test != TEST_TYPE.TEST_NONE:
             self.ctest_process.stop_test()
+            self.ui.pushButton_launchall.setText("Запустить всё")
         TestResultLabel.clear_text()
         TestResultLabel.set_show_status(False)
 
@@ -338,6 +341,7 @@ class MainWindow(QMainWindow):
 
             if self.ctest_process.is_test_launch() != TEST_TYPE.TEST_NONE:
                 self.ctest_process.stop_test()
+                self.ui.pushButton_launchall.setText("Запустить всё")
 
             CButtoms.set_buttoms_default_color()
 
@@ -881,6 +885,7 @@ class MainWindow(QMainWindow):
         current_test = self.ctest_process.is_test_launch()
         if current_test != TEST_TYPE.TEST_NONE:
             self.ctest_process.stop_test()
+            self.ui.pushButton_launchall.setText("Запустить всё")
 
         self.close_current_test_window(test_type)
 
@@ -889,6 +894,7 @@ class MainWindow(QMainWindow):
 
         if next_test is None:
             self.ctest_process.stop_test()
+            self.ui.pushButton_launchall.setText("Тест завершён")
 
             if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:  # Проверяем, что нажата левая кнопка мыши
                 self.call_power_off_bat()
@@ -933,6 +939,8 @@ class MainWindow(QMainWindow):
         self.run_external_bat(bat_file_path)
         return
 
+    def on_call_in_close_test_window(self, test_type: TEST_TYPE):
+        self.on_test_phb_break_all_test(test_type)
 
     def on_test_phb_fail(self, test_type: TEST_TYPE, is_window_open: bool = True):
 

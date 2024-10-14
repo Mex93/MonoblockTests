@@ -383,7 +383,7 @@ class CSpeakerTestWindow(QMainWindow):
         if AutoTest.is_auto_test_start():
             AutoTest.stop()
             self.set_auto_test_enabled_ui_event(False)
-
+        self.__main_window.on_call_in_close_test_window(self.test_type)
         e.accept()
 
     def is_all_sub_test_used(self, incomming_sub_step: AUDIO_TEST_STEP):
