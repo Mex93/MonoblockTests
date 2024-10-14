@@ -21,6 +21,10 @@ def get_rules_text() -> str:
     )
 
 
+def get_current_unix_time() -> int:
+    return int(int(datetime.now().timestamp()))
+
+
 def get_about_text() -> str:
     current_year = datetime.now().year
     return ("Комплекс тестов для проверки моноблоков.\n\n"

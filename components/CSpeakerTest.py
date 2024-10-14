@@ -422,15 +422,15 @@ class RecordWorker(QThread):
             print("Вход в поток")
 
             frames = list()
-            mindex = mw.get_current_microfon_index()
-            if mindex == -1:
-                return
+            # mindex = mw.get_current_microfon_index()
+            # if mindex == -1:
+            #     return
             # print(mindex)
             # print(mw.precord.get_default_input_device_info())
 
             mw.stream = mw.precord.open(format=mw.FORMAT, channels=mw.CHANNELS,
                                         rate=mw.RATE, input=True,
-                                        input_device_index=mindex)
+                                        input_device_index=1)
 
             mw.stream.start_stream()
             for i in range(0, int(mw.RATE / mw.CHUNK * 3)):

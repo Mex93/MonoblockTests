@@ -14,7 +14,8 @@ from ui.get_check_string_window import Ui_MainWindow as Ui_StringWindow
 
 from components.CErrorLabel import TestResultLabel
 
-from common import send_message_box, SMBOX_ICON_TYPE, get_about_text, get_rules_text, send_message_box_triple_variant
+from common import (send_message_box, SMBOX_ICON_TYPE, get_about_text, get_rules_text, send_message_box_triple_variant,
+                    get_current_unix_time)
 from enuuuums import PROGRAM_JOB_TYPE
 
 from components.CConfig import CNewConfig, BLOCKS_DATA, SYS_INFO_PARAMS, CONFIG_PARAMS
@@ -64,7 +65,7 @@ class MainWindow(QMainWindow):
             self.setWindowTitle(f'Тестирование моноблоков Kvant 2024 v1.0 [-]')
         self.load_with_error = False
         self.auto_test_line_time_launch = False
-
+        self.button_blocker = 0
         self.main_config = CMainConfig()
         # ---------------------------------------
         try:
@@ -180,7 +181,16 @@ class MainWindow(QMainWindow):
 
         self.ui.comboBox_config_get.setCurrentIndex(-1)
 
+    def set_get_button_blocker(self) -> bool:
+        if self.button_blocker < get_current_unix_time():
+            self.button_blocker = get_current_unix_time() + 1
+            return True
+
+        return False
+
     def on_user_clicked_on_run_furmark(self):
+        if not self.set_get_button_blocker():
+            return
         patch = self.main_config.get_furmark_patch()
         if isinstance(patch, str) and len(patch):
             if patch.find('.exe') != -1:
@@ -252,6 +262,8 @@ class MainWindow(QMainWindow):
         return self.windowTitle()
 
     def on_user_pressed_check_string(self):
+        if not self.set_get_button_blocker():
+            return
         result = self.ctest_window_sys_info.get_data(False)
         string_window = self.cmain_window_get_string
         string_window.ui.textBrowser_set_string.clear()
@@ -290,6 +302,9 @@ class MainWindow(QMainWindow):
         string_window.setFocus()
 
     def on_user_pressed_start_all_test(self):
+        if not self.set_get_button_blocker():
+            return
+
         current_test = self.ctest_process.is_test_launch()
         if current_test != TEST_TYPE.TEST_NONE:
             self.ctest_process.stop_test()
