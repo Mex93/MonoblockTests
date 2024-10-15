@@ -579,19 +579,6 @@ class MainWindow(QMainWindow):
             CButtoms.set_clear_callbacks_for_all()
 
             btn_index = 0
-            tests_list = list()
-            tests_list = \
-                [
-                    [CSystemInfo, TEST_TYPE.TEST_SYSTEM_INFO, SYS_INFO_PARAMS.TEST_USED, None],
-                    [CExternalDisplay, TEST_TYPE.TEST_EXTERNAL_DISPLAY, EXTERNAL_DISPLAY_PARAMS.TEST_USED, None],
-                    [CVideoCam, TEST_TYPE.TEST_FRONT_CAMERA, VIDEO_CAM_PARAMS.TEST_USED, None],
-                    [CSpeakerTest, TEST_TYPE.TEST_SPEAKER_MIC, SPEAKER_PARAMS.SPEAKER_TEST_USED, None],
-                    [CSpeakerTest, TEST_TYPE.TEST_HEADSET_MIC, SPEAKER_PARAMS.HEADSET_TEST_USED, None],
-                    [CKeyTest, TEST_TYPE.TEST_HARDWARE_BTN, KEYSBUTTOMS_PARAMS.TEST_USED, None],
-                    [CBrightnessTest, TEST_TYPE.TEST_BRIGHTNESS, BRIGHTNESS_PARAMS.TEST_USED, None],
-                    [CUSBDevicesTest, TEST_TYPE.TEST_USB_DEVICES, USB_TEST_PARAMS.TEST_USED, None],
-                    [CPatternsTest, TEST_TYPE.TEST_PATTERNS, PATTERNS_TEST_PARAMS.TEST_USED, None],
-                ]
 
             if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:
                 tests_list = \
@@ -615,16 +602,28 @@ class MainWindow(QMainWindow):
 
             self.ui.pushButton_get_strings.setHidden(True)
             # name insert
-            for test in tests_list:
-                test[3] = CTests.get_test_name_from_test_type(test[1])
+            for index, test in enumerate(tests_list, 0):
+                tests_list[index][3] = CTests.get_test_name_from_test_type(tests_list[index][1])
 
             # buffering tests
+
             for index, test in enumerate(tests_list):
                 test_class, btype, on_params, bname = test
 
-                if test_class.get_test_stats(on_params) is True:
-                    if btype == TEST_TYPE.TEST_SYSTEM_INFO:
-                        self.ui.pushButton_get_strings.setHidden(False)
+                is_only_line_test = False
+                load = False
+
+                if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:
+                    is_only_line_test = True
+                    load = True
+
+                if not is_only_line_test:
+                    if test_class.get_test_stats(on_params) is True:
+                        load = True
+                        if btype == TEST_TYPE.TEST_SYSTEM_INFO:
+                            self.ui.pushButton_get_strings.setHidden(False)  # ИЗНАЧАЛЬНО ВЫКЛЮЧАЮ
+
+                if load:
                     btn_unit = CButtoms.get_unit_from_index(btn_index)
                     btn_unit.set_callback(btype, self.on_user_presed_launch_test)
                     btn_unit.set_name(bname)
@@ -1010,7 +1009,7 @@ class MainWindow(QMainWindow):
 class CStringWindow(QMainWindow):
     """Показ строк для проверки систем инфо"""
 
-    def __init__(self, main_window: MainWindow, parent=None):
+    def __init__(self, main_window:  MainWindow, parent=None):
         super().__init__(parent)
         self.__main_window = main_window
         self.ui = Ui_StringWindow()
@@ -1025,7 +1024,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Please select job type mode")
     parser.add_argument('command', type=str, help='Command for set select job type')
 
-    args = parser.parse_args()  # args = parser.parse_args(["PROGRAM_FULL"])
+    args = parser.parse_args(["PROGRAM_FULL"])  # args = parser.parse_args(["PROGRAM_FULL"])
     pr_type = PROGRAM_JOB_TYPE.JOB_NORMAL
     if args.command == "PROGRAM_LINE":
         pr_type = PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE
