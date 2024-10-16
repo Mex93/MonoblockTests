@@ -108,6 +108,9 @@ class MainWindow(QMainWindow):
         TestResultLabel.set_main_window(self)
         TestResultLabel.set_show_status(False)
 
+        self.ui.pushButton_launchall.setEnabled(False)
+        self.ui.pushButton_clear.setEnabled(False)
+
         self.cmain_window_get_string = CStringWindow(self)
         self.ctest_window_sys_info = CSystemInfoWindow(self)
         self.ctest_window_external_display = CExternalDisplayWindow(self)
@@ -180,6 +183,20 @@ class MainWindow(QMainWindow):
                 return
 
         self.ui.comboBox_config_get.setCurrentIndex(-1)
+
+        if self.ui.comboBox_config_get.count() == 0:
+            send_message_box_triple_variant(icon_style=SMBOX_ICON_TYPE.ICON_WARNING,
+                                            text="Программа обнаружила, что не создано ни одного файла конфигурации для выбора.\n\n"
+                                                 f"Вы можете создать файл конфигурации в автоматическом режиме или выйти из программы.\n"
+                                                 f"Без файла конфигурации дальнейшая работа программы невозможна.\n\n"
+                                                 f"После создания файла конфигурации, Вы сможете зайти в папку с программой и переименовать его название.\n"
+                                                 f"Все настройки нового файла конфигурации будут установлены на стандартные значения.",
+                                            title="Ошибка поиска конфигурации",
+                                            variant_yes="Закрыть программу",
+                                            variant_no="Создать новую конфигурацию",
+                                            variant_apply="",
+                                            callback=self.on_config_is_not_find,
+                                            exit_callback=lambda: self.on_config_is_not_find(None))
 
     def set_get_button_blocker(self) -> bool:
         if self.button_blocker < get_current_unix_time():
@@ -353,7 +370,6 @@ class MainWindow(QMainWindow):
 
         text = self.ui.comboBox_config_get.currentText()
         if text:
-
             if self.ctest_process.is_test_launch() != TEST_TYPE.TEST_NONE:
                 self.ctest_process.stop_test()
                 self.ui.pushButton_launchall.setText("Запустить всё")
@@ -581,12 +597,16 @@ class MainWindow(QMainWindow):
             btn_index = 0
 
             if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:
+
                 tests_list = \
                     [
                         [CPatternsTest, TEST_TYPE.TEST_PATTERNS, PATTERNS_TEST_PARAMS.TEST_USED, None],
                         [CVideoCam, TEST_TYPE.TEST_FRONT_CAMERA, VIDEO_CAM_PARAMS.TEST_USED, None]
                     ]
             else:
+
+                self.ui.pushButton_launchall.setEnabled(True)
+                self.ui.pushButton_clear.setEnabled(True)
                 tests_list = \
                     [
                         [CSystemInfo, TEST_TYPE.TEST_SYSTEM_INFO, SYS_INFO_PARAMS.TEST_USED, None],
@@ -651,6 +671,40 @@ class MainWindow(QMainWindow):
         timer_id.stop()
         self.auto_test_line_time_launch = False
         self.on_user_pressed_start_all_test()
+
+    def on_config_is_not_find(self, variants: QPushButton | None):
+        """
+        Напоминаение: on_config_is_not_find вызовется быстрее, чем выполнится msg бокс
+        :param variants:
+        :return:
+        """
+        if variants is None:
+            self.set_close()
+            return
+
+        text = variants.text()
+        if text.find("Продолжить выполнение") != -1:
+            self.load_with_error = True
+
+        elif text.find("Закрыть программу") != -1:
+            self.set_close()
+        elif text.find("Создать новую конфигурацию") != -1:
+            config_name = self.cconfig_unit.create_new_config_data()
+            if isinstance(config_name, bool):
+                send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
+                                 text=f"Файл конфигурации небыл создан из за ошибки.\n"
+                                      "Перезагрузите программу.",
+                                 title="Создание нового файла конфигурации",
+                                 variant_yes="Закрыть программу", variant_no="", callback=lambda: self.set_close())
+            else:
+                send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_INFO,
+                                 text=f"Файл конфигурации успешно создан с названием '{config_name}'.\n"
+                                      "Программа должна быть перезагружена для удачной загрузки нового файла конфигурации.",
+                                 title="Создание нового файла конфигурации",
+                                 variant_yes="Закрыть программу", variant_no="", callback=lambda: self.set_close())
+            self.set_close()
+        else:
+            self.set_close()
 
     def on_config_is_broken(self, variants: QPushButton | None):
         """
@@ -1009,7 +1063,7 @@ class MainWindow(QMainWindow):
 class CStringWindow(QMainWindow):
     """Показ строк для проверки систем инфо"""
 
-    def __init__(self, main_window:  MainWindow, parent=None):
+    def __init__(self, main_window: MainWindow, parent=None):
         super().__init__(parent)
         self.__main_window = main_window
         self.ui = Ui_StringWindow()
@@ -1024,7 +1078,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Please select job type mode")
     parser.add_argument('command', type=str, help='Command for set select job type')
 
-    args = parser.parse_args()  # args = parser.parse_args(["PROGRAM_FULL"])
+    args = parser.parse_args(["PROGRAM_FULL"])  # args = parser.parse_args(["PROGRAM_FULL"])
     pr_type = PROGRAM_JOB_TYPE.JOB_NORMAL
     if args.command == "PROGRAM_LINE":
         pr_type = PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE

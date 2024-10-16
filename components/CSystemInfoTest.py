@@ -150,15 +150,15 @@ class CSystemInfo:
 
         return total_memory
 
-    # @staticmethod
-    # def get_memory_info_old():
-    #
-    #     vmemory = virtual_memory()
-    #     return {
-    #         'total': vmemory.total,
-    #         'available': vmemory.available,
-    #         'used': vmemory.used,
-    #     }
+    @staticmethod
+    def get_memory_info_old():
+
+        vmemory = virtual_memory()
+        return {
+            'total': vmemory.total,
+            'available': vmemory.available,
+            'used': vmemory.used,
+        }
 
     # Получаем сведения о BIOS
     @staticmethod
@@ -610,13 +610,14 @@ class CSystemInfoWindow(QMainWindow):
             in_test_used_strings_list = list()
 
             in_result_list = [[SYS_INFO_PARAMS.MB_MODEL_STRING, cs_model],
-                                [SYS_INFO_PARAMS.MB_FAMILY_STRING, cs_system_family],
-                                [SYS_INFO_PARAMS.MB_SKU_NUMBER_STRING, cs_system_sku_number],
-                             ]
+                              [SYS_INFO_PARAMS.MB_FAMILY_STRING, cs_system_family],
+                              [SYS_INFO_PARAMS.MB_SKU_NUMBER_STRING, cs_system_sku_number],
+                              ]
 
             for string_tuple in ((mb_model_string, cs_model, "Model", SYS_INFO_PARAMS.MB_MODEL_STRING),
                                  (mb_family_string, cs_system_family, "Family", SYS_INFO_PARAMS.MB_FAMILY_STRING),
-                                 (mb_sku_number_string, cs_system_sku_number, "SKUN",  SYS_INFO_PARAMS.MB_SKU_NUMBER_STRING)):
+                                 (mb_sku_number_string, cs_system_sku_number, "SKUN",
+                                  SYS_INFO_PARAMS.MB_SKU_NUMBER_STRING)):
 
                 in_config_string, mb_string, block_name, string_config_name = string_tuple
                 if isinstance(in_config_string, str):
@@ -672,7 +673,7 @@ class CSystemInfoWindow(QMainWindow):
                         "data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Model: {cs_model} "
                                 f"Family: {cs_system_family} SKUN: {cs_system_sku_number} "
                                 f"<span style=\" font-size:14pt; font-weight:700; color:#8fdd60;\">Сравнение "
-                                    "успешно!</span>",
+                                "успешно!</span>",
 
                         "only_data": f"Model: {cs_model} Family: {cs_system_family} SKUN: {cs_system_sku_number}",
 
@@ -1152,7 +1153,6 @@ class CSystemInfoWindow(QMainWindow):
                     else:
                         self.ui.label_bios_info.setHidden(True)
 
-
                 # cpu
                 case TEST_SYSTEM_INFO_TYPES.CPU_STATS:
                     if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.CPU_CHECK) is True:
@@ -1210,3 +1210,94 @@ class CSystemInfoWindow(QMainWindow):
             TestResultLabel.clear_text()
         self.__main_window.on_call_in_close_test_window(TEST_TYPE.TEST_SYSTEM_INFO)
         e.accept()
+
+
+class SysInfoMain:
+
+    def __init__(self, test_type: TEST_SYSTEM_INFO_TYPES, is_compared: bool):
+        self._test_type = test_type
+        self._result = False
+        self._test_compared_string = str()
+        self._test_result_compared = None
+        self._is_compared_activ = is_compared
+        self._test_name = CSystemInfo.get_sub_test_name_from_type(test_type)
+
+    def is_compared_activ(self) -> bool:
+        return self._is_compared_activ
+
+    def get_name(self) -> str:
+        return self._test_name
+
+    def get_result_compared(self) -> tuple[bool | None, str]:
+        return self._test_result_compared, self._test_compared_string
+
+    def get_result_test(self) -> bool:
+        return self._result
+
+    def set_test_now(self):
+        raise "Не переопределён метод для теста"
+
+    def _get_check_string(self, check_string: str, params_type: SYS_INFO_PARAMS):
+        self._test_result_compared = None
+        self._test_compared_string = ""
+
+        test_result_string, result_test = self._get_checked_string(check_string, params_type)
+
+        if result_test is False:  # не пройдено сравнение
+            self._test_compared_string = test_result_string
+            self._test_result_compared = False
+
+        elif result_test is None:  # сравнение не надо
+            self._test_compared_string = ""
+            self._test_result_compared = None
+        else:
+            self._test_compared_string = test_result_string
+            self._test_result_compared = True
+
+    @classmethod
+    def _get_checked_string(cls, to_check_string: str, params_type: SYS_INFO_PARAMS) -> tuple[str, bool | None]:
+        saved_string = CSystemInfo.get_test_stats(params_type)
+        if isinstance(saved_string, str):
+            if saved_string == "-" or not len(saved_string):
+                return "", None
+            else:
+                if len(saved_string):
+                    if saved_string == to_check_string:
+                        return ("<span style=\" font-size:14pt; font-weight:700; color:#8fdd60;\">Сравнение "
+                                "успешно!</span>"), True
+
+        return (
+            f"<span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">Сравнение не пройдено!</span><br>"
+            f"Check_string: {saved_string}"), False
+
+
+class SysInfoTestBIOS(SysInfoMain):
+
+    def __init__(self, test_type: TEST_SYSTEM_INFO_TYPES, is_compared: bool):
+        super().__init__(test_type, is_compared)
+        self.manufacturer = None
+        self.version = None
+        self.serial_number = None
+        self.release_date = None
+
+    def set_test_now(self):
+        bios_info = CSystemInfo.get_bios_info()
+        manufacturer = bios_info.get("manufacturer", None)
+        version = bios_info.get("version", None)
+        serial_number = bios_info.get("serial_number", None)
+        release_date = bios_info.get("release_date", None)
+
+        self.manufacturer = manufacturer
+        self.version = version
+        self.serial_number = serial_number
+        self.release_date = release_date
+        # if None not in (manufacturer, version, serial_number, release_date):
+        #     is_test_passed_count += 1
+        if None not in (manufacturer, version, serial_number, release_date):
+            self._result = True
+        else:
+            self._result = False
+
+        if self.is_compared_activ():
+            check_string = f"m_{'-' if manufacturer is None else manufacturer}".replace(" ", "_")
+            self._get_check_string(check_string, SYS_INFO_PARAMS.BIOS_STRING)

@@ -4,11 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="added micorfon source fix, added button blocker 1 sec">
+    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="fix bug with load config in only test line&#10;commit 2">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CConfig.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CConfig.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CSystemInfoTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSystemInfoTest.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/configs/main.ini" beforeDir="false" afterPath="$PROJECT_DIR$/configs/main.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/configs/test2.ini" beforeDir="false" afterPath="$PROJECT_DIR$/configs/test2.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/content/output_sound.wav" beforeDir="false" afterPath="$PROJECT_DIR$/content/output_sound.wav" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -44,21 +44,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.CExternalDisplay.executor": "Run",
-    "Python.CPatternsTest.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.video_player.executor": "Run",
-    "Python.videocam.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/Ryazanov/PycharmProjects/QRPrint"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.CExternalDisplay.executor&quot;: &quot;Run&quot;,
+    &quot;Python.CPatternsTest.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.video_player.executor&quot;: &quot;Run&quot;,
+    &quot;Python.videocam.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Ryazanov/PycharmProjects/WEBACP&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Ryazanov\PycharmProjects\MonoblockTests\content" />
@@ -111,30 +111,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1726470153327</updated>
-    </task>
-    <task id="LOCAL-00018" summary="готов speaker test">
-      <option name="closed" value="true" />
-      <created>1728110720317</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1728110720317</updated>
-    </task>
-    <task id="LOCAL-00019" summary="готов speaker test">
-      <option name="closed" value="true" />
-      <created>1728110928312</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1728110928312</updated>
-    </task>
-    <task id="LOCAL-00020" summary="videocam test">
-      <option name="closed" value="true" />
-      <created>1728114097628</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1728114097628</updated>
     </task>
     <task id="LOCAL-00021" summary="videocam completed">
       <option name="closed" value="true" />
@@ -504,7 +480,31 @@
       <option name="project" value="LOCAL" />
       <updated>1728897263103</updated>
     </task>
-    <option name="localTasksCounter" value="67" />
+    <task id="LOCAL-00067" summary="fix bug with load config in only test line">
+      <option name="closed" value="true" />
+      <created>1728987521123</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1728987521124</updated>
+    </task>
+    <task id="LOCAL-00068" summary="fix bug with load config in only test line">
+      <option name="closed" value="true" />
+      <created>1728987580110</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1728987580110</updated>
+    </task>
+    <task id="LOCAL-00069" summary="fix bug with load config in only test line">
+      <option name="closed" value="true" />
+      <created>1728987592496</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1728987592496</updated>
+    </task>
+    <option name="localTasksCounter" value="70" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -546,7 +546,8 @@
     <MESSAGE value="added tests for line" />
     <MESSAGE value="added argpars" />
     <MESSAGE value="added micorfon source fix, added button blocker 1 sec" />
-    <option name="LAST_COMMIT_MESSAGE" value="added micorfon source fix, added button blocker 1 sec" />
+    <MESSAGE value="fix bug with load config in only test line" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix bug with load config in only test line" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

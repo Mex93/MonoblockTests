@@ -5,6 +5,7 @@ from enuuuums import (CONFIG_PARAMS, SYS_INFO_PARAMS, BLOCKS_DATA,
                       EXTERNAL_DISPLAY_PARAMS, SPEAKER_PARAMS, VIDEO_CAM_PARAMS,
                       KEYSBUTTOMS_PARAMS, BRIGHTNESS_PARAMS, USB_TEST_PARAMS,
                       PATTERNS_TEST_PARAMS)
+from common import get_current_unix_time
 
 
 class ConfigError(Exception):
@@ -130,6 +131,22 @@ class CNewConfig:
                 handler.set(bname, pname, dvalue)
             ##
             handler.write(config_file)
+
+    def create_new_config_data(self) -> str | bool:
+        file_name = f"new_config_{get_current_unix_time()}.ini"
+        handler = self.get_config_handler()
+        try:
+            with open(f"{self.get_folder_name()}/{file_name}", 'w', encoding="utf-8") as config_file:
+                for unit in self.__data_units:
+                    bname = unit.get_blocks_name()
+                    pname = unit.get_params_name()
+                    dvalue = unit.get_default_value()
+                    handler.set(bname, pname, dvalue)
+                ##
+                handler.write(config_file)
+            return file_name
+        except:
+            return False
 
     def save_config(self):
         with open(self.get_config_patch(), 'w', encoding="utf-8") as config_file:
