@@ -1212,50 +1212,33 @@ class CSystemInfoWindow(QMainWindow):
         e.accept()
 
 
-class SysInfoMain:
+class SysInfoResult:
 
-    def __init__(self, test_type: TEST_SYSTEM_INFO_TYPES, is_compared: bool):
-        self._test_type = test_type
-        self._result = False
-        self._test_compared_string = str()
-        self._test_result_compared = None
-        self._is_compared_activ = is_compared
-        self._test_name = CSystemInfo.get_sub_test_name_from_type(test_type)
+    def __init__(self, test_type: TEST_SYSTEM_INFO_TYPES, result_dict: dict):
+        self.__test_type = test_type
+        self.__result_dict = result_dict.copy()
 
-    def is_compared_activ(self) -> bool:
-        return self._is_compared_activ
+    def get_test_type(self) -> TEST_SYSTEM_INFO_TYPES:
+        return self.__test_type
 
-    def get_name(self) -> str:
-        return self._test_name
+    def get_test_string(self) -> None | str:
+        return self.__result_dict.get("data", None)
 
-    def get_result_compared(self) -> tuple[bool | None, str]:
-        return self._test_result_compared, self._test_compared_string
+    def get_test_only_data_string(self) -> None | str:
+        return self.__result_dict.get("only_data", None)
 
-    def get_result_test(self) -> bool:
-        return self._result
+    def get_test_check_string(self) -> None | str:
+        return self.__result_dict.get("check_string", None)
 
-    def set_test_now(self):
-        raise "Не переопределён метод для теста"
 
-    def _get_check_string(self, check_string: str, params_type: SYS_INFO_PARAMS):
-        self._test_result_compared = None
-        self._test_compared_string = ""
+class SysInfoTestMain:
 
-        test_result_string, result_test = self._get_checked_string(check_string, params_type)
-
-        if result_test is False:  # не пройдено сравнение
-            self._test_compared_string = test_result_string
-            self._test_result_compared = False
-
-        elif result_test is None:  # сравнение не надо
-            self._test_compared_string = ""
-            self._test_result_compared = None
-        else:
-            self._test_compared_string = test_result_string
-            self._test_result_compared = True
+    def __init__(self):
+        self.test_passed = False
+        self.test_check_string_error = False
 
     @classmethod
-    def _get_checked_string(cls, to_check_string: str, params_type: SYS_INFO_PARAMS) -> tuple[str, bool | None]:
+    def get_checked_string(cls, to_check_string: str, params_type: SYS_INFO_PARAMS) -> tuple[str, bool | None]:
         saved_string = CSystemInfo.get_test_stats(params_type)
         if isinstance(saved_string, str):
             if saved_string == "-" or not len(saved_string):
@@ -1270,34 +1253,83 @@ class SysInfoMain:
             f"<span style=\" font-size:14pt; font-weight:700; color:#ff5733;\">Сравнение не пройдено!</span><br>"
             f"Check_string: {saved_string}"), False
 
+    def set_test_now(self) -> SysInfoResult:
+        raise "Не переопределён метод в SysInfoTestMain"
 
-class SysInfoTestBIOS(SysInfoMain):
+    def is_test_passed(self) -> bool:
+        return self.test_passed
 
-    def __init__(self, test_type: TEST_SYSTEM_INFO_TYPES, is_compared: bool):
-        super().__init__(test_type, is_compared)
-        self.manufacturer = None
-        self.version = None
-        self.serial_number = None
-        self.release_date = None
+    def is_test_check_string_error(self) -> bool:
+        return self.test_check_string_error
 
-    def set_test_now(self):
-        bios_info = CSystemInfo.get_bios_info()
-        manufacturer = bios_info.get("manufacturer", None)
-        version = bios_info.get("version", None)
-        serial_number = bios_info.get("serial_number", None)
-        release_date = bios_info.get("release_date", None)
 
-        self.manufacturer = manufacturer
-        self.version = version
-        self.serial_number = serial_number
-        self.release_date = release_date
-        # if None not in (manufacturer, version, serial_number, release_date):
-        #     is_test_passed_count += 1
-        if None not in (manufacturer, version, serial_number, release_date):
-            self._result = True
-        else:
-            self._result = False
+class SysInfoTestBIOS(SysInfoTestMain):
 
-        if self.is_compared_activ():
+    def __init__(self):
+        super().__init__()
+
+    def set_test_now(self) -> SysInfoResult:
+        bios_dict = dict()
+        test_name = CSystemInfo.get_sub_test_name_from_type(TEST_SYSTEM_INFO_TYPES.BIOS_STATS)
+        if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.BIOS_CHECK) is True:
+            # BIOS
+            bios_info = CSystemInfo.get_bios_info()
+            manufacturer = bios_info.get("manufacturer", None)
+            version = bios_info.get("version", None)
+            serial_number = bios_info.get("serial_number", None)
+            release_date = bios_info.get("release_date", None)
+            # if None not in (manufacturer, version, serial_number, release_date):
+            #     is_test_passed_count += 1
+            if None not in (manufacturer, version, serial_number, release_date):
+                self.test_passed = True
+            else:
+                self.test_passed = False
+
+            # check_string = f"m_{'-' if manufacturer is None else manufacturer}_" \
+            #                f"v_{'-' if version is None else version}_" \
+            #                f"sn_{'-' if serial_number is None else serial_number}_" \
+            #                f"rd_{'-' if release_date is None else release_date}" \
+            #                f"cm_{'-' if cs_model is None else cs_model}" \
+            #                f"sf_{'-' if cs_system_family is None else cs_system_family}" \
+            #                f"sskn_{'-' if cs_system_sku_number is None else cs_system_sku_number}".replace(" ", "_")
+
             check_string = f"m_{'-' if manufacturer is None else manufacturer}".replace(" ", "_")
-            self._get_check_string(check_string, SYS_INFO_PARAMS.BIOS_STRING)
+
+            test_result_string, result_test = self.get_checked_string(check_string, SYS_INFO_PARAMS.BIOS_STRING)
+
+            if result_test is False:  # не пройдено сравнение
+                self.test_check_string_error = True
+            elif result_test is None:  # сравнение не надо
+                pass
+
+            # bios_dict.update({"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> {manufacturer} | {version} | "
+            #                           f"SN: {serial_number} | Vendor: {cs_model}-{cs_system_family}-{cs_system_sku_number} <br> Date: {release_date} {test_result_string}",
+            #
+            #                   "only_data": f"{manufacturer} | {version} | "
+            #                                f"SN: {serial_number} | Vendor: {cs_model}-{cs_system_family}-{cs_system_sku_number} | Date: {release_date}",
+            #
+            #                   "check_string":
+            #                       check_string,
+            #
+            #                   "test_id": TEST_SYSTEM_INFO_TYPES.BIOS_STATS})
+
+            bios_dict.update({
+                "data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> {manufacturer} {test_result_string}",
+
+                "only_data": f"{manufacturer}",
+
+                "check_string":
+                    check_string,
+
+                "test_id": TEST_SYSTEM_INFO_TYPES.BIOS_STATS})
+        else:
+            bios_dict.update(
+                {"data": f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Проверка отключена",
+
+                 "only_data": f"Проверка отключена",
+                 "check_string":
+                     f"result_none",
+
+                 "test_id": TEST_SYSTEM_INFO_TYPES.BIOS_STATS})
+
+        return SysInfoResult(TEST_SYSTEM_INFO_TYPES.BIOS_STATS, bios_dict)
