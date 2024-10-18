@@ -801,17 +801,19 @@ class MainWindow(QMainWindow):
                         result = self.ctest_window_sys_info.get_data()
                         if result:
                             data, on_test_count, is_test_passed_count, is_test_fail_string_check_count = result
+                            is_test_passed = False
                             if on_test_count > 0:
                                 if on_test_count - is_test_passed_count == 0 and is_test_fail_string_check_count == 0:
                                     btn_unit.set_btn_color_green()
+                                    is_test_passed = True
                                 else:
                                     btn_unit.set_btn_color_red()
                             else:
                                 btn_unit.set_btn_color_red()
-                            self.set_next_test(current_test)
+                            self.set_next_test(current_test, is_test_passed)
                         else:
                             btn_unit.set_btn_color_red()
-                            self.set_next_test(current_test)
+                            self.set_next_test(current_test, False)
 
             case _:
                 test_list = CTests.get_avalible_test_list()
@@ -988,7 +990,7 @@ class MainWindow(QMainWindow):
 
         self.close_current_test_window(test_type)
 
-    def set_next_test(self, current_test: TEST_TYPE):
+    def set_next_test(self, current_test: TEST_TYPE, test_passed: bool):
         next_test = self.ctest_process.get_next_test(current_test)
 
         if next_test is None:
@@ -1002,8 +1004,16 @@ class MainWindow(QMainWindow):
         else:
             print("Я ещё нашёл тесты")
             time.sleep(0.5)
-            self.ctest_process.switch_launch_test(next_test)
-            self.show_test_window_no_window(next_test, True)
+            is_next = True
+            # если какой то тест прервался по какой либо причине для лайна то остановим луп
+            if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:
+                if test_passed is False:
+                    is_next = False
+                    if current_test != TEST_TYPE.TEST_NONE:
+                        self.ctest_process.stop_test()
+            if is_next:
+                self.ctest_process.switch_launch_test(next_test)
+                self.show_test_window_no_window(next_test, True)
 
         if TestResultLabel.is_any_element():
             if not TestResultLabel.is_label_show():
@@ -1014,7 +1024,7 @@ class MainWindow(QMainWindow):
         current_test = self.ctest_process.is_test_launch()
         if current_test != TEST_TYPE.TEST_NONE:
             self.ctest_process.set_result_test(current_test, TEST_RESULT.SUCCESS)
-            self.set_next_test(current_test)
+            self.set_next_test(current_test, True)
 
         if TestResultLabel.is_label_show():
             test_name = CTests.get_test_name_from_test_type(test_type)
@@ -1047,7 +1057,7 @@ class MainWindow(QMainWindow):
         current_test = self.ctest_process.is_test_launch()
         if current_test != TEST_TYPE.TEST_NONE:
             self.ctest_process.set_result_test(current_test, TEST_RESULT.FAIL)
-            self.set_next_test(current_test)
+            self.set_next_test(current_test, False)
 
         if not TestResultLabel.is_label_show():
             TestResultLabel.set_show_status(True)
@@ -1109,7 +1119,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Please select job type mode")
     parser.add_argument('command', type=str, help='Command for set select job type')
 
-    args = parser.parse_args()  # args = parser.parse_args(["PROGRAM_FULL"])
+    args = parser.parse_args(["PROGRAM_LINE"])  # args = parser.parse_args(["PROGRAM_FULL"])
     pr_type = PROGRAM_JOB_TYPE.JOB_NORMAL
     if args.command == "PROGRAM_LINE":
         pr_type = PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE

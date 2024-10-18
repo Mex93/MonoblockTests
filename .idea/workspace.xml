@@ -4,15 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="fix bug with load config in only test line&#10;commit 2">
-      <change beforePath="$PROJECT_DIR$/components/CConfig.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CConfig.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CSpeakerTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSpeakerTest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CSystemInfoTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSystemInfoTest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CVideoCamTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CVideoCamTest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/configs/main.ini" beforeDir="false" afterPath="$PROJECT_DIR$/configs/main.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/configs/test.ini" beforeDir="false" afterPath="$PROJECT_DIR$/configs/test.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/content/output_sound.wav" beforeDir="false" afterPath="$PROJECT_DIR$/content/output_sound.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/enuuuums.py" beforeDir="false" afterPath="$PROJECT_DIR$/enuuuums.py" afterDir="false" />
+    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="1) таймауты на звук убрать когда в автомате  X&#10;2) добавить тестинг хдд и звука на линию X&#10;3) убрать запись микро для тестинга на линии X&#10;4) Выпилена подгрузка конфига из лайн версии полностью&#10;5) Пролистывание аудио теста на пустое поле x&#10;6) Вшит в конфиг отключение теста для наушников x">
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -115,14 +107,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1726470153327</updated>
-    </task>
-    <task id="LOCAL-00023" summary="hardkeys">
-      <option name="closed" value="true" />
-      <created>1728237253724</created>
-      <option name="number" value="00023" />
-      <option name="presentableId" value="LOCAL-00023" />
-      <option name="project" value="LOCAL" />
-      <updated>1728237253724</updated>
     </task>
     <task id="LOCAL-00024" summary="hardkeys">
       <option name="closed" value="true" />
@@ -508,7 +492,15 @@
       <option name="project" value="LOCAL" />
       <updated>1729170799750</updated>
     </task>
-    <option name="localTasksCounter" value="72" />
+    <task id="LOCAL-00072" summary="1) таймауты на звук убрать когда в автомате  X&#10;2) добавить тестинг хдд и звука на линию X&#10;3) убрать запись микро для тестинга на линии X&#10;4) Выпилена подгрузка конфига из лайн версии полностью&#10;5) Пролистывание аудио теста на пустое поле x&#10;6) Вшит в конфиг отключение теста для наушников x">
+      <option name="closed" value="true" />
+      <created>1729251541517</created>
+      <option name="number" value="00072" />
+      <option name="presentableId" value="LOCAL-00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1729251541517</updated>
+    </task>
+    <option name="localTasksCounter" value="73" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -526,7 +518,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="external display" />
     <MESSAGE value="speaker" />
     <MESSAGE value="готов speaker test" />
     <MESSAGE value="videocam test" />
@@ -551,7 +542,8 @@
     <MESSAGE value="added micorfon source fix, added button blocker 1 sec" />
     <MESSAGE value="fix bug with load config in only test line" />
     <MESSAGE value="fix bug with load config in only test line&#10;commit 2" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix bug with load config in only test line&#10;commit 2" />
+    <MESSAGE value="1) таймауты на звук убрать когда в автомате  X&#10;2) добавить тестинг хдд и звука на линию X&#10;3) убрать запись микро для тестинга на линии X&#10;4) Выпилена подгрузка конфига из лайн версии полностью&#10;5) Пролистывание аудио теста на пустое поле x&#10;6) Вшит в конфиг отключение теста для наушников x" />
+    <option name="LAST_COMMIT_MESSAGE" value="1) таймауты на звук убрать когда в автомате  X&#10;2) добавить тестинг хдд и звука на линию X&#10;3) убрать запись микро для тестинга на линии X&#10;4) Выпилена подгрузка конфига из лайн версии полностью&#10;5) Пролистывание аудио теста на пустое поле x&#10;6) Вшит в конфиг отключение теста для наушников x" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
