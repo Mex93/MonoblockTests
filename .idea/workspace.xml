@@ -5,8 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="fix bug with load config in only test line&#10;commit 2">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CConfig.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CConfig.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CSpeakerTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSpeakerTest.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/CSystemInfoTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSystemInfoTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/CVideoCamTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CVideoCamTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configs/main.ini" beforeDir="false" afterPath="$PROJECT_DIR$/configs/main.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configs/test.ini" beforeDir="false" afterPath="$PROJECT_DIR$/configs/test.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/content/output_sound.wav" beforeDir="false" afterPath="$PROJECT_DIR$/content/output_sound.wav" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/enuuuums.py" beforeDir="false" afterPath="$PROJECT_DIR$/enuuuums.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -108,14 +115,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1726470153327</updated>
-    </task>
-    <task id="LOCAL-00022" summary="hardkeys">
-      <option name="closed" value="true" />
-      <created>1728235273806</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1728235273806</updated>
     </task>
     <task id="LOCAL-00023" summary="hardkeys">
       <option name="closed" value="true" />
@@ -501,7 +500,15 @@
       <option name="project" value="LOCAL" />
       <updated>1729086353595</updated>
     </task>
-    <option name="localTasksCounter" value="71" />
+    <task id="LOCAL-00071" summary="fix bug with load config in only test line&#10;commit 2">
+      <option name="closed" value="true" />
+      <created>1729170799750</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1729170799750</updated>
+    </task>
+    <option name="localTasksCounter" value="72" />
     <servers />
   </component>
   <component name="UnknownFeatures">

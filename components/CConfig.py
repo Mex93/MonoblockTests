@@ -237,6 +237,9 @@ class CNewConfig:
         # Speaker test
         self.add_params(BLOCKS_DATA.SPEAKER_TEST, SPEAKER_PARAMS.SPEAKER_TEST_USED, bool, "true")
         self.add_params(BLOCKS_DATA.SPEAKER_TEST, SPEAKER_PARAMS.HEADSET_TEST_USED, bool, "true")
+
+        self.add_params(BLOCKS_DATA.SPEAKER_TEST, SPEAKER_PARAMS.HEADSET_TEST_RECORD_ENABLE, bool, "true")
+        self.add_params(BLOCKS_DATA.SPEAKER_TEST, SPEAKER_PARAMS.SPEAKER_TEST_RECORD_ENABLE, bool, "true")
         self.add_params(BLOCKS_DATA.SPEAKER_TEST, SPEAKER_PARAMS.AUDIO_PATCH_LEFT, str,
                         "content/audio_test_left.mp3")
 

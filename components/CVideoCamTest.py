@@ -15,11 +15,11 @@ class CVideoCam:
     __test_dict = dict()
 
     @classmethod
-    def get_test_stats(cls, test_name: VIDEO_CAM_PARAMS) -> bool | str | None:
+    def get_test_stats(cls, test_name: VIDEO_CAM_PARAMS) -> bool | str | int | None:
         return cls.__test_dict.get(test_name, None)
 
     @classmethod
-    def set_test_stats(cls, test_name: VIDEO_CAM_PARAMS, params: str | bool) -> None:
+    def set_test_stats(cls, test_name: VIDEO_CAM_PARAMS, params: str | bool | int) -> None:
         cls.__test_dict.update({test_name: params})
 
 

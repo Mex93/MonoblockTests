@@ -7,7 +7,9 @@ from os.path import isfile as file_isfile
 from common import send_message_box, SMBOX_ICON_TYPE
 from pyaudio import PyAudio, paInt16
 from wave import open as wave_open
-from enuuuums import SPEAKER_PARAMS, TEST_TYPE, AUDIO_CHANNEL, AUDIO_STATUS, AUDIO_TEST_RECORD_STATE, AUDIO_TEST_STEP
+from enuuuums import (SPEAKER_PARAMS, TEST_TYPE, AUDIO_CHANNEL,
+                      AUDIO_STATUS, AUDIO_TEST_RECORD_STATE,
+                      AUDIO_TEST_STEP, PROGRAM_JOB_TYPE)
 from ui.test_speaker_audio import Ui_TestAudioWindow
 
 
@@ -97,25 +99,52 @@ class CSpeakerTestWindow(QMainWindow):
             self.set_default_record_play()
 
             AutoTest.start_test()
-            AutoTest.set_step(4, AUDIO_TEST_STEP.STEP_LEFT_CHANNEL)
+            AutoTest.set_step(600, AUDIO_TEST_STEP.STEP_LEFT_CHANNEL)
             self.set_auto_test_enabled_ui_event(True)
 
             self.on_user_pressed_play_left()
         else:
-            current_test = AutoTest.get_current_auto_test()
-            if current_test == AUDIO_TEST_STEP.STEP_LEFT_CHANNEL:
-                AutoTest.set_step(4, AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL)
-                self.on_user_pressed_play_right()
-            elif current_test == AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL:
-                AutoTest.set_step(4, AUDIO_TEST_STEP.STEP_RECORD)
-                self.on_user_pressed_micro_record()
-            elif current_test == AUDIO_TEST_STEP.STEP_RECORD:
-                return
-                # AutoTest.set_step(4, AUDIO_TEST_STEP.STEP_PLAY)
-            elif current_test == AUDIO_TEST_STEP.STEP_PLAY:
-                AutoTest.stop()
-                self.set_auto_test_enabled_ui_event(False)
-                self.show_result_btns(True)
+            if not self.is_record_test_enable():
+                # После правого канала сразу выводим кнопки и останавливаем звук
+                current_test = AutoTest.get_current_auto_test()
+                if current_test == AUDIO_TEST_STEP.STEP_LEFT_CHANNEL:
+                    AutoTest.set_step(600, AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL)
+                    self.on_user_pressed_play_right()
+                elif current_test == AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL:
+                    AutoTest.stop()
+                    self.set_auto_test_enabled_ui_event(False)
+                    self.show_result_btns(True)
+                    MediaPlayer.stop_any_play()
+            else:
+                # Полный цикл проверки
+                current_test = AutoTest.get_current_auto_test()
+                if current_test == AUDIO_TEST_STEP.STEP_LEFT_CHANNEL:
+                    AutoTest.set_step(600, AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL)
+                    self.on_user_pressed_play_right()
+                elif current_test == AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL:
+                    AutoTest.set_step(4, AUDIO_TEST_STEP.STEP_RECORD)
+                    self.on_user_pressed_micro_record()
+                elif current_test == AUDIO_TEST_STEP.STEP_RECORD:
+                    return
+                    # AutoTest.set_step(4, AUDIO_TEST_STEP.STEP_PLAY)
+                elif current_test == AUDIO_TEST_STEP.STEP_PLAY:
+                    AutoTest.stop()
+                    self.set_auto_test_enabled_ui_event(False)
+                    self.show_result_btns(True)
+
+    def is_record_test_enable(self) -> bool:
+        is_non_record_test = False
+        if self.__main_window.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:
+            is_non_record_test = True
+        else:
+            if self.test_type == TEST_TYPE.TEST_SPEAKER_MIC:
+                print(CSpeakerTest.get_test_stats(SPEAKER_PARAMS.SPEAKER_TEST_RECORD_ENABLE))
+                if not CSpeakerTest.get_test_stats(SPEAKER_PARAMS.SPEAKER_TEST_RECORD_ENABLE):
+                    is_non_record_test = True
+            elif self.test_type == TEST_TYPE.TEST_HEADSET_MIC:
+                if not CSpeakerTest.get_test_stats(SPEAKER_PARAMS.HEADSET_TEST_RECORD_ENABLE):
+                    is_non_record_test = True
+        return not is_non_record_test
 
     def on_update_record_timer(self):
         if self.record_state == AUDIO_TEST_RECORD_STATE.STATE_PLAY:
@@ -125,28 +154,43 @@ class CSpeakerTestWindow(QMainWindow):
                 self.on_stop_record_play_time()
                 self.show_result_btns(True)
 
-        current_test = AutoTest.get_current_auto_test()
-        if current_test == AUDIO_TEST_STEP.STEP_LEFT_CHANNEL:
-            result = AutoTest.set_update_time_count()
-            if result:  # выполнился
-                AutoTest.set_step(4, AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL)
-                self.on_user_pressed_play_right()
-        elif current_test == AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL:
-            result = AutoTest.set_update_time_count()
-            if result:  # выполнился
-                AutoTest.set_step(7, AUDIO_TEST_STEP.STEP_RECORD)
-                self.on_user_pressed_micro_record()
-        elif current_test == AUDIO_TEST_STEP.STEP_RECORD:
-            result = AutoTest.set_update_time_count()
-            if result:  # выполнился
-                AutoTest.set_step(4, AUDIO_TEST_STEP.STEP_PLAY)
-        elif current_test == AUDIO_TEST_STEP.STEP_PLAY:
-            result = AutoTest.set_update_time_count()
-            if result:  # выполнился
-                AutoTest.stop()
-                self.show_result_btns(True)
-                self.set_auto_test_enabled_ui_event(False)
-
+        if not self.is_record_test_enable():
+            # После правого канала сразу выводим кнопки и останавливаем звук
+            current_test = AutoTest.get_current_auto_test()
+            if current_test == AUDIO_TEST_STEP.STEP_LEFT_CHANNEL:
+                result = AutoTest.set_update_time_count()
+                if result:  # выполнился
+                    AutoTest.set_step(600, AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL)
+                    self.on_user_pressed_play_right()
+            elif current_test == AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL:
+                result = AutoTest.set_update_time_count()
+                if result:  # выполнился
+                    AutoTest.stop()
+                    self.show_result_btns(True)
+                    self.set_auto_test_enabled_ui_event(False)
+        else:
+            # Полный цикл проверки
+            current_test = AutoTest.get_current_auto_test()
+            if current_test == AUDIO_TEST_STEP.STEP_LEFT_CHANNEL:
+                result = AutoTest.set_update_time_count()
+                if result:  # выполнился
+                    AutoTest.set_step(4, AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL)
+                    self.on_user_pressed_play_right()
+            elif current_test == AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL:
+                result = AutoTest.set_update_time_count()
+                if result:  # выполнился
+                    AutoTest.set_step(7, AUDIO_TEST_STEP.STEP_RECORD)
+                    self.on_user_pressed_micro_record()
+            elif current_test == AUDIO_TEST_STEP.STEP_RECORD:
+                result = AutoTest.set_update_time_count()
+                if result:  # выполнился
+                    AutoTest.set_step(4, AUDIO_TEST_STEP.STEP_PLAY)
+            elif current_test == AUDIO_TEST_STEP.STEP_PLAY:
+                result = AutoTest.set_update_time_count()
+                if result:  # выполнился
+                    AutoTest.stop()
+                    self.show_result_btns(True)
+                    self.set_auto_test_enabled_ui_event(False)
     def set_auto_test_enabled_ui_event(self, status: bool):
         if status:  # запустить
             self.ui.pushButton_start_test.setText("Запущен тест...\nДалее ->")
@@ -198,7 +242,9 @@ class CSpeakerTestWindow(QMainWindow):
     def set_test_default_params(self):
         self.show_result_btns(False)
         UserFollowTest.set_clear_class()
-        UserFollowTest(AUDIO_TEST_STEP.STEP_RECORD)
+
+        if self.is_record_test_enable():
+            UserFollowTest(AUDIO_TEST_STEP.STEP_RECORD)
         UserFollowTest(AUDIO_TEST_STEP.STEP_LEFT_CHANNEL)
         UserFollowTest(AUDIO_TEST_STEP.STEP_RIGHT_CHANNEL)
 
@@ -325,14 +371,37 @@ class CSpeakerTestWindow(QMainWindow):
         self.left_channel_player.load_file(patch_left)
         self.right_channel_player.load_file(patch_right)
         self.set_test_default_params()
+        self.show_record_block(True)
+
         if test_type == TEST_TYPE.TEST_SPEAKER_MIC:
+            if not CSpeakerTest.get_test_stats(SPEAKER_PARAMS.SPEAKER_TEST_RECORD_ENABLE):
+                self.show_record_block(False)
             self.ui.groupBox.setTitle("Тест динамиков и микрофона")
         elif test_type == TEST_TYPE.TEST_HEADSET_MIC:
+            if not CSpeakerTest.get_test_stats(SPEAKER_PARAMS.HEADSET_TEST_RECORD_ENABLE):
+                self.show_record_block(False)
             self.ui.groupBox.setTitle("Тест наушников и микрофона(В наушниках)")
 
         self.play_record_timer.start(1007)
-        self.show()
+        if self.__main_window.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:
+            self.ui.pushButton_record.setHidden(True)
+
+            # отключение рекорда блока и волум блока
+            self.ui.label.setHidden(True)
+            self.ui.horizontalSlider_volume.setHidden(True)
+            self.ui.label_3.setHidden(True)
+            self.ui.label_4.setHidden(True)
+            self.show_record_block(False)
+            self.showMaximized()
+        else:
+            self.show()
+
         return "True"
+
+    def show_record_block(self, status: bool):
+        status = not status
+        self.ui.pushButton_record.setHidden(status)
+        self.ui.label_2.setHidden(status)
 
     def is_record_avalible_open(self) -> bool:
         stream = None
@@ -373,6 +442,19 @@ class CSpeakerTestWindow(QMainWindow):
             return False
         except:
             return False
+
+    def mousePressEvent(self, event):
+        # Проверяем, что клик был на пустом месте
+        if self.__main_window.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:
+            if event.button() == Qt.MouseButton.LeftButton:  # Обработка левого клика мыши
+                if event.pos().y() > self.ui.label.height():
+                    self.on_empty_area_clicked()
+
+    def on_empty_area_clicked(self):
+        if self.ui.pushButton_success.isHidden():
+            self.on_user_pressed_start_test_loop()
+        else:
+            self.__main_window.on_test_phb_success(self.test_type)
 
     def closeEvent(self, e):
         MediaPlayer.stop_any_play()

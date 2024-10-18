@@ -14,7 +14,7 @@ from wmi import WMI
 
 from components.CErrorLabel import TestResultLabel
 
-from enuuuums import TEST_TYPE, TEST_SYSTEM_INFO_TYPES, SYS_INFO_PARAMS
+from enuuuums import TEST_TYPE, TEST_SYSTEM_INFO_TYPES, SYS_INFO_PARAMS, PROGRAM_JOB_TYPE
 from ui.test_sys_info import Ui_TestSysInfoWindow
 
 
@@ -415,6 +415,23 @@ class CSystemInfoWindow(QMainWindow):
             lambda: self.__main_window.on_test_phb_break_all_test(TEST_TYPE.TEST_SYSTEM_INFO))
 
     @classmethod
+    def disabled_test_for_only_line(cls):
+        disabled_list = [
+            SYS_INFO_PARAMS.MB_CHECK,
+            SYS_INFO_PARAMS.BIOS_CHECK,
+            SYS_INFO_PARAMS.CPU_CHECK,
+            SYS_INFO_PARAMS.RAM_CHECK,
+            SYS_INFO_PARAMS.WLAN_CHECK,
+            SYS_INFO_PARAMS.BT_CHECK,
+            SYS_INFO_PARAMS.LAN_CHECK,
+            SYS_INFO_PARAMS.OS_CHECK,
+        ]
+        for dis_type in disabled_list:
+            CSystemInfo.set_test_stats(dis_type, False)
+
+        CSystemInfo.set_test_stats(SYS_INFO_PARAMS.DISK_CHECK, True)
+
+    @classmethod
     def clear_all_test_in_error_label(cls):
         tests = CSystemInfo.get_tests_list()
         for test in tests:
@@ -435,8 +452,8 @@ class CSystemInfoWindow(QMainWindow):
         self.ui.label_cpu_info.setText("-")
         self.ui.label_os_info.setText("-")
 
-    @classmethod
-    def get_data(cls, error_label_used=True) -> tuple[list, int, int, int] | None:
+
+    def get_data(self, error_label_used=True) -> tuple[list, int, int, int] | None:
         # ram
         result_list = list()
         on_test_count = 0
@@ -475,12 +492,12 @@ class CSystemInfoWindow(QMainWindow):
                 is_test_passed_count += 1
             else:
                 if error_label_used:
-                    cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.RAM_STATS)
+                    self.add_test_in_error(TEST_SYSTEM_INFO_TYPES.RAM_STATS)
 
             if result_test is False:  # не пройдено сравнение
                 is_test_fail_string_check_count += 1
                 if error_label_used:
-                    cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.RAM_STATS)
+                    self.add_test_in_error(TEST_SYSTEM_INFO_TYPES.RAM_STATS)
             elif result_test is None:  # сравнение не надо
                 pass
 
@@ -531,7 +548,7 @@ class CSystemInfoWindow(QMainWindow):
                 is_test_passed_count += 1
             else:
                 if error_label_used:
-                    cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.BIOS_STATS)
+                    self.add_test_in_error(TEST_SYSTEM_INFO_TYPES.BIOS_STATS)
 
             # check_string = f"m_{'-' if manufacturer is None else manufacturer}_" \
             #                f"v_{'-' if version is None else version}_" \
@@ -548,7 +565,7 @@ class CSystemInfoWindow(QMainWindow):
             if result_test is False:  # не пройдено сравнение
                 is_test_fail_string_check_count += 1
                 if error_label_used:
-                    cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.BIOS_STATS)
+                    self.add_test_in_error(TEST_SYSTEM_INFO_TYPES.BIOS_STATS)
             elif result_test is None:  # сравнение не надо
                 pass
 
@@ -600,7 +617,7 @@ class CSystemInfoWindow(QMainWindow):
                 is_test_passed_count += 1
             else:
                 if error_label_used:
-                    cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.MB_STATS)
+                    self.add_test_in_error(TEST_SYSTEM_INFO_TYPES.MB_STATS)
 
             mb_model_string = CSystemInfo.get_test_stats(SYS_INFO_PARAMS.MB_MODEL_STRING)
             mb_family_string = CSystemInfo.get_test_stats(SYS_INFO_PARAMS.MB_FAMILY_STRING)
@@ -666,7 +683,7 @@ class CSystemInfoWindow(QMainWindow):
                         "test_id": TEST_SYSTEM_INFO_TYPES.MB_STATS})
                     is_test_fail_string_check_count += 1
                     if error_label_used:
-                        cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.MB_STATS)
+                        self.add_test_in_error(TEST_SYSTEM_INFO_TYPES.MB_STATS)
                 else:
 
                     mb_dict.update({
@@ -712,7 +729,7 @@ class CSystemInfoWindow(QMainWindow):
             if result_test is False:  # не пройдено сравнение
                 is_test_fail_string_check_count += 1
                 if error_label_used:
-                    cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.CPU_STATS)
+                    self.add_test_in_error(TEST_SYSTEM_INFO_TYPES.CPU_STATS)
             elif result_test is None:  # сравнение не надо
                 pass
 
@@ -764,7 +781,7 @@ class CSystemInfoWindow(QMainWindow):
             if result_test is False:  # не пройдено сравнение
                 is_test_fail_string_check_count += 1
                 if error_label_used:
-                    cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.OS_STATS)
+                    self.add_test_in_error(TEST_SYSTEM_INFO_TYPES.OS_STATS)
             elif result_test is None:  # сравнение не надо
                 pass
 
@@ -805,7 +822,7 @@ class CSystemInfoWindow(QMainWindow):
                 string_not_span = f"{test_name}: не пройден - IP невалидный"
                 ip_check_result = "not_valid_ip"
                 if error_label_used:
-                    cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.LAN_STATS)
+                    self.add_test_in_error(TEST_SYSTEM_INFO_TYPES.LAN_STATS)
             elif response is True:
                 string = f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> <span style=\" font-size:14pt; font-weight:700; color:#0000ff;\">пройден успешно</span>!"
                 string_not_span = f"{test_name}: пройден успешно!"
@@ -816,7 +833,7 @@ class CSystemInfoWindow(QMainWindow):
                 string_not_span = f"{test_name}: не пройден!"
                 ip_check_result = "fail"
                 if error_label_used:
-                    cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.LAN_STATS)
+                    self.add_test_in_error(TEST_SYSTEM_INFO_TYPES.LAN_STATS)
 
             check_string = f"result_{ip_check_result}"
             # test_result_string, result_test = get_checked_string(check_string, SYS_INFO_PARAMS.LAN_STRING)
@@ -870,13 +887,13 @@ class CSystemInfoWindow(QMainWindow):
                     string_not_span = f"{test_name}: не пройден! Нет доступных сетей."
                     check_string = "wlans_none"
                     if error_label_used:
-                        cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.WIFI_STATS)
+                        self.add_test_in_error(TEST_SYSTEM_INFO_TYPES.WIFI_STATS)
             except:
                 string = f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> WIFI модуль <span style=\" font-size:14pt; font-weight:700; color:#FF0000;\">не обнаружен</span>!"
                 string_not_span = f"{test_name}: WIFI модуль не обнаружен!"
                 check_string = "wlans_error_none"
                 if error_label_used:
-                    cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.WIFI_STATS)
+                    self.add_test_in_error(TEST_SYSTEM_INFO_TYPES.WIFI_STATS)
 
             test_result_string = ""
             saved_string = CSystemInfo.get_test_stats(SYS_INFO_PARAMS.WLAN_STRING)
@@ -904,7 +921,7 @@ class CSystemInfoWindow(QMainWindow):
                         f"Check_string: {saved_string}")
                     is_test_fail_string_check_count += 1
                     if error_label_used:
-                        cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.WIFI_STATS)
+                        self.add_test_in_error(TEST_SYSTEM_INFO_TYPES.WIFI_STATS)
 
             wifi_dict.update({"data": string + " " + test_result_string,
                               "only_data": string_not_span,
@@ -952,13 +969,13 @@ class CSystemInfoWindow(QMainWindow):
                         string_not_span = f"{test_name}: не пройден! Сети не видны или модуль не подключен!"
                         check_string = "bts_none"
                         if error_label_used:
-                            cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.BT_STATS)
+                            self.add_test_in_error(TEST_SYSTEM_INFO_TYPES.BT_STATS)
             except:
                 string = f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> BT модуль <span style=\" font-size:14pt; font-weight:700; color:#FF0000;\">не обнаружен</span>!"
                 string_not_span = f"{test_name}: BT модуль не обнаружен!"
                 check_string = "bts_error_none"
                 if error_label_used:
-                    cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.BT_STATS)
+                    self.add_test_in_error(TEST_SYSTEM_INFO_TYPES.BT_STATS)
 
             test_result_string = ""
             saved_string = CSystemInfo.get_test_stats(SYS_INFO_PARAMS.BT_STRING)
@@ -986,7 +1003,7 @@ class CSystemInfoWindow(QMainWindow):
                         f"Check_string: {saved_string}")
                     is_test_fail_string_check_count += 1
                     if error_label_used:
-                        cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.BT_STATS)
+                        self.add_test_in_error(TEST_SYSTEM_INFO_TYPES.BT_STATS)
 
             bt_dict.update({"data": string + " " + test_result_string,
                             "only_data": string_not_span,
@@ -1013,6 +1030,7 @@ class CSystemInfoWindow(QMainWindow):
         if CSystemInfo.get_test_stats(SYS_INFO_PARAMS.DISK_CHECK) is True:
             disk_initials_result_list = None
             disks_string = ""
+            check_string = ""
             try:
                 disk_initials_result_list = CSystemInfo.get_drives_info()
                 if isinstance(disk_initials_result_list, list):
@@ -1026,53 +1044,67 @@ class CSystemInfoWindow(QMainWindow):
                     string = f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> <span style=\" font-size:14pt; font-weight:700; color:#FF0000;\">не пройден</span>! Диски не видны."
                     string_not_span = f"{test_name}: не пройден! Диски не видны"
                     if error_label_used:
-                        cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.DISKS_STATS)
+                        self.add_test_in_error(TEST_SYSTEM_INFO_TYPES.DISKS_STATS)
             except:
                 string = f"<span style=\" font-size:14pt; font-weight:700;\">{test_name}:</span> Диски <span style=\" font-size:14pt; font-weight:700; color:#FF0000;\">не обнаружены</span>!"
                 string_not_span = f"{test_name}: Диски не обнаружены!"
                 if error_label_used:
-                    cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.DISKS_STATS)
+                    self.add_test_in_error(TEST_SYSTEM_INFO_TYPES.DISKS_STATS)
             test_result_string = str()
             result_test = False
             if len(disk_initials_result_list) > 0:
-                check_string = f"drivers_{",".join(disk_initials_result_list)}"
+
                 saved_string = CSystemInfo.get_test_stats(SYS_INFO_PARAMS.DISK_STRING)
-                # Список объёмов дисков приходит списокм строк. Тупо объём
-                # В строке для сравнения из конфига строка с объёмом через запятую
-                # Просто дробим её на отельные списик строк и потом ищем
-                # в списке реальных устройств строку с объёмом для каждой строки списка строки сравнения
-
-                if isinstance(saved_string, str) and (saved_string == "-" or not len(saved_string)):
-                    result_test = None
-                else:
-                    if isinstance(saved_string, str):
-                        if len(saved_string) > 0:
-                            if saved_string.find("drivers_") != -1:
-                                try:
-                                    find_string = saved_string.replace("drivers_", "").split(",")
-                                    is_all_find = True
-                                    for find_disk in find_string:
-                                        is_find = False
-                                        for real_driver in disk_initials_result_list:
-                                            if find_disk == real_driver:
-                                                is_find = True
-                                                # Нашли устройство в реальных устройствах, значит прерываем
-                                                break
-
-                                        if not is_find:
-                                            # Устройство из списка строк строки сравнения не найдено
-                                            # в реальных устройствах
-                                            is_all_find = False
-                                            break
-
-                                    if is_all_find:  # Все строки в списке реальных выданных устройств найдены
-                                        result_test = True
-                                except:
-                                    pass
-                    if not result_test:
+                if self.__main_window.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:
+                    if len(disk_initials_result_list) < 2:
+                        result_test = False
                         test_result_string = (
                             f" {disks_string} <span style=\"font-size:14pt;font-weight:700;color:#ff5733;\">Сравнение не пройдено!</span> "
-                            f"Check_string: {saved_string}")
+                            f"Должно быть не менее двух дисков!")
+                    else:
+                        result_test = True
+                        test_result_string = (
+                            "<span style=\" font-size:14pt; font-weight:700; color:#8fdd60;\">Сравнение "
+                            "успешно!</span>")
+                else:
+                    check_string = f"drivers_{",".join(disk_initials_result_list)}"
+
+                    # Список объёмов дисков приходит списокм строк. Тупо объём
+                    # В строке для сравнения из конфига строка с объёмом через запятую
+                    # Просто дробим её на отельные списик строк и потом ищем
+                    # в списке реальных устройств строку с объёмом для каждой строки списка строки сравнения
+
+                    if isinstance(saved_string, str) and (saved_string == "-" or not len(saved_string)):
+                        result_test = None
+                    else:
+                        if isinstance(saved_string, str):
+                            if len(saved_string) > 0:
+                                if saved_string.find("drivers_") != -1:
+                                    try:
+                                        find_string = saved_string.replace("drivers_", "").split(",")
+                                        is_all_find = True
+                                        for find_disk in find_string:
+                                            is_find = False
+                                            for real_driver in disk_initials_result_list:
+                                                if find_disk == real_driver:
+                                                    is_find = True
+                                                    # Нашли устройство в реальных устройствах, значит прерываем
+                                                    break
+
+                                            if not is_find:
+                                                # Устройство из списка строк строки сравнения не найдено
+                                                # в реальных устройствах
+                                                is_all_find = False
+                                                break
+
+                                        if is_all_find:  # Все строки в списке реальных выданных устройств найдены
+                                            result_test = True
+                                    except:
+                                        pass
+                        if not result_test:
+                            test_result_string = (
+                                f" {disks_string} <span style=\"font-size:14pt;font-weight:700;color:#ff5733;\">Сравнение не пройдено!</span> "
+                                f"Check_string: {saved_string}")
             else:
                 check_string = f"drivers_fail"
 
@@ -1083,7 +1115,7 @@ class CSystemInfoWindow(QMainWindow):
             if result_test is False:  # не пройдено сравнение
                 is_test_fail_string_check_count += 1
                 if error_label_used:
-                    cls.add_test_in_error(TEST_SYSTEM_INFO_TYPES.DISKS_STATS)
+                    self.add_test_in_error(TEST_SYSTEM_INFO_TYPES.DISKS_STATS)
             elif result_test is None:  # сравнение не надо
                 test_result_string = ""
 

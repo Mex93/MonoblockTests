@@ -78,7 +78,7 @@ class BLOCKS_DATA:
     PROGRAM_SETTING = "program"
     SYS_INFO_TEST = "sys_info_test"
     EXTERNAL_DISPLAY_TEST = "external_display_test"
-    SPEAKER_TEST = "speaker_test"
+    SPEAKER_TEST = "sound_test"
     VIDEO_CAM_TEST = "videocam_test"
     HARDWARE_BTN_TEST = "hardw_keys_test"
     BRIGHTNESS_TEST = "brightness_test"
@@ -150,8 +150,12 @@ class PATTERNS_TEST_PARAMS:
 
 
 class SPEAKER_PARAMS:
-    SPEAKER_TEST_USED = "test_used"
-    HEADSET_TEST_USED = "test_used"
+    SPEAKER_TEST_USED = "speaker_test_used"
+    HEADSET_TEST_USED = "headset_test_used"
+
+    SPEAKER_TEST_RECORD_ENABLE = "speaker_test_record_enable"
+    HEADSET_TEST_RECORD_ENABLE = "headset_test_record_enable"
+
     AUDIO_PATCH_LEFT = "audio_patch_left"
     AUDIO_PATCH_RIGHT = "audio_patch_right"
 

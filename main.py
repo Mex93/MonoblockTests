@@ -69,13 +69,14 @@ class MainWindow(QMainWindow):
         self.main_config = CMainConfig()
         # ---------------------------------------
         try:
-            if self.main_config.load_data() is False:
-                send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
-                                 text="Ошибка в главном файле конфигурации!\n"
-                                      "Один или несколько параметров ошибочны!",
-                                 title="Внимание!",
-                                 variant_yes="Закрыть", variant_no="", callback=lambda: self.set_close())
-                return
+            if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_NORMAL:
+                if self.main_config.load_data() is False:
+                    send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
+                                     text="Ошибка в главном файле конфигурации!\n"
+                                          "Один или несколько параметров ошибочны!",
+                                     title="Внимание!",
+                                     variant_yes="Закрыть", variant_no="", callback=lambda: self.set_close())
+                    return
 
             if not file_isdir("content"):
                 send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
@@ -165,38 +166,42 @@ class MainWindow(QMainWindow):
         # timer_update_cpu_temp.start(2000)
 
         self.call_time_sync_bat()
-        only_config_name = self.main_config.get_only_config_name()
-        if len(only_config_name):
-            current_index = self.get_item_index_from_text(only_config_name)
-            if current_index is not None:
-                self.ui.comboBox_config_get.setCurrentIndex(current_index)
-                self.on_changed_config()
-                self.ui.comboBox_config_get.setEnabled(False)
-                return
+        if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_NORMAL:
+            only_config_name = self.main_config.get_only_config_name()
+            if len(only_config_name):
+                current_index = self.get_item_index_from_text(only_config_name)
+                if current_index is not None:
+                    self.ui.comboBox_config_get.setCurrentIndex(current_index)
+                    self.on_changed_config()
+                    self.ui.comboBox_config_get.setEnabled(False)
+                    return
 
-        last_config = self.main_config.get_last_config_name()
-        if len(last_config):
-            current_index = self.get_item_index_from_text(last_config)
-            if current_index is not None:
-                self.ui.comboBox_config_get.setCurrentIndex(current_index)
-                self.on_changed_config()
-                return
+            last_config = self.main_config.get_last_config_name()
+            if len(last_config):
+                current_index = self.get_item_index_from_text(last_config)
+                if current_index is not None:
+                    self.ui.comboBox_config_get.setCurrentIndex(current_index)
+                    self.on_changed_config()
+                    return
 
-        self.ui.comboBox_config_get.setCurrentIndex(-1)
+            self.ui.comboBox_config_get.setCurrentIndex(-1)
+            if self.ui.comboBox_config_get.count() == 0:
+                send_message_box_triple_variant(icon_style=SMBOX_ICON_TYPE.ICON_WARNING,
+                                                text="Программа обнаружила, что не создано ни одного файла конфигурации для выбора.\n\n"
+                                                     f"Вы можете создать файл конфигурации в автоматическом режиме или выйти из программы.\n"
+                                                     f"Без файла конфигурации дальнейшая работа программы невозможна.\n\n"
+                                                     f"После создания файла конфигурации, Вы сможете зайти в папку с программой и переименовать его название.\n"
+                                                     f"Все настройки нового файла конфигурации будут установлены на стандартные значения.",
+                                                title="Ошибка поиска конфигурации",
+                                                variant_yes="Закрыть программу",
+                                                variant_no="Создать новую конфигурацию",
+                                                variant_apply="",
+                                                callback=self.on_config_is_not_find,
+                                                exit_callback=lambda: self.on_config_is_not_find(None))
 
-        if self.ui.comboBox_config_get.count() == 0:
-            send_message_box_triple_variant(icon_style=SMBOX_ICON_TYPE.ICON_WARNING,
-                                            text="Программа обнаружила, что не создано ни одного файла конфигурации для выбора.\n\n"
-                                                 f"Вы можете создать файл конфигурации в автоматическом режиме или выйти из программы.\n"
-                                                 f"Без файла конфигурации дальнейшая работа программы невозможна.\n\n"
-                                                 f"После создания файла конфигурации, Вы сможете зайти в папку с программой и переименовать его название.\n"
-                                                 f"Все настройки нового файла конфигурации будут установлены на стандартные значения.",
-                                            title="Ошибка поиска конфигурации",
-                                            variant_yes="Закрыть программу",
-                                            variant_no="Создать новую конфигурацию",
-                                            variant_apply="",
-                                            callback=self.on_config_is_not_find,
-                                            exit_callback=lambda: self.on_config_is_not_find(None))
+        else:
+            self.ui.comboBox_config_get.setCurrentIndex(-1)
+            self.on_changed_config()
 
     def set_get_button_blocker(self) -> bool:
         if self.button_blocker < get_current_unix_time():
@@ -369,65 +374,72 @@ class MainWindow(QMainWindow):
     def on_changed_config(self):
 
         text = self.ui.comboBox_config_get.currentText()
+        if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:
+            text = "For Line"
         if text:
             if self.ctest_process.is_test_launch() != TEST_TYPE.TEST_NONE:
                 self.ctest_process.stop_test()
                 self.ui.pushButton_launchall.setText("Запустить всё")
 
             CButtoms.set_buttoms_default_color()
-
-            if not self.cconfig_unit.set_init_config(text):
-                self.cconfig_unit.create_config_data()
-                self.close()
-                return
-
-            try:
-                self.cconfig_unit.load_config()
-            except Exception as err:
-                # self.cconfig_unit.create_config_data()
-
-                send_message_box_triple_variant(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
-                                                text="Во время выполнения программы произошла ошибка считывания конфигурации.\n\n"
-                                                     f"Конфигуратор сообщил детальный код ошибки: '{err}'!\n\n"
-                                                     f"Код ошибки блока RunTime: 'on_changed_config -> [Error Read Config Data]'",
-                                                title="Фатальная ошибка",
-                                                variant_yes="Закрыть программу",
-                                                variant_no="Сбросить конфиг по умолчанию",
-                                                variant_apply="Продолжить выполнение",
-                                                callback=self.on_config_is_broken, exit_callback=
-                                                lambda: self.on_config_is_broken(None))
-                if not self.load_with_error:
+            if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_NORMAL:
+                if not self.cconfig_unit.set_init_config(text):
+                    self.cconfig_unit.create_config_data()
+                    self.close()
                     return
 
-                # self.send_error_message(
-                #     "Во время выполнения программы произошла ошибка считывания конфигурации.\n"
-                #     "Весь конфиг файл был сброшен по умолчанию!\n\n"
-                #     f"Код ошибки: 'on_changed_config -> [Error Read Data]'")
-                # self.close()
-                # return
-            display_resolution = self.cconfig_unit.get_config_value(BLOCKS_DATA.PROGRAM_SETTING,
-                                                                    CONFIG_PARAMS.DISPLAY_RESOLUTION)
-            if len(display_resolution):
-                if display_resolution.find("x") != -1:
-                    height: str
-                    width: str
+                try:
+                    self.cconfig_unit.load_config()
+                except Exception as err:
+                    # self.cconfig_unit.create_config_data()
 
-                    height, width = display_resolution.split("x")
-                    if height.isnumeric() and width.isnumeric():
-                        display_resolution = [int(height), int(width)]
+                    send_message_box_triple_variant(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
+                                                    text="Во время выполнения программы произошла ошибка считывания конфигурации.\n\n"
+                                                         f"Конфигуратор сообщил детальный код ошибки: '{err}'!\n\n"
+                                                         f"Код ошибки блока RunTime: 'on_changed_config -> [Error Read Config Data]'",
+                                                    title="Фатальная ошибка",
+                                                    variant_yes="Закрыть программу",
+                                                    variant_no="Сбросить конфиг по умолчанию",
+                                                    variant_apply="Продолжить выполнение",
+                                                    callback=self.on_config_is_broken, exit_callback=
+                                                    lambda: self.on_config_is_broken(None))
+                    if not self.load_with_error:
+                        return
 
-            if isinstance(display_resolution, list):
-                self.ctest_window_external_display.resize(*display_resolution)
+                    # self.send_error_message(
+                    #     "Во время выполнения программы произошла ошибка считывания конфигурации.\n"
+                    #     "Весь конфиг файл был сброшен по умолчанию!\n\n"
+                    #     f"Код ошибки: 'on_changed_config -> [Error Read Data]'")
+                    # self.close()
+                    # return
+                display_resolution = self.cconfig_unit.get_config_value(BLOCKS_DATA.PROGRAM_SETTING,
+                                                                        CONFIG_PARAMS.DISPLAY_RESOLUTION)
 
+                if len(display_resolution):
+                    if display_resolution.find("x") != -1:
+                        height: str
+                        width: str
+
+                        height, width = display_resolution.split("x")
+                        if height.isnumeric() and width.isnumeric():
+                            display_resolution = [int(height), int(width)]
+
+                if isinstance(display_resolution, list):
+                    self.ctest_window_external_display.resize(*display_resolution)
+
+                else:
+                    # на всю длинну если не задано
+                    # задаётся и для видео кам теста через конфиг экстерн дисплея
+                    CExternalDisplay.set_test_stats(CONFIG_PARAMS.DISPLAY_RESOLUTION, "full-screen")
+
+                config_human_name = self.cconfig_unit.get_config_value(BLOCKS_DATA.PROGRAM_SETTING,
+                                                                       CONFIG_PARAMS.CONFIG_NAME)
+
+                self.ui.label_monoblock_config_name.setText(f"Тест моноблоков: {config_human_name}")
+
+                self.main_config.save_last_config(text)
             else:
-                # на всю длинну если не задано
-                # задаётся и для видео кам теста через конфиг экстерн дисплея
                 CExternalDisplay.set_test_stats(CONFIG_PARAMS.DISPLAY_RESOLUTION, "full-screen")
-
-            config_human_name = self.cconfig_unit.get_config_value(BLOCKS_DATA.PROGRAM_SETTING,
-                                                                   CONFIG_PARAMS.CONFIG_NAME)
-
-            self.ui.label_monoblock_config_name.setText(f"Тест моноблоков: {config_human_name}")
 
             self.ui.pushButton_get_strings.setHidden(True)
             if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:
@@ -436,161 +448,177 @@ class MainWindow(QMainWindow):
                 self.ui.pushButton_launchall.setEnabled(False)
                 self.ui.pushButton_clear.setEnabled(False)
                 self.ui.pushButton_furmark.setHidden(True)
-                self.ui.label_monoblock_config_name.setText("Тесты для сборочной линии линии")
+                self.ui.label_monoblock_config_name.setText("Тесты для сборочной линии")
 
-            self.main_config.save_last_config(text)
+            if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_NORMAL:
+                # LOAD
+                # Sys Info
+                # check
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.TEST_USED,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.TEST_USED))
 
-            # LOAD
-            # Sys Info
-            # check
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.TEST_USED,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.TEST_USED))
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.BIOS_CHECK,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.BIOS_CHECK))
 
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.BIOS_CHECK,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.BIOS_CHECK))
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.MB_CHECK,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.MB_CHECK))
 
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.MB_CHECK,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.MB_CHECK))
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.CPU_CHECK,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.CPU_CHECK))
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.RAM_CHECK,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.RAM_CHECK))
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.DISK_CHECK,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.DISK_CHECK))
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.WLAN_CHECK,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.WLAN_CHECK))
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.BT_CHECK,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.BT_CHECK))
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.LAN_CHECK,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.LAN_CHECK))
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.OS_CHECK,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.OS_CHECK))
 
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.CPU_CHECK,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.CPU_CHECK))
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.RAM_CHECK,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.RAM_CHECK))
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.DISK_CHECK,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.DISK_CHECK))
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.WLAN_CHECK,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.WLAN_CHECK))
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.BT_CHECK,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.BT_CHECK))
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.LAN_CHECK,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.LAN_CHECK))
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.OS_CHECK,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.OS_CHECK))
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.OS_STRING,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.OS_STRING))
 
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.OS_STRING,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.OS_STRING))
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.LAN_IP,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.LAN_IP))
 
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.LAN_IP,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.LAN_IP))
+                # string
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.BIOS_STRING,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.BIOS_STRING))
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.CPU_STRING,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.CPU_STRING))
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.RAM_STRING,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.RAM_STRING))
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.DISK_STRING,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.DISK_STRING))
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.WLAN_STRING,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.WLAN_STRING))
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.BT_STRING,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.BT_STRING))
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.LAN_STRING,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.LAN_STRING))
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.MB_MODEL_STRING,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.MB_MODEL_STRING))
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.MB_FAMILY_STRING,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.MB_FAMILY_STRING))
+                CSystemInfo.set_test_stats(SYS_INFO_PARAMS.MB_SKU_NUMBER_STRING,
+                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
+                                                                              SYS_INFO_PARAMS.MB_SKU_NUMBER_STRING))
 
-            # string
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.BIOS_STRING,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.BIOS_STRING))
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.CPU_STRING,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.CPU_STRING))
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.RAM_STRING,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.RAM_STRING))
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.DISK_STRING,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.DISK_STRING))
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.WLAN_STRING,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.WLAN_STRING))
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.BT_STRING,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.BT_STRING))
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.LAN_STRING,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.LAN_STRING))
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.MB_MODEL_STRING,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.MB_MODEL_STRING))
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.MB_FAMILY_STRING,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.MB_FAMILY_STRING))
-            CSystemInfo.set_test_stats(SYS_INFO_PARAMS.MB_SKU_NUMBER_STRING,
-                                       self.cconfig_unit.get_config_value(BLOCKS_DATA.SYS_INFO_TEST,
-                                                                          SYS_INFO_PARAMS.MB_SKU_NUMBER_STRING))
+                # External display
+                # check
+                CExternalDisplay.set_test_stats(EXTERNAL_DISPLAY_PARAMS.TEST_USED,
+                                                self.cconfig_unit.get_config_value(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST,
+                                                                                   EXTERNAL_DISPLAY_PARAMS.TEST_USED))
+                # string
+                CExternalDisplay.set_test_stats(EXTERNAL_DISPLAY_PARAMS.VIDEO_PATCH,
+                                                self.cconfig_unit.get_config_value(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST,
+                                                                                   EXTERNAL_DISPLAY_PARAMS.VIDEO_PATCH))
 
-            # External display
-            # check
-            CExternalDisplay.set_test_stats(EXTERNAL_DISPLAY_PARAMS.TEST_USED,
-                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST,
-                                                                               EXTERNAL_DISPLAY_PARAMS.TEST_USED))
-            # string
-            CExternalDisplay.set_test_stats(EXTERNAL_DISPLAY_PARAMS.VIDEO_PATCH,
-                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST,
-                                                                               EXTERNAL_DISPLAY_PARAMS.VIDEO_PATCH))
+                CExternalDisplay.set_test_stats(EXTERNAL_DISPLAY_PARAMS.WINDOW_DEFAULT,
+                                                self.cconfig_unit.get_config_value(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST,
+                                                                                   EXTERNAL_DISPLAY_PARAMS.WINDOW_DEFAULT))
 
-            CExternalDisplay.set_test_stats(EXTERNAL_DISPLAY_PARAMS.WINDOW_DEFAULT,
-                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST,
-                                                                               EXTERNAL_DISPLAY_PARAMS.WINDOW_DEFAULT))
+                CExternalDisplay.set_test_stats(EXTERNAL_DISPLAY_PARAMS.WINDOW_SWITCH_TO,
+                                                self.cconfig_unit.get_config_value(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST,
+                                                                                   EXTERNAL_DISPLAY_PARAMS.WINDOW_SWITCH_TO))
 
-            CExternalDisplay.set_test_stats(EXTERNAL_DISPLAY_PARAMS.WINDOW_SWITCH_TO,
-                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.EXTERNAL_DISPLAY_TEST,
-                                                                               EXTERNAL_DISPLAY_PARAMS.WINDOW_SWITCH_TO))
+                # Speaker test
+                # check
+                CSpeakerTest.set_test_stats(SPEAKER_PARAMS.SPEAKER_TEST_USED,
+                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
+                                                                               SPEAKER_PARAMS.SPEAKER_TEST_USED))
+                CSpeakerTest.set_test_stats(SPEAKER_PARAMS.HEADSET_TEST_USED,
+                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
+                                                                               SPEAKER_PARAMS.HEADSET_TEST_USED))
 
-            # Speaker test
-            # check
-            CSpeakerTest.set_test_stats(SPEAKER_PARAMS.SPEAKER_TEST_USED,
-                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
-                                                                           SPEAKER_PARAMS.SPEAKER_TEST_USED))
-            # string
-            CSpeakerTest.set_test_stats(SPEAKER_PARAMS.AUDIO_PATCH_LEFT,
-                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
-                                                                           SPEAKER_PARAMS.AUDIO_PATCH_LEFT))
-            CSpeakerTest.set_test_stats(SPEAKER_PARAMS.AUDIO_PATCH_RIGHT,
-                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
-                                                                           SPEAKER_PARAMS.AUDIO_PATCH_RIGHT))
-            CSpeakerTest.set_test_stats(SPEAKER_PARAMS.HEADSET_TEST_USED,
-                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
-                                                                           SPEAKER_PARAMS.HEADSET_TEST_USED))
+                CSpeakerTest.set_test_stats(SPEAKER_PARAMS.SPEAKER_TEST_RECORD_ENABLE,
+                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
+                                                                               SPEAKER_PARAMS.SPEAKER_TEST_RECORD_ENABLE))
 
-            # VideoCam test
-            # check
-            CVideoCam.set_test_stats(VIDEO_CAM_PARAMS.TEST_USED,
-                                     self.cconfig_unit.get_config_value(BLOCKS_DATA.VIDEO_CAM_TEST,
-                                                                        VIDEO_CAM_PARAMS.TEST_USED))
-            CVideoCam.set_test_stats(VIDEO_CAM_PARAMS.CAMERA_INDEX,
-                                     self.cconfig_unit.get_config_value(BLOCKS_DATA.VIDEO_CAM_TEST,
-                                                                        VIDEO_CAM_PARAMS.CAMERA_INDEX))
+                CSpeakerTest.set_test_stats(SPEAKER_PARAMS.HEADSET_TEST_RECORD_ENABLE,
+                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
+                                                                               SPEAKER_PARAMS.HEADSET_TEST_RECORD_ENABLE))
 
-            # HardwareKeys test
-            # check
-            CKeyTest.set_test_stats(KEYSBUTTOMS_PARAMS.TEST_USED,
-                                    self.cconfig_unit.get_config_value(BLOCKS_DATA.HARDWARE_BTN_TEST,
-                                                                       KEYSBUTTOMS_PARAMS.TEST_USED))
+                # string
+                CSpeakerTest.set_test_stats(SPEAKER_PARAMS.AUDIO_PATCH_LEFT,
+                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
+                                                                               SPEAKER_PARAMS.AUDIO_PATCH_LEFT))
+                CSpeakerTest.set_test_stats(SPEAKER_PARAMS.AUDIO_PATCH_RIGHT,
+                                            self.cconfig_unit.get_config_value(BLOCKS_DATA.SPEAKER_TEST,
+                                                                               SPEAKER_PARAMS.AUDIO_PATCH_RIGHT))
 
-            # Brighntess test
-            # check
-            CBrightnessTest.set_test_stats(BRIGHTNESS_PARAMS.TEST_USED,
-                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.BRIGHTNESS_TEST,
-                                                                              BRIGHTNESS_PARAMS.TEST_USED))
+                # VideoCam test
+                # check
+                CVideoCam.set_test_stats(VIDEO_CAM_PARAMS.TEST_USED,
+                                         self.cconfig_unit.get_config_value(BLOCKS_DATA.VIDEO_CAM_TEST,
+                                                                            VIDEO_CAM_PARAMS.TEST_USED))
+                CVideoCam.set_test_stats(VIDEO_CAM_PARAMS.CAMERA_INDEX,
+                                         self.cconfig_unit.get_config_value(BLOCKS_DATA.VIDEO_CAM_TEST,
+                                                                            VIDEO_CAM_PARAMS.CAMERA_INDEX))
 
-            CBrightnessTest.set_test_stats(BRIGHTNESS_PARAMS.FILE_PATCH,
-                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.BRIGHTNESS_TEST,
-                                                                              BRIGHTNESS_PARAMS.FILE_PATCH))
+                # HardwareKeys test
+                # check
+                CKeyTest.set_test_stats(KEYSBUTTOMS_PARAMS.TEST_USED,
+                                        self.cconfig_unit.get_config_value(BLOCKS_DATA.HARDWARE_BTN_TEST,
+                                                                           KEYSBUTTOMS_PARAMS.TEST_USED))
 
-            # USB Devices test
-            # check
-            CUSBDevicesTest.set_test_stats(USB_TEST_PARAMS.TEST_USED,
-                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.USB_DEVICE_TEST,
-                                                                              USB_TEST_PARAMS.TEST_USED))
+                # Brighntess test
+                # check
+                CBrightnessTest.set_test_stats(BRIGHTNESS_PARAMS.TEST_USED,
+                                               self.cconfig_unit.get_config_value(BLOCKS_DATA.BRIGHTNESS_TEST,
+                                                                                  BRIGHTNESS_PARAMS.TEST_USED))
 
-            CUSBDevicesTest.set_test_stats(USB_TEST_PARAMS.MAX_SIZE,
-                                           self.cconfig_unit.get_config_value(BLOCKS_DATA.USB_DEVICE_TEST,
-                                                                              USB_TEST_PARAMS.MAX_SIZE))
+                CBrightnessTest.set_test_stats(BRIGHTNESS_PARAMS.FILE_PATCH,
+                                               self.cconfig_unit.get_config_value(BLOCKS_DATA.BRIGHTNESS_TEST,
+                                                                                  BRIGHTNESS_PARAMS.FILE_PATCH))
 
-            # Patterns test
-            # check
-            CPatternsTest.set_test_stats(PATTERNS_TEST_PARAMS.TEST_USED,
-                                         self.cconfig_unit.get_config_value(BLOCKS_DATA.PATTERNS_TEST,
-                                                                            PATTERNS_TEST_PARAMS.TEST_USED))
+                # USB Devices test
+                # check
+                CUSBDevicesTest.set_test_stats(USB_TEST_PARAMS.TEST_USED,
+                                               self.cconfig_unit.get_config_value(BLOCKS_DATA.USB_DEVICE_TEST,
+                                                                                  USB_TEST_PARAMS.TEST_USED))
+
+                CUSBDevicesTest.set_test_stats(USB_TEST_PARAMS.MAX_SIZE,
+                                               self.cconfig_unit.get_config_value(BLOCKS_DATA.USB_DEVICE_TEST,
+                                                                                  USB_TEST_PARAMS.MAX_SIZE))
+
+                # Patterns test
+                # check
+                CPatternsTest.set_test_stats(PATTERNS_TEST_PARAMS.TEST_USED,
+                                             self.cconfig_unit.get_config_value(BLOCKS_DATA.PATTERNS_TEST,
+                                                                                PATTERNS_TEST_PARAMS.TEST_USED))
+            else:  # Only Line
+                CVideoCam.set_test_stats(VIDEO_CAM_PARAMS.CAMERA_INDEX,
+                                         0)
+
+                CSpeakerTest.set_test_stats(SPEAKER_PARAMS.AUDIO_PATCH_LEFT,
+                                            "content/audio_test_left.mp3")
+                CSpeakerTest.set_test_stats(SPEAKER_PARAMS.AUDIO_PATCH_RIGHT,
+                                            "content/audio_test_right.mp3")
 
             CButtoms.set_clear_callbacks_for_all()
 
@@ -600,6 +628,8 @@ class MainWindow(QMainWindow):
 
                 tests_list = \
                     [
+                        [CSystemInfo, TEST_TYPE.TEST_SYSTEM_INFO, SYS_INFO_PARAMS.TEST_USED, None],
+                        [CSpeakerTest, TEST_TYPE.TEST_SPEAKER_MIC, SPEAKER_PARAMS.SPEAKER_TEST_USED, None],
                         [CPatternsTest, TEST_TYPE.TEST_PATTERNS, PATTERNS_TEST_PARAMS.TEST_USED, None],
                         [CVideoCam, TEST_TYPE.TEST_FRONT_CAMERA, VIDEO_CAM_PARAMS.TEST_USED, None]
                     ]
@@ -662,6 +692,7 @@ class MainWindow(QMainWindow):
             if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE:
                 self.auto_test_line_time_launch = True
 
+                self.ctest_window_sys_info.disabled_test_for_only_line()
                 timer = QTimer(self)
                 timer.timeout.connect(
                     lambda: self.on_launch_line_start(timer))  # сколько навесиш раз функцию столько и будет вызываться
@@ -1078,7 +1109,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Please select job type mode")
     parser.add_argument('command', type=str, help='Command for set select job type')
 
-    args = parser.parse_args(["PROGRAM_FULL"])  # args = parser.parse_args(["PROGRAM_FULL"])
+    args = parser.parse_args()  # args = parser.parse_args(["PROGRAM_FULL"])
     pr_type = PROGRAM_JOB_TYPE.JOB_NORMAL
     if args.command == "PROGRAM_LINE":
         pr_type = PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE
