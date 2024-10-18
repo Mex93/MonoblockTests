@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton
 from PySide6.QtGui import QFontDatabase
 from PySide6.QtCore import QTimer
 
-# from wmi import WMI
+from wmi import WMI
 import subprocess
 import argparse
 from ui.untitled import Ui_MainWindow
@@ -30,6 +30,9 @@ from components.CBrightnessTest import CBrightnessTest, CBrightnessTestWindow, B
 from components.CPatternsTest import CPatternsTest, CPatternsTestWindow, PATTERNS_TEST_PARAMS
 from components.CUSBTest import CUSBDevicesTest, CUSBDevicesTestWindow, USB_TEST_PARAMS
 from components.CButtons import CButtoms
+
+
+# from components.CHWMonitor import HWMonitor
 
 
 # pyside6-uic .\ui\test.ui -o .\ui\test.py
@@ -122,6 +125,7 @@ class MainWindow(QMainWindow):
         self.ctest_window_patterns = CPatternsTestWindow(self)
         self.ctest_window_speaker_window = CSpeakerTestWindow(self, TEST_TYPE.TEST_SPEAKER_MIC)
         self.ctest_window_headset_window = CSpeakerTestWindow(self, TEST_TYPE.TEST_HEADSET_MIC)
+        # self.chw_monitor = HWMonitor()
 
         filtred_files = CNewConfig.get_configs_list_in_folder()
         if filtred_files is not None:
@@ -156,14 +160,19 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_launchall.clicked.connect(self.on_user_pressed_start_all_test)
         self.ui.pushButton_get_strings.clicked.connect(self.on_user_pressed_check_string)
         self.ui.pushButton_furmark.clicked.connect(self.on_user_clicked_on_run_furmark)
+        self.ui.pushButton_cpu_temp.clicked.connect(self.on_user_clicked_on_run_ophwm)
 
         self.ui.action_info.triggered.connect(self.rules)
 
-        self.ui.pushButton_cpu_temp.setHidden(True)
         self.ui.pushButton_alter_prog.setHidden(True)
-        # timer_update_cpu_temp = QTimer()
-        # timer_update_cpu_temp.timeout.connect(self.on_timer_cpu_temp_update)
-        # timer_update_cpu_temp.start(2000)
+        if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_NORMAL:
+            timer_update_cpu_temp = QTimer(self)
+            timer_update_cpu_temp.timeout.connect(self.on_timer_cpu_temp_update)
+            timer_update_cpu_temp.start(2000)
+            self.ui.pushButton_cpu_temp.setHidden(False)
+
+        else:
+            self.ui.pushButton_cpu_temp.setHidden(True)
 
         self.call_time_sync_bat()
         if self.PROGRAM_JOB_FLAG == PROGRAM_JOB_TYPE.JOB_NORMAL:
@@ -210,6 +219,28 @@ class MainWindow(QMainWindow):
 
         return False
 
+    def on_user_clicked_on_run_ophwm(self):
+        # надо перепилить
+        if not self.set_get_button_blocker():
+            return
+        patch = "OpenHardwareMonitor/OpenHardwareMonitor.exe"
+        if isinstance(patch, str) and len(patch):
+            if patch.find('.exe') != -1:
+                result = self.run_external_program(patch)
+                if result:
+                    return
+            elif patch.find('.bat') != -1:
+                result = self.run_external_bat(patch)
+                if result:
+                    return
+
+        send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
+                         text="Не удалось запустить программу!\n"
+                              "Поддерживается .exe, .bat файлы.\n"
+                              f"Путь: {patch}!",
+                         title="Внимание!",
+                         variant_yes="Закрыть", variant_no="", callback=None)
+
     def on_user_clicked_on_run_furmark(self):
         if not self.set_get_button_blocker():
             return
@@ -234,6 +265,7 @@ class MainWindow(QMainWindow):
     @staticmethod
     def run_external_program(program_path) -> bool:
         try:
+            print(program_path)
             subprocess.Popen(program_path)
             return True
 
@@ -256,19 +288,17 @@ class MainWindow(QMainWindow):
             return False
 
     def on_timer_cpu_temp_update(self):
-        print(self.cpu_temperature())
-        print("ejghwuegeegw")
+        w = WMI(namespace="root/OpenHardwareMonitor")
+        temperature_infos = w.Sensor()
+        for sensor in temperature_infos:
+            if sensor.SensorType == u'Temperature':
+                # print(sensor.Name, sensor.Value)
+                if isinstance(sensor.Name, str):
+                    if sensor.Name.find("CPU Package") != -1:
+                        self.ui.pushButton_cpu_temp.setText(f"{sensor.Name}: {sensor.Value}")
+                        return
 
-    @classmethod
-    def cpu_temperature(cls):
-        pass
-        # sensor = WMI(namespace="root\\\\wmi")
-        #
-        # temperature = sensor.MSAcpi_ThermalZone()
-        #
-        # for temp in temperature:
-        #     print(
-        #         f"Температура процессора: {temp.CurrentTemperature / 10 - 273.15:.2f}°C")  # Преобразуем из Кельвинов в Цельсии
+        self.ui.pushButton_cpu_temp.setText(f"Запустите OpenHardwareMonitor")
 
     @classmethod
     def rules(cls):
@@ -1119,7 +1149,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Please select job type mode")
     parser.add_argument('command', type=str, help='Command for set select job type')
 
-    args = parser.parse_args()  # args = parser.parse_args(["PROGRAM_FULL"])
+    args = parser.parse_args(["PROGRAM_FULL"])  # args = parser.parse_args(["PROGRAM_FULL"])
     pr_type = PROGRAM_JOB_TYPE.JOB_NORMAL
     if args.command == "PROGRAM_LINE":
         pr_type = PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE

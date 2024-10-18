@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1357</width>
-    <height>474</height>
+    <height>518</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -30,7 +30,7 @@
    </size>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_7">
+   <layout class="QVBoxLayout" name="verticalLayout_8">
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0,1">
       <item>
@@ -320,50 +320,54 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
-             <widget class="QPushButton" name="pushButton_furmark">
-              <property name="font">
-               <font>
-                <pointsize>15</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>Stress Test</string>
-              </property>
-              <property name="icon">
-               <iconset resource="res.qrc">
-                <normaloff>:/res/fur_mark_icon.bmp</normaloff>:/res/fur_mark_icon.bmp</iconset>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>60</width>
-                <height>60</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButton_alter_prog">
-              <property name="font">
-               <font>
-                <pointsize>15</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>run_alter_prog</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButton_cpu_temp">
-              <property name="font">
-               <font>
-                <pointsize>15</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>CPU TEMP</string>
-              </property>
-             </widget>
+             <layout class="QVBoxLayout" name="verticalLayout_7">
+              <item>
+               <widget class="QPushButton" name="pushButton_furmark">
+                <property name="font">
+                 <font>
+                  <pointsize>15</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Stress Test</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="res.qrc">
+                  <normaloff>:/res/fur_mark_icon.bmp</normaloff>:/res/fur_mark_icon.bmp</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>60</width>
+                  <height>60</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_cpu_temp">
+                <property name="font">
+                 <font>
+                  <pointsize>15</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>CPU TEMP</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_alter_prog">
+                <property name="font">
+                 <font>
+                  <pointsize>15</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>run_alter_prog</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>

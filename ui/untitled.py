@@ -26,7 +26,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1357, 474)
+        MainWindow.resize(1357, 518)
         MainWindow.setMinimumSize(QSize(719, 297))
         icon = QIcon()
         icon.addFile(u":/res/images/logo.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
@@ -36,8 +36,8 @@ class Ui_MainWindow(object):
         self.action_info.setObjectName(u"action_info")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.verticalLayout_7 = QVBoxLayout(self.centralwidget)
-        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
+        self.verticalLayout_8 = QVBoxLayout(self.centralwidget)
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
         self.verticalLayout_5 = QVBoxLayout()
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.horizontalLayout_3 = QHBoxLayout()
@@ -220,6 +220,8 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.verticalLayout_7 = QVBoxLayout()
+        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
         self.pushButton_furmark = QPushButton(self.centralwidget)
         self.pushButton_furmark.setObjectName(u"pushButton_furmark")
         self.pushButton_furmark.setFont(font1)
@@ -228,19 +230,22 @@ class Ui_MainWindow(object):
         self.pushButton_furmark.setIcon(icon2)
         self.pushButton_furmark.setIconSize(QSize(60, 60))
 
-        self.horizontalLayout_4.addWidget(self.pushButton_furmark)
-
-        self.pushButton_alter_prog = QPushButton(self.centralwidget)
-        self.pushButton_alter_prog.setObjectName(u"pushButton_alter_prog")
-        self.pushButton_alter_prog.setFont(font1)
-
-        self.horizontalLayout_4.addWidget(self.pushButton_alter_prog)
+        self.verticalLayout_7.addWidget(self.pushButton_furmark)
 
         self.pushButton_cpu_temp = QPushButton(self.centralwidget)
         self.pushButton_cpu_temp.setObjectName(u"pushButton_cpu_temp")
         self.pushButton_cpu_temp.setFont(font1)
 
-        self.horizontalLayout_4.addWidget(self.pushButton_cpu_temp)
+        self.verticalLayout_7.addWidget(self.pushButton_cpu_temp)
+
+        self.pushButton_alter_prog = QPushButton(self.centralwidget)
+        self.pushButton_alter_prog.setObjectName(u"pushButton_alter_prog")
+        self.pushButton_alter_prog.setFont(font1)
+
+        self.verticalLayout_7.addWidget(self.pushButton_alter_prog)
+
+
+        self.horizontalLayout_4.addLayout(self.verticalLayout_7)
 
 
         self.horizontalLayout_5.addLayout(self.horizontalLayout_4)
@@ -253,7 +258,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_5.setStretch(1, 1)
 
-        self.verticalLayout_7.addLayout(self.verticalLayout_5)
+        self.verticalLayout_8.addLayout(self.verticalLayout_5)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
@@ -295,8 +300,8 @@ class Ui_MainWindow(object):
         self.pushButton_btn12.setText(QCoreApplication.translate("MainWindow", u"btn12", None))
         self.label_tests_failed.setText(QCoreApplication.translate("MainWindow", u"\u0422\u0435\u0441\u0442\u044b \u043d\u0435 \u043f\u0440\u043e\u0439\u0434\u0435\u043d\u044b:", None))
         self.pushButton_furmark.setText(QCoreApplication.translate("MainWindow", u"Stress Test", None))
-        self.pushButton_alter_prog.setText(QCoreApplication.translate("MainWindow", u"run_alter_prog", None))
         self.pushButton_cpu_temp.setText(QCoreApplication.translate("MainWindow", u"CPU TEMP", None))
+        self.pushButton_alter_prog.setText(QCoreApplication.translate("MainWindow", u"run_alter_prog", None))
         self.menu_info.setTitle(QCoreApplication.translate("MainWindow", u"\u0418\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u044f", None))
     # retranslateUi
 

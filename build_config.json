@@ -68,6 +68,10 @@
   {
    "optionDest": "datas",
    "value": "C:/Users/Ryazanov/PycharmProjects/MonoblockTests/content;content/"
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Users/Ryazanov/PycharmProjects/MonoblockTests/OpenHardwareMonitor;OpenHardwareMonitor/"
   }
  ],
  "nonPyinstallerOptions": {
