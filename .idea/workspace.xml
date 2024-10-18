@@ -4,8 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="1) таймауты на звук убрать когда в автомате  X&#10;2) добавить тестинг хдд и звука на линию X&#10;3) убрать запись микро для тестинга на линии X&#10;4) Выпилена подгрузка конфига из лайн версии полностью&#10;5) Пролистывание аудио теста на пустое поле x&#10;6) Вшит в конфиг отключение теста для наушников x">
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="wmi CPU temp with hwmonitor">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,21 +40,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.CExternalDisplay.executor": "Run",
-    "Python.CPatternsTest.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.video_player.executor": "Run",
-    "Python.videocam.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/Ryazanov/PycharmProjects/WEBACP"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.CExternalDisplay.executor&quot;: &quot;Run&quot;,
+    &quot;Python.CPatternsTest.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.video_player.executor&quot;: &quot;Run&quot;,
+    &quot;Python.videocam.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Ryazanov/PycharmProjects/QRPrint&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Ryazanov\PycharmProjects\MonoblockTests\content" />
@@ -107,30 +107,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1726470153327</updated>
-    </task>
-    <task id="LOCAL-00024" summary="hardkeys">
-      <option name="closed" value="true" />
-      <created>1728239331071</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1728239331071</updated>
-    </task>
-    <task id="LOCAL-00025" summary="hardkeys">
-      <option name="closed" value="true" />
-      <created>1728239339418</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1728239339418</updated>
-    </task>
-    <task id="LOCAL-00026" summary="hardkeys">
-      <option name="closed" value="true" />
-      <created>1728277336718</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1728277336718</updated>
     </task>
     <task id="LOCAL-00027" summary="hardkeys completed">
       <option name="closed" value="true" />
@@ -500,7 +476,31 @@
       <option name="project" value="LOCAL" />
       <updated>1729251541517</updated>
     </task>
-    <option name="localTasksCounter" value="73" />
+    <task id="LOCAL-00073" summary="Если мы в лупе тестов только для линии, в случае ошибки в каком либо тесте на линии, прервём луп">
+      <option name="closed" value="true" />
+      <created>1729252644300</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1729252644300</updated>
+    </task>
+    <task id="LOCAL-00074" summary="Если мы в лупе тестов только для линии, в случае ошибки в каком либо тесте на линии, прервём луп">
+      <option name="closed" value="true" />
+      <created>1729252657866</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1729252657866</updated>
+    </task>
+    <task id="LOCAL-00075" summary="wmi CPU temp with hwmonitor">
+      <option name="closed" value="true" />
+      <created>1729258959653</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1729258959653</updated>
+    </task>
+    <option name="localTasksCounter" value="76" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -518,8 +518,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="speaker" />
-    <MESSAGE value="готов speaker test" />
     <MESSAGE value="videocam test" />
     <MESSAGE value="videocam completed" />
     <MESSAGE value="hardkeys" />
@@ -543,7 +541,9 @@
     <MESSAGE value="fix bug with load config in only test line" />
     <MESSAGE value="fix bug with load config in only test line&#10;commit 2" />
     <MESSAGE value="1) таймауты на звук убрать когда в автомате  X&#10;2) добавить тестинг хдд и звука на линию X&#10;3) убрать запись микро для тестинга на линии X&#10;4) Выпилена подгрузка конфига из лайн версии полностью&#10;5) Пролистывание аудио теста на пустое поле x&#10;6) Вшит в конфиг отключение теста для наушников x" />
-    <option name="LAST_COMMIT_MESSAGE" value="1) таймауты на звук убрать когда в автомате  X&#10;2) добавить тестинг хдд и звука на линию X&#10;3) убрать запись микро для тестинга на линии X&#10;4) Выпилена подгрузка конфига из лайн версии полностью&#10;5) Пролистывание аудио теста на пустое поле x&#10;6) Вшит в конфиг отключение теста для наушников x" />
+    <MESSAGE value="Если мы в лупе тестов только для линии, в случае ошибки в каком либо тесте на линии, прервём луп" />
+    <MESSAGE value="wmi CPU temp with hwmonitor" />
+    <option name="LAST_COMMIT_MESSAGE" value="wmi CPU temp with hwmonitor" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
