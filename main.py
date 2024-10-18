@@ -1119,7 +1119,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Please select job type mode")
     parser.add_argument('command', type=str, help='Command for set select job type')
 
-    args = parser.parse_args(["PROGRAM_LINE"])  # args = parser.parse_args(["PROGRAM_FULL"])
+    args = parser.parse_args()  # args = parser.parse_args(["PROGRAM_FULL"])
     pr_type = PROGRAM_JOB_TYPE.JOB_NORMAL
     if args.command == "PROGRAM_LINE":
         pr_type = PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE
