@@ -41,6 +41,7 @@ class CSpeakerTestWindow(QMainWindow):
 
         self.ui.setupUi(self)
         self.test_type = test_type
+
         self.path_to_record_audio = "content/output_sound.wav"
         self.precord = PyAudio()
         self.record_state: AUDIO_TEST_RECORD_STATE = AUDIO_TEST_RECORD_STATE.STATE_NONE

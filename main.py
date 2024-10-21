@@ -224,20 +224,25 @@ class MainWindow(QMainWindow):
         if not self.set_get_button_blocker():
             return
         patch = "OpenHardwareMonitor/OpenHardwareMonitor.exe"
+        self.run_programm(patch)
+
+    def run_programm(self, patch: str):
+        result = ""
         if isinstance(patch, str) and len(patch):
             if patch.find('.exe') != -1:
                 result = self.run_external_program(patch)
-                if result:
+                if result is True:
                     return
             elif patch.find('.bat') != -1:
                 result = self.run_external_bat(patch)
-                if result:
+                if result is True:
                     return
 
         send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
                          text="Не удалось запустить программу!\n"
                               "Поддерживается .exe, .bat файлы.\n"
-                              f"Путь: {patch}!",
+                              f"Путь: {patch}!\n"
+                              f"Ошибка: {result}",
                          title="Внимание!",
                          variant_yes="Закрыть", variant_no="", callback=None)
 
@@ -245,32 +250,16 @@ class MainWindow(QMainWindow):
         if not self.set_get_button_blocker():
             return
         patch = self.main_config.get_furmark_patch()
-        if isinstance(patch, str) and len(patch):
-            if patch.find('.exe') != -1:
-                result = self.run_external_program(patch)
-                if result:
-                    return
-            elif patch.find('.bat') != -1:
-                result = self.run_external_bat(patch)
-                if result:
-                    return
-
-        send_message_box(icon_style=SMBOX_ICON_TYPE.ICON_ERROR,
-                         text="Не удалось запустить программу!\n"
-                              "Поддерживается .exe, .bat файлы.\n"
-                              f"Путь: {patch}!",
-                         title="Внимание!",
-                         variant_yes="Закрыть", variant_no="", callback=None)
+        self.run_programm(patch)
 
     @staticmethod
-    def run_external_program(program_path) -> bool:
+    def run_external_program(program_path) -> bool | str:
         try:
-            print(program_path)
             subprocess.Popen(program_path)
             return True
 
-        except:
-            return False
+        except Exception as err:
+            return str(err)
 
     @staticmethod
     def run_external_bat(program_path) -> bool:
