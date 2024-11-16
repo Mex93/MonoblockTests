@@ -6,8 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="a2ae36f3-8ef9-4fad-8195-4847425d3833" name="Changes" comment="wmi CPU temp with hwmonitor">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CSpeakerTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/CSpeakerTest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -109,14 +107,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1726470153327</updated>
-    </task>
-    <task id="LOCAL-00028" summary="removabledev completed">
-      <option name="closed" value="true" />
-      <created>1728297866519</created>
-      <option name="number" value="00028" />
-      <option name="presentableId" value="LOCAL-00028" />
-      <option name="project" value="LOCAL" />
-      <updated>1728297866519</updated>
     </task>
     <task id="LOCAL-00029" summary="removabledev completed">
       <option name="closed" value="true" />
@@ -502,7 +492,15 @@
       <option name="project" value="LOCAL" />
       <updated>1729259817987</updated>
     </task>
-    <option name="localTasksCounter" value="77" />
+    <task id="LOCAL-00077" summary="wmi CPU temp with hwmonitor">
+      <option name="closed" value="true" />
+      <created>1729491942021</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1729491942021</updated>
+    </task>
+    <option name="localTasksCounter" value="78" />
     <servers />
   </component>
   <component name="UnknownFeatures">
