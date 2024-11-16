@@ -277,15 +277,18 @@ class MainWindow(QMainWindow):
             return False
 
     def on_timer_cpu_temp_update(self):
-        w = WMI(namespace="root/OpenHardwareMonitor")
-        temperature_infos = w.Sensor()
-        for sensor in temperature_infos:
-            if sensor.SensorType == u'Temperature':
-                # print(sensor.Name, sensor.Value)
-                if isinstance(sensor.Name, str):
-                    if sensor.Name.find("CPU Package") != -1:
-                        self.ui.pushButton_cpu_temp.setText(f"{sensor.Name}: {sensor.Value}")
-                        return
+        try:
+            w = WMI(namespace="root/OpenHardwareMonitor")
+            temperature_infos = w.Sensor()
+            for sensor in temperature_infos:
+                if sensor.SensorType == u'Temperature':
+                    # print(sensor.Name, sensor.Value)
+                    if isinstance(sensor.Name, str):
+                        if sensor.Name.find("CPU Package") != -1:
+                            self.ui.pushButton_cpu_temp.setText(f"{sensor.Name}: {sensor.Value}")
+                            return
+        except:
+            pass
 
         self.ui.pushButton_cpu_temp.setText(f"Запустите OpenHardwareMonitor")
 
@@ -1138,7 +1141,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Please select job type mode")
     parser.add_argument('command', type=str, help='Command for set select job type')
 
-    args = parser.parse_args()  # args = parser.parse_args(["PROGRAM_FULL"])
+    args = parser.parse_args(["PROGRAM_FULL"])  # args = parser.parse_args(["PROGRAM_FULL"])
     pr_type = PROGRAM_JOB_TYPE.JOB_NORMAL
     if args.command == "PROGRAM_LINE":
         pr_type = PROGRAM_JOB_TYPE.JOB_ONLY_FOR_LINE
