@@ -106,14 +106,6 @@
       <option name="presentableId" value="Default" />
       <updated>1726470153327</updated>
     </task>
-    <task id="LOCAL-00030" summary="removabledev completed">
-      <option name="closed" value="true" />
-      <created>1728309627863</created>
-      <option name="number" value="00030" />
-      <option name="presentableId" value="LOCAL-00030" />
-      <option name="project" value="LOCAL" />
-      <updated>1728309627863</updated>
-    </task>
     <task id="LOCAL-00031" summary="display test completed">
       <option name="closed" value="true" />
       <created>1728368962199</created>
@@ -498,7 +490,15 @@
       <option name="project" value="LOCAL" />
       <updated>1731765392455</updated>
     </task>
-    <option name="localTasksCounter" value="79" />
+    <task id="LOCAL-00079" summary="wmi CPU temp with hwmonitor">
+      <option name="closed" value="true" />
+      <created>1731765534796</created>
+      <option name="number" value="00079" />
+      <option name="presentableId" value="LOCAL-00079" />
+      <option name="project" value="LOCAL" />
+      <updated>1731765534796</updated>
+    </task>
+    <option name="localTasksCounter" value="80" />
     <servers />
   </component>
   <component name="UnknownFeatures">
